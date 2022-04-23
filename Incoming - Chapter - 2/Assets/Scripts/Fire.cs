@@ -12,18 +12,22 @@ public class Fire : MonoBehaviour
     private Gun gunAsset;
     public Transform firePoint;
     private Camera cam;
-    private InputAction shoot;
-    private InputAction Scope;
     private void Awake()
     {
+        
         cam = GetComponentInParent<Camera>();
     }
+    /*private void OnEnable()
+    {
+        input.Enable();
+    }
+    private void OnDestroy()
+    {
+        input.Disable();
+    }*/
     void Update()
     {
-        if (shoot.enabled)
-        {
-            Shoot();
-        }
+
     }
     void Shoot()
     {
