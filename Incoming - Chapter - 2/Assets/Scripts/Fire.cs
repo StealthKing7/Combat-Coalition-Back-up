@@ -8,28 +8,25 @@ using UnityEngine;
 
 public class Fire : MonoBehaviour
 {
-    [SerializeField]
+    /*private WeaponSwitching switching;
     private Gun gunAsset;
-    public Transform firePoint;
-    private Camera cam;
+    private GameObject gun;
     private void Awake()
     {
-        
-        cam = GetComponentInParent<Camera>();
+        switching = GetComponentInChildren<WeaponSwitching>();
+        //cam = GetComponentInParent<Camera>();
     }
-    /*private void OnEnable()
-    {
-        input.Enable();
-    }
-    private void OnDestroy()
-    {
-        input.Disable();
-    }*/
     void Update()
     {
+        for (int i = 0; i < switching.weapons.Count; i++)
+        {
 
+            gun = switching.weapons[i].gameObject;
+                
+            
+        }
     }
-    void Shoot()
+   /* void Shoot()
     {
         Vector3 mousePos = Vector3.zero;
         Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
@@ -43,5 +40,5 @@ public class Fire : MonoBehaviour
             Destroy(bullet, gunAsset.BulletLifeTime);
         }
 
-    }
+    }*/
 }

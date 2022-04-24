@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 738646681595172698}
   - component: {fileID: 738646681595172702}
   - component: {fileID: 8445785304601523835}
+  - component: {fileID: 5359721651993308152}
   m_Layer: 9
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -234,6 +235,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5359721651993308152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 738646681595172696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72a00b786bcb6ab48b8a4315fb253ef6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunAsset: {fileID: 0}
+  firePoint: {fileID: 0}
 --- !u!1 &738646681744756154
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +260,6 @@ GameObject:
   - component: {fileID: 738646681744756156}
   - component: {fileID: 738646681744756155}
   - component: {fileID: 339138788302325471}
-  - component: {fileID: 2827406359732472740}
   m_Layer: 9
   m_Name: PlayerControllerFPS
   m_TagString: Untagged
@@ -299,40 +313,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ffb40776abc5ef4fbbe100dd2ac0f86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2827406359732472740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 738646681744756154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: b4afad37585f0d34cb69c38257424336, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 19895770-14c7-449e-8ab0-4a77da31bc19
-    m_ActionName: Player/Jump[/Keyboard/space]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
+  gravity: 0
+  GroundCheck: {fileID: 0}
+  GroundCheckRadius: 0
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  JumpHeight: 0
+  Speed: 0
 --- !u!1 &738646681763345175
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,6 +390,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 769948490487807239}
+  - component: {fileID: 1209138870184859179}
   m_Layer: 9
   m_Name: WeaponHolder
   m_TagString: Untagged
@@ -424,6 +413,18 @@ Transform:
   m_Father: {fileID: 738646681595172700}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1209138870184859179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8947306920273206639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50139c366ce3baf478aa3c5dc523af88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7552904877789707638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -481,27 +482,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75dcb58506746b84db987c4ce01e99b5, type: 3}
---- !u!1 &7552904877789805524 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100002, guid: 75dcb58506746b84db987c4ce01e99b5, type: 3}
-  m_PrefabInstance: {fileID: 7552904877789707638}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7552904877790095348 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: 75dcb58506746b84db987c4ce01e99b5, type: 3}
   m_PrefabInstance: {fileID: 7552904877789707638}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5691004527764817654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7552904877789805524}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 72a00b786bcb6ab48b8a4315fb253ef6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gunAsset: {fileID: 11400000, guid: a471d8b8ebb36dc43bf28daeb3d7890a, type: 2}
-  firePoint: {fileID: 0}
