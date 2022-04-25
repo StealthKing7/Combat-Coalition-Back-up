@@ -17,7 +17,7 @@ public class AKM : MonoBehaviour
     public float BulletLifeTime;
     private PlayerInput playerInput;
     public float BulletSpeed;
-
+    public Transform Test;
     private void Awake()
     {
         playerInput = new PlayerInput();
@@ -40,6 +40,7 @@ public class AKM : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, Range, layerMask))
             {
                 mousePos = hit.point;
+                Test.position = hit.point;
                 Vector3 aimDir = (mousePos - firePoint.position).normalized;
                 GameObject bullet = Instantiate(Bullet, firePoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
                 bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
