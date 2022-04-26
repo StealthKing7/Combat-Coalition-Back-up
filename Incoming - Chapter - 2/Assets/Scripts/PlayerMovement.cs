@@ -21,7 +21,6 @@ public class PlayerMovement : MonoBehaviour
         inputActions = new PlayerInput();
         inputActions.Enable();
         inputActions.Player.Jump.performed += Jump;
-        //inputActions.Player.Fire.performed += Shoot;
     }
     // Start is called before the first frame update
     void Start()
@@ -43,13 +42,6 @@ public class PlayerMovement : MonoBehaviour
         Vector3 move = transform.right * input.x + transform.forward * input.y;
         characterController.Move(move * Speed * Time.deltaTime);
     }
-    /*void Shoot(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            Debug.Log("Shot");
-        }
-    }*/
     void Jump(InputAction.CallbackContext context)
     {
         if (context.performed)
