@@ -62,6 +62,15 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Mouse ScrollWheel"",
+                    ""type"": ""Value"",
+                    ""id"": ""8ca5c257-d290-466f-9056-c7ddafb05237"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -152,6 +161,17 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""action"": ""Scope"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e7206b39-2202-42be-8035-bf1182fbcb66"",
+                    ""path"": ""<Mouse>/scroll/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse ScrollWheel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_Player_Moment = m_Player.FindAction("Moment", throwIfNotFound: true);
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_Scope = m_Player.FindAction("Scope", throwIfNotFound: true);
+        m_Player_MouseScrollWheel = m_Player.FindAction("Mouse ScrollWheel", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -227,6 +248,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Moment;
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_Scope;
+    private readonly InputAction m_Player_MouseScrollWheel;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -235,6 +257,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         public InputAction @Moment => m_Wrapper.m_Player_Moment;
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @Scope => m_Wrapper.m_Player_Scope;
+        public InputAction @MouseScrollWheel => m_Wrapper.m_Player_MouseScrollWheel;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +279,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Scope.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScope;
                 @Scope.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScope;
                 @Scope.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScope;
+                @MouseScrollWheel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseScrollWheel;
+                @MouseScrollWheel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseScrollWheel;
+                @MouseScrollWheel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMouseScrollWheel;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -272,6 +298,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @Scope.started += instance.OnScope;
                 @Scope.performed += instance.OnScope;
                 @Scope.canceled += instance.OnScope;
+                @MouseScrollWheel.started += instance.OnMouseScrollWheel;
+                @MouseScrollWheel.performed += instance.OnMouseScrollWheel;
+                @MouseScrollWheel.canceled += instance.OnMouseScrollWheel;
             }
         }
     }
@@ -282,5 +311,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         void OnMoment(InputAction.CallbackContext context);
         void OnFire(InputAction.CallbackContext context);
         void OnScope(InputAction.CallbackContext context);
+        void OnMouseScrollWheel(InputAction.CallbackContext context);
     }
 }

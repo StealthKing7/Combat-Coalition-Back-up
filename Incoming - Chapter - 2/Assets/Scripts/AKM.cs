@@ -21,11 +21,13 @@ public class AKM : MonoBehaviour
     private Animator animator;
     private float NextTimeToFire = 0;
     public float FireRate;
+    private Recoil recoil;
     private void Awake()
     {
         playerInput = new PlayerInput();
-        cam = GetComponentInParent<Camera>();
         playerInput.Player.Enable();
+        cam = GetComponentInParent<Camera>();
+        recoil = GetComponent<Recoil>();
         animator = cam.GetComponent<Animator>();
     }
     void Update()
@@ -38,6 +40,8 @@ public class AKM : MonoBehaviour
         if (playerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire)
         {
             NextTimeToFire = Time.time + 1f / FireRate;
+            recoil.Fire();
+            recoil.aim = isScope;
             Shoot();
         }
     }
