@@ -11,8 +11,14 @@ public class AKM : MonoBehaviour
     public LayerMask layer;
     public Transform FirePoint;
     public GameObject BulletPB;
+    public float BulletSpeed;
+    public float BulletLifeTime;
+    private Recoil recoil;
+    public float FireRate;
+    private float NextTimeToFire = 0;
     void Awake()
     {
+        recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
     }
@@ -25,8 +31,10 @@ public class AKM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (PlayerInput.Player.Fire.IsPressed())
+        if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire)
         {
+            NextTimeToFire = Time.time + 1f / FireRate;
+            recoil.Fire();
             Shoot();
         }
     }
@@ -40,8 +48,8 @@ public class AKM : MonoBehaviour
             mousePos += hit.point;
             Vector3 aimDir = (mousePos - FirePoint.position).normalized;
             GameObject bullet = Instantiate(BulletPB, FirePoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
-            //bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
-            //Destroy(bullet, BulletLifeTime);
+            bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
+            Destroy(bullet, BulletLifeTime);
         }
 
     }
