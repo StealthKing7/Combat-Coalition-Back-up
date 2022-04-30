@@ -7,7 +7,7 @@ public class PlayerMovemet : MonoBehaviour
 
     private PlayerInput playerInput;
     private CharacterController characterController;
-    public float Speed;
+    private float Speed;
     public float MouseSensitivity;
     private MouseLook mouseLook;
     private Vector3 velocity;
@@ -17,13 +17,16 @@ public class PlayerMovemet : MonoBehaviour
     public float GroundRadius;
     public LayerMask LayerMask;
     private bool isGrounded;
+    public float SprintSpeed;
+    public float NormalSpeed;
     private void Awake()
     {
+        Speed = NormalSpeed;
         characterController = GetComponent<CharacterController>();  
         playerInput = new PlayerInput();
         playerInput.Player.Enable();
         mouseLook=GetComponentInChildren<MouseLook>();
-        mouseLook.GetValues(MouseSensitivity, this.transform);
+        mouseLook.GetValues(MouseSensitivity, this.transform, transform.GetChild(0));
     }
 
     // Start is called before the first frame update
@@ -41,6 +44,7 @@ public class PlayerMovemet : MonoBehaviour
     {
         Movement();
     }
+
     private void Movement()
     {
         float x, z;
@@ -55,10 +59,20 @@ public class PlayerMovemet : MonoBehaviour
         }
 
         Vector3 move = transform.right * x + transform.forward * z;
-        if (isGrounded)
+
+
+        if (playerInput.Player.Sprint.IsPressed())
         {
-            characterController.Move(move * Speed * Time.deltaTime);
+            Speed = SprintSpeed;
+
         }
+        else
+        {
+            Speed = NormalSpeed;
+        }
+
+        characterController.Move(move * Speed * Time.deltaTime);
+        
         if (playerInput.Player.Jump.IsPressed() && isGrounded)
         {
             velocity.y = Mathf.Sqrt(JumpHeight * -2f * Gravity);
