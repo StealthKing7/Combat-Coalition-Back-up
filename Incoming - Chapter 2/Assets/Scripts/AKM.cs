@@ -16,11 +16,14 @@ public class AKM : MonoBehaviour
     private Recoil recoil;
     public float FireRate;
     private float NextTimeToFire = 0;
+    private Animator animator;
+    private bool isScoped;
     void Awake()
     {
         recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
+        animator = cam.GetComponent<Animator>();
     }
     // Start is called before the first frame update
     void Start()
@@ -36,6 +39,11 @@ public class AKM : MonoBehaviour
             NextTimeToFire = Time.time + 1f / FireRate;
             recoil.Fire();
             Shoot();
+        }
+        if (PlayerInput.Player.Scope.triggered)
+        {
+            isScoped = !isScoped;
+            animator.SetBool("Scope", isScoped);
         }
     }
     void Shoot()
