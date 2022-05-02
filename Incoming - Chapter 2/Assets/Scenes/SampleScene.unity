@@ -264,6 +264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 375513078}
   - component: {fileID: 375513079}
+  - component: {fileID: 375513080}
   m_Layer: 0
   m_Name: WeaponHolder
   m_TagString: Untagged
@@ -298,6 +299,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48948dfe9d76b07488dacd46a7955fa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &375513080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375513077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 780a44a52e688eb42b80e274af961ce4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Smothness: 8
+  SwayMultiplier: 2
 --- !u!1 &445463417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,7 +1962,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3400864675135050670, guid: b34af42063ae0da43b034b47599a4a77, type: 3}
       propertyPath: RecoilY
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3400864675135050670, guid: b34af42063ae0da43b034b47599a4a77, type: 3}
       propertyPath: BulletPB

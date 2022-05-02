@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class AKM : MonoBehaviour
 {
@@ -21,7 +18,10 @@ public class AKM : MonoBehaviour
     private CameraRecoil cameraRecoil;
     [Space(10)]
     [Header("Camera Recoil")]
-    public float RecoilX, RecoilY, Snapiness, ReturnSpeed;
+    public float RecoilX;
+    public float RecoilY;
+    public float Snapiness;
+    public float ReturnSpeed;
     void Awake()
     {
         recoil = GetComponentInChildren<Recoil>();  
