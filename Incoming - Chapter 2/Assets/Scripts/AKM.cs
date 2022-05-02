@@ -18,12 +18,18 @@ public class AKM : MonoBehaviour
     private float NextTimeToFire = 0;
     private Animator animator;
     private bool isScoped;
+    private CameraRecoil cameraRecoil;
+    [Space(10)]
+    [Header("Camera Recoil")]
+    public float RecoilX, RecoilY, Snapiness, ReturnSpeed;
     void Awake()
     {
         recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
         animator = cam.GetComponent<Animator>();
+        cameraRecoil = GetComponentInParent<CameraRecoil>();
+        cameraRecoil.CameraRecoilValues(RecoilX, RecoilY, Snapiness, ReturnSpeed);
 
     }
     // Start is called before the first frame update
@@ -50,10 +56,11 @@ public class AKM : MonoBehaviour
     }
     void Shoot()
     {
+        cameraRecoil.RecoilFire();
         Vector3 mousePos = Vector3.zero;
         Vector2 ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
         Ray ray = cam.ScreenPointToRay(ScreenCenter);
-        if(Physics.Raycast(ray, out RaycastHit hit, Range, layer))
+        if (Physics.Raycast(ray, out RaycastHit hit, Range, layer))
         {
             mousePos += hit.point;
             Vector3 aimDir = (mousePos - FirePoint.position).normalized;
@@ -61,6 +68,6 @@ public class AKM : MonoBehaviour
             bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
             Destroy(bullet, BulletLifeTime);
         }
-
+        
     }
 }
