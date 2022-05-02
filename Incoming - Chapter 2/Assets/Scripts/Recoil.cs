@@ -31,9 +31,6 @@ public class Recoil : MonoBehaviour
 
     public bool aim;
 
-
-
-
     void FixedUpdate()
     {
         CurrentRecoil1 = Vector3.Lerp(CurrentRecoil1, Vector3.zero, Recoil1 * Time.deltaTime);
@@ -51,7 +48,6 @@ public class Recoil : MonoBehaviour
         {
             CurrentRecoil1 += new Vector3(RecoilRotation_Aim.x, Random.Range(-RecoilRotation_Aim.y, RecoilRotation_Aim.y), Random.Range(-RecoilRotation_Aim.z, RecoilRotation_Aim.z));
             CurrentRecoil3 += new Vector3(Random.Range(-RecoilKickBack_Aim.x, RecoilKickBack_Aim.x), Random.Range(-RecoilKickBack_Aim.y, RecoilKickBack_Aim.y), RecoilKickBack_Aim.z);
-
         }
         if (aim == false)
         {

@@ -13,7 +13,6 @@ public class MouseLook : MonoBehaviour
     private Transform playerBody;
     private Transform CameraHolder;
     float xRotation = 0f;
-
     public void GetValues(float sencitivity,Transform player,Transform holder)
     {
         mouseSensitivity = sencitivity;

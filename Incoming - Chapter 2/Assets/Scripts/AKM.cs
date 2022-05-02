@@ -24,6 +24,7 @@ public class AKM : MonoBehaviour
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
         animator = cam.GetComponent<Animator>();
+
     }
     // Start is called before the first frame update
     void Start()
@@ -44,6 +45,7 @@ public class AKM : MonoBehaviour
         {
             isScoped = !isScoped;
             animator.SetBool("Scope", isScoped);
+            recoil.aim = isScoped;
         }
     }
     void Shoot()
