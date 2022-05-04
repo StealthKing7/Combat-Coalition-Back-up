@@ -52,6 +52,11 @@ public class AKM : MonoBehaviour
             animator.SetBool("Scope", isScoped);
             recoil.aim = isScoped;
         }
+        Ammo.text = currentAmmo.ToString();
+        if ((currentAmmo == 0) || (currentAmmo < MaxAmmo && PlayerInput.Player.Reload.triggered))
+        {
+            StartCoroutine(Reload());
+        }
         if (currentAmmo == 0)
         {
             return;
@@ -63,11 +68,7 @@ public class AKM : MonoBehaviour
             Shoot();
         }
 
-        Ammo.text = currentAmmo.ToString();
-        if ((currentAmmo == 0) || (currentAmmo < MaxAmmo && PlayerInput.Player.Reload.triggered))
-        {
-            StartCoroutine(Reload());
-        }
+
     }
     void Shoot()
     {
@@ -89,7 +90,10 @@ public class AKM : MonoBehaviour
     IEnumerator Reload()
     {
         Debug.Log("Reloading");
-        yield return new WaitForSeconds(ReloadTime);
+        animator.SetBool("Reloading", true);
+        yield return new WaitForSeconds(ReloadTime - 2.5f);
+        animator.SetBool("Reloading", false);
+        yield return new WaitForSeconds(2.5f);
         currentAmmo = MaxAmmo;
     } 
 }
