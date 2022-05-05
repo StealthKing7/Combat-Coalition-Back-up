@@ -89,10 +89,20 @@ public class AKM : MonoBehaviour
     }
     IEnumerator Reload()
     {
+        string AnimatoinType;
+        switch (currentAmmo)
+        {
+            case 0:
+                AnimatoinType = "Reload_Empty";
+                break;
+            default:
+                AnimatoinType = "Reload_NotEmpty";
+                break;
+        }
         Debug.Log("Reloading");
-        animator.SetBool("Reloading", true);
+        animator.SetBool(AnimatoinType, true);
         yield return new WaitForSeconds(ReloadTime - 2.5f);
-        animator.SetBool("Reloading", false);
+        animator.SetBool(AnimatoinType, false);
         yield return new WaitForSeconds(2.5f);
         currentAmmo = MaxAmmo;
     } 
