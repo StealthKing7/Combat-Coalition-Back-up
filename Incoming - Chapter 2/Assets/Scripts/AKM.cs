@@ -21,6 +21,7 @@ public class AKM : MonoBehaviour
     public float MaxAmmo;
     private float currentAmmo;
     public float ReloadTime;
+    private bool isReloading;
     [Space(10)]
     [Header("Camera Recoil")]
     public float RecoilX;
@@ -52,16 +53,20 @@ public class AKM : MonoBehaviour
             animator.SetBool("Scope", isScoped);
             recoil.aim = isScoped;
         }
+        if (isScoped)
+        {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 45, 0.25f);
+        }
+        else
+        {
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 60, 0.25f);
+        }
         Ammo.text = currentAmmo.ToString();
         if ((currentAmmo == 0) || (currentAmmo < MaxAmmo && PlayerInput.Player.Reload.triggered))
         {
             StartCoroutine(Reload());
         }
-        if (currentAmmo == 0)
-        {
-            return;
-        }
-        if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire&&currentAmmo > 0)
+        if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire&&currentAmmo > 0&&!isReloading)
         {
             NextTimeToFire = Time.time + 1f / FireRate;
             recoil.Fire();
@@ -89,6 +94,9 @@ public class AKM : MonoBehaviour
     }
     IEnumerator Reload()
     {
+        isScoped = false;
+        animator.SetBool("Scope", false);
+        isReloading = true;
         string AnimatoinType;
         switch (currentAmmo)
         {
@@ -105,5 +113,6 @@ public class AKM : MonoBehaviour
         animator.SetBool(AnimatoinType, false);
         yield return new WaitForSeconds(2.5f);
         currentAmmo = MaxAmmo;
+        isReloading = false;
     } 
 }
