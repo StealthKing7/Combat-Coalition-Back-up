@@ -4,32 +4,33 @@ using UnityEngine.UI;
 public class AKM : MonoBehaviour
 {
     private PlayerInput PlayerInput;
-    public Camera cam;
-    public float Range;
-    public LayerMask layer;
-    public Transform FirePoint;
-    public GameObject BulletPB;
-    public float BulletSpeed;
-    public float BulletLifeTime;
+    [SerializeField] private Camera cam;
+    [SerializeField] private float Range;
+    [SerializeField] private LayerMask layer;
+    [SerializeField] private Transform FirePoint;
+    [SerializeField] private GameObject BulletPB;
+    [SerializeField] private float BulletSpeed;
+    [SerializeField] private float BulletLifeTime;
     private Recoil recoil;
-    public float FireRate;
+    [SerializeField] private float FireRate;
     private float NextTimeToFire = 0;
     private Animator animator;
     private bool isScoped;
     private CameraRecoil cameraRecoil;
-    public Text Ammo;
-    public float MaxAmmo;
+    [SerializeField] private Text Ammo;
+    [SerializeField] private float MaxAmmo;
     private float currentAmmo;
-    public float ReloadTime;
+    [SerializeField] private float ReloadTime;
     private bool isReloading;
     [Space(10)]
     [Header("Camera Recoil")]
-    public float RecoilX;
-    public float RecoilY;
-    public float Snapiness;
-    public float ReturnSpeed;
+    [SerializeField] private float RecoilX;
+    [SerializeField] private float RecoilY;
+    [SerializeField] private float Snapiness;
+    [SerializeField] private float ReturnSpeed;
     void Awake()
     {
+        Application.targetFrameRate = 100;
         recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
@@ -109,9 +110,9 @@ public class AKM : MonoBehaviour
         }
         Debug.Log("Reloading");
         animator.SetBool(AnimatoinType, true);
-        yield return new WaitForSeconds(ReloadTime - 2.5f);
+        yield return new WaitForSeconds(ReloadTime - 0.25f);
         animator.SetBool(AnimatoinType, false);
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(0.25f);
         currentAmmo = MaxAmmo;
         isReloading = false;
     } 

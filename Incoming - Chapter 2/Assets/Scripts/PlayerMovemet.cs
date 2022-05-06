@@ -5,36 +5,27 @@ public class PlayerMovemet : MonoBehaviour
     private PlayerInput playerInput;
     private CharacterController characterController;
     private float Speed;
-    public float MouseSensitivity;
+    [SerializeField] private float MouseSensitivity;
     private MouseLook mouseLook;
     private Vector3 velocity;
-    public float Gravity;
-    public float JumpHeight;
-    public Transform GroundCheck;
-    public float GroundRadius;
-    public LayerMask LayerMask;
+    [SerializeField] private float Gravity;
+    [SerializeField] private float JumpHeight;
+    [SerializeField] private Transform GroundCheck;
+    [SerializeField] private float GroundRadius;
+    [SerializeField] private LayerMask LayerMask;
     private bool isGrounded;
-    public float SprintSpeed;
-    public float NormalSpeed;
+    [SerializeField] private float SprintSpeed;
+    [SerializeField] private float NormalSpeed;
+    private Animator animator;
     private void Awake()
     {
+        animator = GetComponentInChildren<Animator>();
         Speed = NormalSpeed;
-        characterController = GetComponent<CharacterController>();  
+        characterController = GetComponent<CharacterController>();
         playerInput = new PlayerInput();
         playerInput.Player.Enable();
-        mouseLook=GetComponentInChildren<MouseLook>();
+        mouseLook = GetComponentInChildren<MouseLook>();
         mouseLook.GetValues(MouseSensitivity, this.transform, transform.GetChild(0));
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-       
     }
 
     void FixedUpdate()
@@ -61,13 +52,12 @@ public class PlayerMovemet : MonoBehaviour
         if (playerInput.Player.Sprint.IsPressed())
         {
             Speed = SprintSpeed;
-
         }
         else
         {
             Speed = NormalSpeed;
         }
-
+        //animator.SetBool("Walk", true);
         characterController.Move(move * Speed * Time.deltaTime);
         
         if (playerInput.Player.Jump.IsPressed() && isGrounded)
