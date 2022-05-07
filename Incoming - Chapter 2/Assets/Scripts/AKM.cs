@@ -22,6 +22,8 @@ public class AKM : MonoBehaviour
     private float currentAmmo;
     [SerializeField] private float ReloadTime;
     private bool isReloading;
+    [HideInInspector]
+    public bool isFireing;
     [Space(10)]
     [Header("Camera Recoil")]
     [SerializeField] private float RecoilX;
@@ -48,6 +50,7 @@ public class AKM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Ammo.text = currentAmmo.ToString();
         if (PlayerInput.Player.Scope.triggered)
         {
             isScoped = !isScoped;
@@ -62,9 +65,9 @@ public class AKM : MonoBehaviour
         {
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 60, 0.25f);
         }
-        Ammo.text = currentAmmo.ToString();
         if ((currentAmmo == 0) || (currentAmmo < MaxAmmo && PlayerInput.Player.Reload.triggered))
         {
+            if (!isReloading)
             StartCoroutine(Reload());
         }
         if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire&&currentAmmo > 0&&!isReloading)
@@ -78,6 +81,7 @@ public class AKM : MonoBehaviour
     }
     void Shoot()
     {
+        isFireing = true;
         currentAmmo--;
         cameraRecoil.RecoilFire();
         Vector3 mousePos = Vector3.zero;
@@ -91,7 +95,7 @@ public class AKM : MonoBehaviour
             bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
             Destroy(bullet, BulletLifeTime);
         }
-        
+        isFireing = false;
     }
     IEnumerator Reload()
     {

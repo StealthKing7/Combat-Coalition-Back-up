@@ -17,8 +17,11 @@ public class PlayerMovemet : MonoBehaviour
     [SerializeField] private float SprintSpeed;
     [SerializeField] private float NormalSpeed;
     private Animator animator;
+    private AKM aKM;
+    private bool isSprinting = false;
     private void Awake()
     {
+        aKM = GetComponentInChildren<AKM>();
         animator = GetComponentInChildren<Animator>();
         Speed = NormalSpeed;
         characterController = GetComponent<CharacterController>();
@@ -27,7 +30,27 @@ public class PlayerMovemet : MonoBehaviour
         mouseLook = GetComponentInChildren<MouseLook>();
         mouseLook.GetValues(MouseSensitivity, this.transform, transform.GetChild(0));
     }
+    private void Update()
+    {
+        if (playerInput.Player.Movement.IsPressed())
+        {
+            animator.SetBool("Walk", true);
+        }
+        else
+        {
+            animator.SetBool("Walk", false);
+        }
+        if (playerInput.Player.Movement.IsPressed() && isSprinting && !aKM.isFireing)
+        {
 
+            animator.SetBool("Run", true);
+
+        }
+        else 
+        {
+            animator.SetBool("Run", false);
+        }
+    }
     void FixedUpdate()
     {
         Movement();
@@ -52,12 +75,14 @@ public class PlayerMovemet : MonoBehaviour
         if (playerInput.Player.Sprint.IsPressed())
         {
             Speed = SprintSpeed;
+            isSprinting = true;
         }
         else
         {
+            isSprinting = false;
             Speed = NormalSpeed;
         }
-        //animator.SetBool("Walk", true);
+
         characterController.Move(move * Speed * Time.deltaTime);
         
         if (playerInput.Player.Jump.IsPressed() && isGrounded)
