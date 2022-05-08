@@ -22,8 +22,7 @@ public class AKM : MonoBehaviour
     private float currentAmmo;
     [SerializeField] private float ReloadTime;
     private bool isReloading;
-    [HideInInspector]
-    public bool isFireing;
+    public bool isFireing = false;
     [Space(10)]
     [Header("Camera Recoil")]
     [SerializeField] private float RecoilX;
@@ -70,14 +69,12 @@ public class AKM : MonoBehaviour
             if (!isReloading)
             StartCoroutine(Reload());
         }
-        if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire&&currentAmmo > 0&&!isReloading)
+        if (PlayerInput.Player.Fire.IsPressed() && Time.time >= NextTimeToFire && currentAmmo > 0 && !isReloading)
         {
             NextTimeToFire = Time.time + 1f / FireRate;
             recoil.Fire();
             Shoot();
         }
-
-
     }
     void Shoot()
     {
