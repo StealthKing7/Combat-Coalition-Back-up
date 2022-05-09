@@ -22,7 +22,6 @@ public class AKM : MonoBehaviour
     private float currentAmmo;
     [SerializeField] private float ReloadTime;
     private bool isReloading;
-    public bool isFireing = false;
     [Space(10)]
     [Header("Camera Recoil")]
     [SerializeField] private float RecoilX;
@@ -73,14 +72,14 @@ public class AKM : MonoBehaviour
         {
             NextTimeToFire = Time.time + 1f / FireRate;
             recoil.Fire();
+            cameraRecoil.RecoilFire();
             Shoot();
         }
     }
     void Shoot()
     {
-        isFireing = true;
+
         currentAmmo--;
-        cameraRecoil.RecoilFire();
         Vector3 mousePos = Vector3.zero;
         Vector2 ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
         Ray ray = cam.ScreenPointToRay(ScreenCenter);
@@ -92,7 +91,7 @@ public class AKM : MonoBehaviour
             bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
             Destroy(bullet, BulletLifeTime);
         }
-        isFireing = false;
+
     }
     IEnumerator Reload()
     {

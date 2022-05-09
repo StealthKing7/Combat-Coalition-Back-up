@@ -43,13 +43,13 @@ public class PlayerMovemet : MonoBehaviour
         if (playerInput.Player.Movement.IsPressed() && isSprinting)
         {
             animator.SetBool("Walk", false);
-            if (aKM.isFireing == false)
+            if (playerInput.Player.Fire.IsPressed())
             {
-                animator.SetBool("Run", true);
+                animator.SetBool("Run", false);
             }
             else
             {
-                animator.SetBool("Run", false);
+                animator.SetBool("Run", true);
             }
         }
         else
