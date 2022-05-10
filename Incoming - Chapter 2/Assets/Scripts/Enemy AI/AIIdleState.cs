@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class AIIdleState : AIState
 {
-    [SerializeField] bool PlayerSpotted;
+    private bool PlayerSpotted;
     [SerializeField] AIAlertState petrolState;
+    [SerializeField] float Range;
+    [SerializeField] Transform player;
     public override AIState RunCurrentState()
     {
         if (PlayerSpotted)
@@ -16,5 +18,27 @@ public class AIIdleState : AIState
         {
             return this;
         }
+    }
+    private void Awake()
+    {
+        Idle();
+    }
+    private void FixedUpdate()
+    {
+        float dis = Vector3.Distance(transform.position, player.position);
+        if (dis <= Range)
+        {
+            PlayerSpotted = true;
+        }
+
+    }
+    void Idle()
+    {
+
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, Range);
     }
 }

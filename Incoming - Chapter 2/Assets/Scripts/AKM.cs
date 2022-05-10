@@ -48,7 +48,7 @@ public class AKM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Ammo.text = currentAmmo.ToString();
+        //Ammo.text = currentAmmo.ToString();
         if (PlayerInput.Player.Scope.triggered)
         {
             isScoped = !isScoped;
