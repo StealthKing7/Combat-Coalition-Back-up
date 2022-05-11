@@ -19,10 +19,8 @@ public class AIIdleState : AIState
             return this;
         }
     }
-    private void Awake()
-    {
-        Idle();
-    }
+ 
+
     private void FixedUpdate()
     {
         float dis = Vector3.Distance(transform.position, player.position);
@@ -30,10 +28,6 @@ public class AIIdleState : AIState
         {
             PlayerSpotted = true;
         }
-
-    }
-    void Idle()
-    {
 
     }
     private void OnDrawGizmosSelected()
