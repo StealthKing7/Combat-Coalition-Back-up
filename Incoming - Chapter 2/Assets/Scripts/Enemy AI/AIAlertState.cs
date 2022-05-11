@@ -12,8 +12,7 @@ public class AIAlertState : AIState
         agent = GetComponentInParent<NavMeshAgent>();
     }
     public override AIState RunCurrentState()
-    {
-        FindCover();
+    { 
         if (InAttackRange)
         {
             return attachState;
@@ -23,8 +22,19 @@ public class AIAlertState : AIState
             return this;
         }
     }
-
-    void FindCover()
+    public  void AlertEnemies()
+    {
+        AIIdleState[] nearbyenemies = FindObjectsOfType<AIIdleState>();
+        if (nearbyenemies.Length > 0)
+        {
+            for (int i = 0; i < nearbyenemies.Length; i++)
+            {
+                nearbyenemies[i].PlayerSpotted = true;
+            }
+            Debug.Log("Working");
+        }
+    }
+    public void FindCover()
     {
         GameObject[] covers = GameObject.FindGameObjectsWithTag("Cover");
         if(covers.Length == 0)

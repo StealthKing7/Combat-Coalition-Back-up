@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AIIdleState : AIState
 {
-    private bool PlayerSpotted;
+    public bool PlayerSpotted;
     [SerializeField] AIAlertState petrolState;
     [SerializeField] float Range;
     [SerializeField] Transform player;
@@ -12,6 +12,8 @@ public class AIIdleState : AIState
     {
         if (PlayerSpotted)
         {
+            petrolState.AlertEnemies();
+            //petrolState.FindCover();
             return petrolState;
         }
         else
