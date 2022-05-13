@@ -13,7 +13,7 @@ public class AIIdleState : AIState
         if (PlayerSpotted)
         {
             petrolState.AlertEnemies();
-            //petrolState.FindCover();
+            petrolState.FindCover();
             return petrolState;
         }
         else

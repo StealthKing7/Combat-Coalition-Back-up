@@ -6,6 +6,7 @@ public class AIAlertState : AIState
 {
     [SerializeField] bool InAttackRange;
     [SerializeField] AIAttachState attachState;
+    [SerializeField] Animator animator;
     private NavMeshAgent agent;
     private void Awake()
     {
@@ -55,6 +56,7 @@ public class AIAlertState : AIState
         if (nearestCover != null)
         {
             agent.destination = nearestCover.transform.position;
+            animator.SetBool("Run", true);
         }
     }
 }
