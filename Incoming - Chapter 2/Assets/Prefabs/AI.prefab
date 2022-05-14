@@ -45,6 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InAttackRange: 0
   attachState: {fileID: 7736511494636281135}
+  animator: {fileID: 0}
 --- !u!1 &7736511494101718268
 GameObject:
   m_ObjectHideFlags: 0
@@ -308,7 +309,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: thug1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5866666021909216657, guid: 8988b7d53902a7b4fab39d027e978529, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8988b7d53902a7b4fab39d027e978529, type: 3}
 --- !u!4 &8601525275729783936 stripped
 Transform:
