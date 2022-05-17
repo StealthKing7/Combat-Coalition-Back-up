@@ -7,19 +7,15 @@ public class EnemyLineOfSightChecker : MonoBehaviour
     public SphereCollider sphereCollider;
     public float FieldOfView = 90f;
     public LayerMask LineOfSightLayers;
-
     public delegate void GainSightEvent(Transform Target);
     public GainSightEvent OnGainSight;
     public delegate void LoseSightEvent(Transform Target);
     public LoseSightEvent OnLoseSight;
-
     private Coroutine CheckForLineOfSightCoroutine;
-
     private void Awake()
     {
         sphereCollider = GetComponent<SphereCollider>();
     }
-
     private void OnTriggerEnter(Collider other)
     {
         if (!CheckLineOfSight(other.transform))
@@ -27,7 +23,6 @@ public class EnemyLineOfSightChecker : MonoBehaviour
             CheckForLineOfSightCoroutine = StartCoroutine(CheckForLineOfSight(other.transform));
         }
     }
-
     private void OnTriggerExit(Collider other)
     {
         OnLoseSight?.Invoke(other.transform);
@@ -36,7 +31,6 @@ public class EnemyLineOfSightChecker : MonoBehaviour
             StopCoroutine(CheckForLineOfSightCoroutine);
         }
     }
-
     private bool CheckLineOfSight(Transform Target)
     {
         Vector3 direction = (Target.transform.position - transform.position).normalized;
@@ -49,10 +43,8 @@ public class EnemyLineOfSightChecker : MonoBehaviour
                 return true;
             }
         }
-
         return false;
     }
-
     private IEnumerator CheckForLineOfSight(Transform Target)
     {
         WaitForSeconds Wait = new WaitForSeconds(0.5f);
