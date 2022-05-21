@@ -25,7 +25,7 @@ public class EnemyLineOfSightChecker : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        OnLoseSight?.Invoke(other.transform);
+        
         if (CheckForLineOfSightCoroutine != null)
         {
             StopCoroutine(CheckForLineOfSightCoroutine);

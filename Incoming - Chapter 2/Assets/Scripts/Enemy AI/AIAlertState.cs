@@ -35,15 +35,11 @@ public class AIAlertState : AIState
     }
     private void Update()
     {
-        if (boolean)
-        {
-            Hide();
-        }
+
     }
     public void Hide()
     {
-        float dotproduct = Vector3.Dot(AI.position, player.position);
-        dot = dotproduct;
+
 
     }
     

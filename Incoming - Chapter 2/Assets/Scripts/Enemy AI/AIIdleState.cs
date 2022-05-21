@@ -12,7 +12,7 @@ public class AIIdleState : AIState
     {
         if (PlayerSpotted)
         {
-            alertState.Hide();
+
             return alertState;
         }
         else
