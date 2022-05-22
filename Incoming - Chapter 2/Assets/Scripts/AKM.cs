@@ -19,7 +19,10 @@ public class AKM : MonoBehaviour
     private CameraRecoil cameraRecoil;
     [SerializeField] private Text Ammo;
     [SerializeField] private float MaxAmmo;
+    [SerializeField] private Text Fps;
+    private float timer;
     private float currentAmmo;
+    private float framerate;
     [SerializeField] private float ReloadTime;
     private bool isReloading;
     [Space(10)]
@@ -48,13 +51,24 @@ public class AKM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Ammo.text = currentAmmo.ToString();
+        Ammo.text = currentAmmo.ToString();
         if (PlayerInput.Player.Scope.triggered)
         {
             isScoped = !isScoped;
             animator.SetBool("Scope", isScoped);
             recoil.aim = isScoped;
         }
+        if (timer > 1f)
+        {
+            framerate = (int)(1f / Time.unscaledDeltaTime);
+            timer = 0f;
+        }
+        else
+        {
+            timer += Time.deltaTime;
+        }
+        string fps = framerate + " fps";
+        Fps.text = fps;
         if (isScoped)
         {
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 45, 0.25f);
