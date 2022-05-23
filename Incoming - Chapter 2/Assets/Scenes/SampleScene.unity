@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 71f14a2d79f732f4d9893ef1b911f4ff, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657832, g: 0.49641377, b: 0.57481784, a: 1}
+  m_IndirectSpecularColor: {r: 0.4839615, g: 0.57574034, b: 0.68019885, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14303,7 +14303,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.9195122, b: 0.7, a: 1}
-  m_Intensity: 4
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -14603,8 +14603,8 @@ ReflectionProbe:
   m_TimeSlicingMode: 0
   m_Resolution: 256
   m_UpdateFrequency: 0
-  m_BoxSize: {x: 13.139274, y: 17.34013, z: 10}
-  m_BoxOffset: {x: 0.5911031, y: 3.670062, z: 0}
+  m_BoxSize: {x: 13.139274, y: 17.34013, z: 10.7283}
+  m_BoxOffset: {x: 0.5911031, y: 3.670062, z: -0.3641481}
   m_NearClip: 0.3
   m_FarClip: 1000
   m_ShadowDistance: 100
@@ -16775,8 +16775,8 @@ ReflectionProbe:
   m_TimeSlicingMode: 0
   m_Resolution: 256
   m_UpdateFrequency: 0
-  m_BoxSize: {x: 10, y: 17.34013, z: 10}
-  m_BoxOffset: {x: -0.30903816, y: 3.670062, z: 0}
+  m_BoxSize: {x: 10, y: 17.34013, z: 10.7283}
+  m_BoxOffset: {x: -0.30903816, y: 3.670062, z: -0.3641481}
   m_NearClip: 0.3
   m_FarClip: 1000
   m_ShadowDistance: 100
@@ -20967,8 +20967,8 @@ ReflectionProbe:
   m_TimeSlicingMode: 0
   m_Resolution: 256
   m_UpdateFrequency: 0
-  m_BoxSize: {x: 10.481908, y: 17.34013, z: 10}
-  m_BoxOffset: {x: -0.06808424, y: 3.670062, z: 0}
+  m_BoxSize: {x: 10.481908, y: 17.34013, z: 10.728296}
+  m_BoxOffset: {x: -0.06808424, y: 3.670062, z: -0.36414814}
   m_NearClip: 0.3
   m_FarClip: 1000
   m_ShadowDistance: 100
@@ -38427,6 +38427,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2602763537272839141, guid: ce2613d9049e90d499baf6f04c702c94, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2602763538133492764, guid: ce2613d9049e90d499baf6f04c702c94, type: 3}
       propertyPath: m_Name
       value: Player
