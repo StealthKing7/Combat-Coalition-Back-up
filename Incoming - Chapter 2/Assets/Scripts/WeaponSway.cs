@@ -26,8 +26,8 @@ public class WeaponSway : MonoBehaviour
             mouseY += delta.y;
         }
 
-        mouseX *= SwayMultiplier;
-        mouseY *= SwayMultiplier;
+        mouseX *= SwayMultiplier * Time.deltaTime;
+        mouseY *= SwayMultiplier * Time.deltaTime;
         Quaternion rotationX = Quaternion.AngleAxis(-mouseY, Vector3.right);
         Quaternion rotationY = Quaternion.AngleAxis(mouseX, Vector3.up);
 

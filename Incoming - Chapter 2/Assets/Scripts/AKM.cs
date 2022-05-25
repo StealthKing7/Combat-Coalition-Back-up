@@ -33,7 +33,7 @@ public class AKM : MonoBehaviour
     [SerializeField] private float ReturnSpeed;
     void Awake()
     {
-        Application.targetFrameRate = 100;
+        
         recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
