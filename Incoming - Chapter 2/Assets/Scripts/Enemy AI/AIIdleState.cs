@@ -12,12 +12,19 @@ public class AIIdleState : AIState
     {
         if (PlayerSpotted)
         {
-
+            alertState.Follow();
             return alertState;
         }
         else
         {
             return this;
+        }
+    }
+    private void Update()
+    {
+        if(Vector3.Distance(transform.transform.position, player.position) < Range)
+        {
+            PlayerSpotted = true;
         }
     }
 }

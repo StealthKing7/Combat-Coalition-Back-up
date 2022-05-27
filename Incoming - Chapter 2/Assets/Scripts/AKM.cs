@@ -11,6 +11,9 @@ public class AKM : MonoBehaviour
     [SerializeField] private GameObject BulletPB;
     [SerializeField] private float BulletSpeed;
     [SerializeField] private float BulletLifeTime;
+    [SerializeField] private GameObject bolt;
+    [SerializeField] private Vector3 boltpos;
+    private Vector3 boltdeafultpos;
     private Recoil recoil;
     [SerializeField] private float FireRate;
     private float NextTimeToFire = 0;
@@ -33,7 +36,7 @@ public class AKM : MonoBehaviour
     [SerializeField] private float ReturnSpeed;
     void Awake()
     {
-        
+        boltdeafultpos = bolt.transform.position;
         recoil = GetComponentInChildren<Recoil>();  
         PlayerInput = new PlayerInput();
         PlayerInput.Player.Enable();
@@ -92,7 +95,7 @@ public class AKM : MonoBehaviour
     }
     void Shoot()
     {
-
+        bolt.transform.position = Vector3.Lerp(boltdeafultpos, boltpos, 0.25f);
         currentAmmo--;
         Vector3 mousePos = Vector3.zero;
         Vector2 ScreenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
@@ -105,7 +108,7 @@ public class AKM : MonoBehaviour
             bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
             Destroy(bullet, BulletLifeTime);
         }
-
+        bolt.transform.position = Vector3.Lerp(boltpos, boltdeafultpos, 0.25f);
     }
     IEnumerator Reload()
     {

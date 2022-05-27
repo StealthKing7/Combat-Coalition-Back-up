@@ -4,24 +4,18 @@ using UnityEngine;
 using UnityEngine.AI;
 public class AIAlertState : AIState
 {
-    [HideInInspector]
-    public Transform Player;
-    public LayerMask HidableLayers;
-    public EnemyLineOfSightChecker LineOfSightChecker;
     private NavMeshAgent Agent;
-    public float dot;
-    [SerializeField]
     private bool IsInAttackRange;
+    [SerializeField]private AIAttachState attachState;
     [SerializeField]
-    private AIAttachState attachState;
+    private float range;
     [SerializeField]
     private Transform player;
-    public Transform AI;
-    public bool boolean;
     public override AIState RunCurrentState()
     {
         if (IsInAttackRange)
         {
+            //attachState.Fire();
             return attachState;
         }
         else
@@ -32,17 +26,20 @@ public class AIAlertState : AIState
     private void Awake()
     {
         Agent = GetComponentInParent<NavMeshAgent>();
+            
     }
     private void Update()
     {
-
+        if(Vector3.Distance(transform.position, player.position) < range)
+        {
+            IsInAttackRange = true;
+        }
+        
     }
-    public void Hide()
+    public void Follow()
     {
-
-
+        Agent.SetDestination(player.position);
     }
-    
 }
             
     
