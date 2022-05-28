@@ -6,13 +6,19 @@ public class AIAttachState : AIState
 {
 
     [SerializeField] private float range;
-    //[SerializeField] private Transform firepoint;
+    [SerializeField] private Transform firepoint;
     [SerializeField] private LayerMask layerMask;
+    [SerializeField] private float FireRate; 
     [SerializeField] private float Damge;
+    private float nextTimeToFire = 0;
 
     public override AIState RunCurrentState()
     {
-        Fire();
+        if(Time.time >= nextTimeToFire)
+        {
+            nextTimeToFire = Time.time + 1f / FireRate;
+            Fire();
+        }
         return this;
 
     }
@@ -20,7 +26,7 @@ public class AIAttachState : AIState
     {
         Debug.Log("Fire");
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, range, layerMask))
+        if (Physics.Raycast(firepoint.position,firepoint.forward, out hit, range, layerMask))
         {
             Health health = hit.transform.GetComponent<Health>();
             if (health != null)
