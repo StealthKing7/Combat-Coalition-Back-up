@@ -9,13 +9,12 @@ public class AIAlertState : AIState
     [SerializeField]private AIAttachState attachState;
     [SerializeField]
     private float range;
-    [SerializeField]
-    private Transform player;
+    [SerializeField]private Transform player;
     public override AIState RunCurrentState()
     {
         if (IsInAttackRange)
         {
-            //attachState.Fire();
+            
             return attachState;
         }
         else

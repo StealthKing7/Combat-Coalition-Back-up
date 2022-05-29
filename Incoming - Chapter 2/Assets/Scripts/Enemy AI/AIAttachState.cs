@@ -6,23 +6,28 @@ public class AIAttachState : AIState
 {
 
     [SerializeField] private float range;
+    [SerializeField] private float Distancerange;
     [SerializeField] private Transform firepoint;
     [SerializeField] private LayerMask layerMask;
     [SerializeField] private float FireRate; 
     [SerializeField] private float Damge;
-    private float nextTimeToFire = 0;
+    [SerializeField]private Transform player;
+    private float timetofire = 0;
 
     public override AIState RunCurrentState()
     {
-        if(Time.time >= nextTimeToFire)
-        {
-            nextTimeToFire = Time.time + 1f / FireRate;
-            Fire();
-        }
         return this;
 
     }
-    public void Fire()
+    void Update()
+    {
+        if ((Vector3.Distance(player.position, transform.position) <= Distancerange) && Time.time >= timetofire)
+        {
+            timetofire = Time.time + 1f / FireRate;
+            Fire();         
+        }
+    }
+    void Fire()
     {
         Debug.Log("Fire");
         RaycastHit hit;

@@ -21,6 +21,7 @@ public class AKM : MonoBehaviour
     private bool isScoped;
     private CameraRecoil cameraRecoil;
     [SerializeField] private Text Ammo;
+    [SerializeField] private float Damage;
     [SerializeField] private float MaxAmmo;
     [SerializeField] private Text Fps;
     private float timer;
@@ -105,7 +106,7 @@ public class AKM : MonoBehaviour
             mousePos += hit.point;
             Vector3 aimDir = (mousePos - FirePoint.position).normalized;
             GameObject bullet = Instantiate(BulletPB, FirePoint.position, Quaternion.LookRotation(aimDir, Vector3.up));
-            bullet.GetComponent<Bullet>().Initialized(BulletSpeed);
+            bullet.GetComponent<Bullet>().Initialized(BulletSpeed,Damage);
             Destroy(bullet, BulletLifeTime);
         }
         bolt.transform.position = Vector3.Lerp(boltpos, boltdeafultpos, 0.25f);

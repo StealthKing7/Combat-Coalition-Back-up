@@ -23027,7 +23027,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7736511493284937456, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: range
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7736511493284937456, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: player
@@ -23035,7 +23035,7 @@ PrefabInstance:
       objectReference: {fileID: 1735593719}
     - target: {fileID: 7736511494524188241, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: Range
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7736511494524188241, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: player
@@ -23054,6 +23054,10 @@ PrefabInstance:
       value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 7736511494636281135, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1735593719}
+    - target: {fileID: 7736511494636281135, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: FireRate
       value: 5
       objectReference: {fileID: 0}
@@ -23061,6 +23065,10 @@ PrefabInstance:
       propertyPath: firepoint
       value: 
       objectReference: {fileID: 207484672}
+    - target: {fileID: 7736511494636281135, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
+      propertyPath: Distancerange
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7736511494636281135, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: layerMask.m_Bits
       value: 256
@@ -23116,6 +23124,10 @@ PrefabInstance:
     - target: {fileID: 8407802513783683456, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8547809194024910244, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
+      propertyPath: maxhealth
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bb908fd868c39534e9f1b551b8deb8ce, type: 3}
@@ -43630,6 +43642,10 @@ PrefabInstance:
       propertyPath: bolt
       value: 
       objectReference: {fileID: 2602763537635689502}
+    - target: {fileID: 3810903041440434598, guid: ce2613d9049e90d499baf6f04c702c94, type: 3}
+      propertyPath: Damage
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 3810903041440434598, guid: ce2613d9049e90d499baf6f04c702c94, type: 3}
       propertyPath: boltpos.x
       value: 0.0089

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AIIdleState : AIState
@@ -12,6 +10,7 @@ public class AIIdleState : AIState
     {
         if (PlayerSpotted)
         {
+            
             alertState.Follow();
             return alertState;
         }
