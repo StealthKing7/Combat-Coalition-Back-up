@@ -56,6 +56,10 @@ public class PlayerMovemet : MonoBehaviour
         {
             animator.SetBool("Run", false);
         }
+        if (Input.GetKey(KeyCode.P))
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
     }
     void FixedUpdate()
     {

@@ -13,11 +13,16 @@ public class AIAttachState : AIState
     [SerializeField] private float Damge;
     [SerializeField]private Transform player;
     private float timetofire = 0;
-
+    private float maxammo = 30f;
+    private float currentammo;
     public override AIState RunCurrentState()
     {
         return this;
 
+    }
+    private void Awake()
+    {
+        currentammo = maxammo;
     }
     void Update()
     {
@@ -26,10 +31,14 @@ public class AIAttachState : AIState
             timetofire = Time.time + 1f / FireRate;
             Fire();         
         }
+        if (currentammo <= 0)
+        {
+           StartCoroutine(Reload());
+        }
     }
     void Fire()
     {
-        Debug.Log("Fire");
+        currentammo--;
         RaycastHit hit;
         if (Physics.Raycast(firepoint.position,firepoint.forward, out hit, range, layerMask))
         {
@@ -37,7 +46,12 @@ public class AIAttachState : AIState
             if (health != null)
             {
                 health.TakeDamge(Damge);
+                health.gameObject.GetComponentInChildren<CameraRecoil>().RecoilFire();
             }
         }
+    }
+    IEnumerator Reload()
+    {
+        yield return null;
     }
 }
