@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask GroundLayer;
     [SerializeField] float MouseSensitivity;
     Transform Maincam;
-    bool IsGrounded;
+    [SerializeField] bool IsGrounded = true;
     Vector3 move;
     Vector3 Velocity;
     float Xrot = 0;
@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
         OnMovement += Movement;
         OnJump += Jump;
         Maincam = transform.GetChild(0);
-       OnCameraMovement += CameraMovement;
+        OnCameraMovement += CameraMovement;
     }
 
 
@@ -39,16 +39,16 @@ public class PlayerMovement : MonoBehaviour
         Velocity.y += Gravity * Time.deltaTime;
         if (inputActions.PlayerMap.Movement.IsPressed())
         {
-            OnMovement(this,EventArgs.Empty);
+            OnMovement?.Invoke(this,EventArgs.Empty);
         }
-        if (inputActions.PlayerMap.Jump.IsPressed())
+        if (inputActions.PlayerMap.Jump.IsPressed()&&Velocity.y < 0)
         {
-            OnJump(this,EventArgs.Empty);
+            OnJump?.Invoke(this,EventArgs.Empty);
 
         }
         if (Mouse.current.position.ReadValue()!=Vector2.zero)
         {
-            OnCameraMovement(this, EventArgs.Empty);
+            OnCameraMovement?.Invoke(this, EventArgs.Empty);
         }
 
         characterController.Move(Velocity * Time.deltaTime);
