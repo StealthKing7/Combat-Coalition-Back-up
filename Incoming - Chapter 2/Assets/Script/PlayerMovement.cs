@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public event EventHandler OnCameraMovement;
     [SerializeField] CharacterController characterController;
     [SerializeField] float Speed;
+    [SerializeField] float SprintSpeed;
     [SerializeField] float JumpHieght;
     [SerializeField] float Gravity;
     [SerializeField] Transform GroundCheck;
@@ -18,7 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask GroundLayer;
     [SerializeField] float MouseSensitivity;
     Transform Maincam;
-    [SerializeField] bool IsGrounded = true;
+    bool IsGrounded = true;
     Vector3 move;
     Vector3 Velocity;
     float Xrot = 0;
@@ -37,11 +38,11 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         Velocity.y += Gravity * Time.deltaTime;
-        if (inputActions.PlayerMap.Movement.IsPressed())
+        if (inputActions.PlayerMap.Movement.IsPressed()&&IsGrounded)
         {
             OnMovement?.Invoke(this,EventArgs.Empty);
         }
-        if (inputActions.PlayerMap.Jump.IsPressed()&&Velocity.y < 0)
+        if (inputActions.PlayerMap.Jump.IsPressed()&&IsGrounded)
         {
             OnJump?.Invoke(this,EventArgs.Empty);
 
@@ -51,12 +52,12 @@ public class PlayerMovement : MonoBehaviour
             OnCameraMovement?.Invoke(this, EventArgs.Empty);
         }
 
+        IsGrounded = Physics.CheckSphere(GroundCheck.position, GroundCheckRaduis, GroundLayer);
         characterController.Move(Velocity * Time.deltaTime);
     }
     void Jump(object obj, EventArgs args)
     {
         Velocity.y = Mathf.Sqrt(JumpHieght * -2 * Gravity);
-        IsGrounded = Physics.CheckSphere(GroundCheck.position, GroundCheckRaduis, GroundLayer);
         if(IsGrounded&&Velocity.y < 0)
         {
             Velocity.y = -2;
@@ -64,8 +65,13 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Movement(object obj,EventArgs args)
     {
+        float speed = Speed;
         move = transform.right*inputActions.PlayerMap.Movement.ReadValue<Vector2>().x+transform.forward* inputActions.PlayerMap.Movement.ReadValue<Vector2>().y;
-        characterController.Move(move*Speed*Time.deltaTime);
+        if (inputActions.PlayerMap.Sprint.IsPressed())
+        {
+            speed = SprintSpeed;
+        }
+        characterController.Move(move*speed*Time.deltaTime);
     }
     void CameraMovement(object obj, EventArgs args)
     {
