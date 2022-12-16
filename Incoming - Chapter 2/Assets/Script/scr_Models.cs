@@ -13,6 +13,10 @@ public static class scr_Models
         public float ViewYSencitivity;
         public bool ViewXInverted;
         public bool ViewYInverted;
+        [Header("Movement Settings")]
+        public float WalkingForwardSpeed;
+        public float WalkingBackwardSpeed;
+        public float WalkingStrafeSpeed;
 
     }
 
