@@ -27,15 +27,24 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Stance")]
     [SerializeField] PlayerStance playerStance;
     [SerializeField] float PlayerStanceSmoothing;
-    [SerializeField] float CameraStandHeight,CameraCrouchHeight ,CameraProneHeight;
+    public CharacterStance playerStandStance;
+    public CharacterStance playerCrouchStance;
+    public CharacterStance playerProneStance;
     private float CameraHeight;
     private float CameraHeightVelocity;
+    private Vector3 StanceCapsuleCenterVeloctiy;
+    private float StanceCapsuleHieghtVelocity;
+
+
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
         DefaultInput.Character.View.performed += e => Input_View = e.ReadValue<Vector2>();
         DefaultInput.Character.Jump.performed += e => Jump();
+
+        DefaultInput.Character.Crouch.performed += e => Crouch();
+        DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Enable();
 
         NewCharacterRotation = transform.localRotation.eulerAngles;
@@ -48,7 +57,7 @@ public class scr_CharacterController : MonoBehaviour
         CalculateView();
         CalculateMovement();
         CalculateJump();
-        CalculateCameraHeight();
+        CalculateStance();
     }
     void CalculateView()
     {
@@ -81,20 +90,23 @@ public class scr_CharacterController : MonoBehaviour
         newMovementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(newMovementSpeed);
     }
-    void CalculateCameraHeight()
+    void CalculateStance()
     {
-        var StanceHeight = CameraStandHeight;
+        var currentStance = playerStandStance;
         if (playerStance == PlayerStance.Crouch)
         {
-            StanceHeight = CameraCrouchHeight;
+            currentStance = playerCrouchStance;
         }else if(playerStance == PlayerStance.Prone)
         {
-            StanceHeight = CameraProneHeight;
+            currentStance = playerProneStance;
         }
 
 
-        CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, StanceHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
+        CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
         CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
+
+        characterController.height = Mathf.SmoothDamp(characterController.height, currentStance.StanceCollider.height, ref StanceCapsuleHieghtVelocity, PlayerStanceSmoothing);
+        characterController.center = Vector3.SmoothDamp(characterController.center, currentStance.StanceCollider.center, ref StanceCapsuleCenterVeloctiy, PlayerStanceSmoothing);
     }
     void CalculateJump()
     {
@@ -107,5 +119,20 @@ public class scr_CharacterController : MonoBehaviour
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
         PlayerGravity = 0;
+    }
+    void Crouch()
+    {
+        if (playerStance == PlayerStance.Crouch)
+        {
+            playerStance = PlayerStance.Stand;
+            return;
+        }
+
+        playerStance = PlayerStance.Crouch;
+    }
+    void Prone()
+    {
+        playerStance = PlayerStance.Prone;
+
     }
 }

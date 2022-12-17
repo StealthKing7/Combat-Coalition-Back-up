@@ -32,7 +32,12 @@ public static class scr_Models
 
 
     }
-
+    [System.Serializable]
+    public class CharacterStance
+    {
+        public float CameraHeight;
+        public CapsuleCollider StanceCollider;
+    }
 
     #endregion
 }
