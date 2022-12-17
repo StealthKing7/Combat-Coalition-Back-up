@@ -518,11 +518,13 @@ MonoBehaviour:
     WalkingForwardSpeed: 4
     WalkingBackwardSpeed: 2
     WalkingStrafeSpeed: 3
+    JumpingHeight: 10
+    JumpingFallof: 0.1
   ViewClampYmin: -70
   ViewClampYmax: 80
   GravityAmount: 0.1
   GravityMin: -3
-  PlayerGravity: 0
+  JumpingForce: {x: 0, y: 0, z: 0}
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0

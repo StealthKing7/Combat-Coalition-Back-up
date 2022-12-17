@@ -21,7 +21,9 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Gravity")]
     [SerializeField] float GravityAmount;
     [SerializeField] float GravityMin;
-    [SerializeField] float PlayerGravity;
+    private  float PlayerGravity;
+    [SerializeField] Vector3 JumpingForce;
+    private Vector3 JumpingForceVelocity;
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
@@ -38,6 +40,7 @@ public class scr_CharacterController : MonoBehaviour
     {
         CalculateView();
         CalculateMovement();
+        CalculateJump();
     }
     void CalculateView()
     {
@@ -55,7 +58,7 @@ public class scr_CharacterController : MonoBehaviour
         var horizontalspeed = PlayerSettings.WalkingStrafeSpeed * Input_Movement.x * Time.deltaTime;
         var newMovementSpeed = new Vector3(horizontalspeed, 0, verticalSpeed);
         newMovementSpeed=transform.TransformDirection(newMovementSpeed);
-        if (PlayerGravity > GravityMin)
+        if (PlayerGravity > GravityMin&&JumpingForce.y<0.1f)
         {
 
             PlayerGravity -= GravityAmount * Time.deltaTime;
@@ -65,15 +68,24 @@ public class scr_CharacterController : MonoBehaviour
         {
             PlayerGravity = -1;
         }
+        if (JumpingForce.y>0.1f)
+        {
+            PlayerGravity = 0;
+        }
         newMovementSpeed.y += PlayerGravity;
+        newMovementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(newMovementSpeed);
+    }
+    void CalculateJump()
+    {
+        JumpingForce = Vector3.SmoothDamp(JumpingForce, Vector3.zero, ref JumpingForceVelocity, PlayerSettings.JumpingFallof);
     }
     void Jump()
     {
         if (!characterController.isGrounded)
             return;
 
-
+        JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
 
     }
 }

@@ -18,6 +18,11 @@ public static class scr_Models
         public float WalkingBackwardSpeed;
         public float WalkingStrafeSpeed;
 
+        [Header("Jump Settings")]
+        public float JumpingHeight;
+        public float JumpingFallof;
+
+
     }
 
 
