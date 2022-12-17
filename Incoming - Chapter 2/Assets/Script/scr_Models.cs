@@ -5,8 +5,16 @@ using UnityEngine;
 public static class scr_Models
 {
     #region - Player -
+
+    public enum PlayerStance
+    {
+        Stand,
+        Crouch,
+        Prone
+    }
+     
     [System.Serializable]
-    public class PlayerSettingModel
+    public struct PlayerSettingModel
     {
         [Header("View Settings")]
         public float ViewXSencitivity;

@@ -24,6 +24,12 @@ public class scr_CharacterController : MonoBehaviour
     private  float PlayerGravity;
     [SerializeField] Vector3 JumpingForce;
     private Vector3 JumpingForceVelocity;
+    [Header("Stance")]
+    [SerializeField] PlayerStance playerStance;
+    [SerializeField] float PlayerStanceSmoothing;
+    [SerializeField] float CameraStandHeight,CameraCrouchHeight ,CameraProneHeight;
+    private float CameraHeight;
+    private float CameraHeightVelocity;
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
@@ -35,12 +41,14 @@ public class scr_CharacterController : MonoBehaviour
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
+        CameraHeight = CameraHolder.localPosition.y;
     }
     private void Update()
     {
         CalculateView();
         CalculateMovement();
         CalculateJump();
+        CalculateCameraHeight();
     }
     void CalculateView()
     {
@@ -58,23 +66,35 @@ public class scr_CharacterController : MonoBehaviour
         var horizontalspeed = PlayerSettings.WalkingStrafeSpeed * Input_Movement.x * Time.deltaTime;
         var newMovementSpeed = new Vector3(horizontalspeed, 0, verticalSpeed);
         newMovementSpeed=transform.TransformDirection(newMovementSpeed);
-        if (PlayerGravity > GravityMin&&JumpingForce.y<0.1f)
+        if (PlayerGravity > GravityMin)
         {
 
             PlayerGravity -= GravityAmount * Time.deltaTime;
         }
 
-        if (PlayerGravity < -1 && characterController.isGrounded)
+        if (PlayerGravity < -0.1f && characterController.isGrounded)
         {
-            PlayerGravity = -1;
+            PlayerGravity = -0.1f;
         }
-        if (JumpingForce.y>0.1f)
-        {
-            PlayerGravity = 0;
-        }
+
         newMovementSpeed.y += PlayerGravity;
         newMovementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(newMovementSpeed);
+    }
+    void CalculateCameraHeight()
+    {
+        var StanceHeight = CameraStandHeight;
+        if (playerStance == PlayerStance.Crouch)
+        {
+            StanceHeight = CameraCrouchHeight;
+        }else if(playerStance == PlayerStance.Prone)
+        {
+            StanceHeight = CameraProneHeight;
+        }
+
+
+        CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, StanceHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
+        CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
     }
     void CalculateJump()
     {
@@ -86,6 +106,6 @@ public class scr_CharacterController : MonoBehaviour
             return;
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
-
+        PlayerGravity = 0;
     }
 }
