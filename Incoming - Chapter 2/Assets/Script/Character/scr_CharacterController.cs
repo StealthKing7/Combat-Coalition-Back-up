@@ -13,28 +13,32 @@ public class scr_CharacterController : MonoBehaviour
     CharacterController characterController;
     [Header("References")]
     [SerializeField] Transform CameraHolder;
+    [SerializeField] Transform feetTransfrom;
 
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
     [SerializeField] float ViewClampYmin = -70;
     [SerializeField] float ViewClampYmax = 80;
+    [SerializeField] LayerMask PlayerMask;
+
     [Header("Gravity")]
     [SerializeField] float GravityAmount;
     [SerializeField] float GravityMin;
     private  float PlayerGravity;
     [SerializeField] Vector3 JumpingForce;
     private Vector3 JumpingForceVelocity;
+
     [Header("Stance")]
     [SerializeField] PlayerStance playerStance;
     [SerializeField] float PlayerStanceSmoothing;
-    public CharacterStance playerStandStance;
-    public CharacterStance playerCrouchStance;
-    public CharacterStance playerProneStance;
+    [SerializeField] CharacterStance playerStandStance;
+    [SerializeField] CharacterStance playerCrouchStance;
+    [SerializeField] CharacterStance playerProneStance;
+    private float StanceCheckErrorMargin = 0.05f;
     private float CameraHeight;
     private float CameraHeightVelocity;
     private Vector3 StanceCapsuleCenterVeloctiy;
     private float StanceCapsuleHieghtVelocity;
-
 
     private void Awake()
     {
@@ -42,7 +46,6 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
         DefaultInput.Character.View.performed += e => Input_View = e.ReadValue<Vector2>();
         DefaultInput.Character.Jump.performed += e => Jump();
-
         DefaultInput.Character.Crouch.performed += e => Crouch();
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Enable();
@@ -124,15 +127,41 @@ public class scr_CharacterController : MonoBehaviour
     {
         if (playerStance == PlayerStance.Crouch)
         {
+            if (StanceCheck(playerStandStance.StanceCollider.height))
+            {
+                return;
+            }
             playerStance = PlayerStance.Stand;
             return;
         }
-
+        if (StanceCheck(playerCrouchStance.StanceCollider.height))
+        {
+            return;
+        }
         playerStance = PlayerStance.Crouch;
     }
     void Prone()
     {
-        playerStance = PlayerStance.Prone;
+        if (playerStance == PlayerStance.Prone)
+        {
+            if (StanceCheck(playerStandStance.StanceCollider.height))
+            {
+                return;
+            }
 
+
+            playerStance = PlayerStance.Stand;
+            return;
+        }
+        playerStance = PlayerStance.Prone;
+    }
+
+    bool StanceCheck(float _StanceCheckHeight)
+    {
+        var Start = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + characterController.radius + StanceCheckErrorMargin, feetTransfrom.position.z);
+        var End = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + _StanceCheckHeight - characterController.radius - StanceCheckErrorMargin, feetTransfrom.position.z);
+
+
+        return Physics.CheckCapsule(Start, End, characterController.radius, PlayerMask);
     }
 }

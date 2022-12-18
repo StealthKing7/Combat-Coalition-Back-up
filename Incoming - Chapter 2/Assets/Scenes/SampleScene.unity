@@ -382,6 +382,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &643222812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 643222813}
+  m_Layer: 8
+  m_Name: FeetTransform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &643222813
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643222812}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1184896764}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &744866037
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +421,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 744866038}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: CameraHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -521,7 +551,7 @@ GameObject:
   - component: {fileID: 1184896762}
   - component: {fileID: 1184896766}
   - component: {fileID: 1184896765}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -576,6 +606,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 744866038}
+  - {fileID: 643222813}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -594,6 +625,7 @@ MonoBehaviour:
   Input_Movement: {x: 0, y: 0}
   Input_View: {x: 0, y: 0}
   CameraHolder: {fileID: 744866038}
+  feetTransfrom: {fileID: 643222813}
   PlayerSettings:
     ViewXSencitivity: 10
     ViewYSencitivity: 10
@@ -606,11 +638,14 @@ MonoBehaviour:
     JumpingFallof: 0.4
   ViewClampYmin: -70
   ViewClampYmax: 80
+  PlayerMask:
+    serializedVersion: 2
+    m_Bits: 55
   GravityAmount: 0.03
   GravityMin: -3
   JumpingForce: {x: 0, y: 0, z: 0}
-  playerStance: 0
-  PlayerStanceSmoothing: 0.3
+  playerStance: 2
+  PlayerStanceSmoothing: 0.15
   playerStandStance:
     CameraHeight: 0.7
     StanceCollider: {fileID: 1184896761}
@@ -620,6 +655,7 @@ MonoBehaviour:
   playerProneStance:
     CameraHeight: -0.58
     StanceCollider: {fileID: 1184896762}
+  test: 0
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0
@@ -759,7 +795,7 @@ GameObject:
   - component: {fileID: 2099876229}
   - component: {fileID: 2099876228}
   - component: {fileID: 2099876227}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -830,7 +866,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 60
   orthographic: 0
