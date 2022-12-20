@@ -40,6 +40,8 @@ public class scr_CharacterController : MonoBehaviour
     private Vector3 StanceCapsuleCenterVeloctiy;
     private float StanceCapsuleHieghtVelocity;
 
+
+    private bool IsSprinting;
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
@@ -48,6 +50,7 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Jump.performed += e => Jump();
         DefaultInput.Character.Crouch.performed += e => Crouch();
         DefaultInput.Character.Prone.performed += e => Prone();
+        DefaultInput.Character.Sprint.performed += e => ToggleSprint();
         DefaultInput.Enable();
 
         NewCharacterRotation = transform.localRotation.eulerAngles;
@@ -117,8 +120,15 @@ public class scr_CharacterController : MonoBehaviour
     }
     void Jump()
     {
-        if (!characterController.isGrounded)
+        if (!characterController.isGrounded || playerStance == PlayerStance.Prone)
+        {
             return;
+        }
+        if (playerStance == PlayerStance.Crouch)
+        {
+            playerStance = PlayerStance.Stand;
+            return;
+        }
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
         PlayerGravity = 0;
@@ -163,5 +173,10 @@ public class scr_CharacterController : MonoBehaviour
 
 
         return Physics.CheckCapsule(Start, End, characterController.radius, PlayerMask);
+    }
+
+    void ToggleSprint()
+    {
+        IsSprinting = !IsSprinting;
     }
 }

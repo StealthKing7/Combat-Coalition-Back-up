@@ -644,7 +644,7 @@ MonoBehaviour:
   GravityAmount: 0.03
   GravityMin: -3
   JumpingForce: {x: 0, y: 0, z: 0}
-  playerStance: 2
+  playerStance: 0
   PlayerStanceSmoothing: 0.15
   playerStandStance:
     CameraHeight: 0.7
@@ -655,7 +655,6 @@ MonoBehaviour:
   playerProneStance:
     CameraHeight: -0.58
     StanceCollider: {fileID: 1184896762}
-  test: 0
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0
