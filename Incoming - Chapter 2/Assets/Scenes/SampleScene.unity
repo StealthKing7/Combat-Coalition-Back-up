@@ -622,8 +622,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c039b2f2176247c498a3458ba1ab62a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Input_Movement: {x: 0, y: 0}
-  Input_View: {x: 0, y: 0}
   CameraHolder: {fileID: 744866038}
   feetTransfrom: {fileID: 643222813}
   PlayerSettings:
@@ -631,6 +629,9 @@ MonoBehaviour:
     ViewYSencitivity: 10
     ViewXInverted: 0
     ViewYInverted: 0
+    RunningForwardSpeed: 10
+    RunningStrafeSpeed: 8
+    SprintHold: 1
     WalkingForwardSpeed: 4
     WalkingBackwardSpeed: 2
     WalkingStrafeSpeed: 3

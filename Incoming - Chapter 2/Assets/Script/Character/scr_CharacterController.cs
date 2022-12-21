@@ -6,8 +6,8 @@ using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
     DefaultInputs DefaultInput;
-    public Vector2 Input_Movement;
-    public Vector2 Input_View;
+    Vector2 Input_Movement;
+    Vector2 Input_View;
     Vector3 NewCameraRotation;
     Vector3 NewCharacterRotation;
     CharacterController characterController;
@@ -51,6 +51,7 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Crouch.performed += e => Crouch();
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
+        DefaultInput.Character.SprintRealesed.performed += e => StopSprint();
         DefaultInput.Enable();
 
         NewCharacterRotation = transform.localRotation.eulerAngles;
@@ -77,9 +78,18 @@ public class scr_CharacterController : MonoBehaviour
     }
     void CalculateMovement()
     {
-        var verticalSpeed = PlayerSettings.WalkingForwardSpeed * Input_Movement.y * Time.deltaTime;
-        var horizontalspeed = PlayerSettings.WalkingStrafeSpeed * Input_Movement.x * Time.deltaTime;
-        var newMovementSpeed = new Vector3(horizontalspeed, 0, verticalSpeed);
+        if (Input_Movement.y <= 0.2f)
+        {
+            IsSprinting = false;
+        }
+        var verticalSpeed = PlayerSettings.WalkingForwardSpeed;
+        var horizontalSpeed = PlayerSettings.WalkingStrafeSpeed;
+        if (IsSprinting)
+        {
+            verticalSpeed = PlayerSettings.RunningForwardSpeed;
+            horizontalSpeed = PlayerSettings.RunningStrafeSpeed;
+        }
+        var newMovementSpeed = new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime);
         newMovementSpeed=transform.TransformDirection(newMovementSpeed);
         if (PlayerGravity > GravityMin)
         {
@@ -165,7 +175,7 @@ public class scr_CharacterController : MonoBehaviour
         }
         playerStance = PlayerStance.Prone;
     }
-
+     
     bool StanceCheck(float _StanceCheckHeight)
     {
         var Start = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + characterController.radius + StanceCheckErrorMargin, feetTransfrom.position.z);
@@ -177,6 +187,16 @@ public class scr_CharacterController : MonoBehaviour
 
     void ToggleSprint()
     {
+        if (Input_Movement.y <= 0.2f)
+        {
+            IsSprinting = false;
+            return;
+        }
         IsSprinting = !IsSprinting;
+    }
+    void StopSprint()
+    {
+        if(PlayerSettings.SprintHold)
+        IsSprinting = false;
     }
 }
