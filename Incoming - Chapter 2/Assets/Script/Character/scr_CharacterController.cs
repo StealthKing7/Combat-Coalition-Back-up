@@ -39,7 +39,8 @@ public class scr_CharacterController : MonoBehaviour
     private float CameraHeightVelocity;
     private Vector3 StanceCapsuleCenterVeloctiy;
     private float StanceCapsuleHieghtVelocity;
-
+    private Vector3 newMovementSpeed;
+    private Vector3 newMovementSpeedVelocity;
 
     private bool IsSprinting;
     private void Awake()
@@ -58,6 +59,7 @@ public class scr_CharacterController : MonoBehaviour
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
     private void Update()
     {
@@ -89,8 +91,26 @@ public class scr_CharacterController : MonoBehaviour
             verticalSpeed = PlayerSettings.RunningForwardSpeed;
             horizontalSpeed = PlayerSettings.RunningStrafeSpeed;
         }
-        var newMovementSpeed = new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime);
-        newMovementSpeed=transform.TransformDirection(newMovementSpeed);
+        if (!characterController.isGrounded)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
+        }else if (playerStance == PlayerStance.Crouch)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
+        }else if (playerStance == PlayerStance.Prone)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
+        }
+        else
+        {
+            PlayerSettings.SpeedEffector = 1;
+        }
+
+
+        verticalSpeed *= PlayerSettings.SpeedEffector;
+        horizontalSpeed *= PlayerSettings.SpeedEffector;
+        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, characterController.isGrounded ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
+        var movementSpeed = transform.TransformDirection(newMovementSpeed);
         if (PlayerGravity > GravityMin)
         {
 
@@ -102,9 +122,9 @@ public class scr_CharacterController : MonoBehaviour
             PlayerGravity = -0.1f;
         }
 
-        newMovementSpeed.y += PlayerGravity;
-        newMovementSpeed += JumpingForce * Time.deltaTime;
-        characterController.Move(newMovementSpeed);
+        movementSpeed.y += PlayerGravity;
+        movementSpeed += JumpingForce * Time.deltaTime;
+        characterController.Move(movementSpeed);
     }
     void CalculateStance()
     {
@@ -136,6 +156,11 @@ public class scr_CharacterController : MonoBehaviour
         }
         if (playerStance == PlayerStance.Crouch)
         {
+            if (StanceCheck(playerStandStance.StanceCollider.height))
+            {
+                return;
+            }
+
             playerStance = PlayerStance.Stand;
             return;
         }

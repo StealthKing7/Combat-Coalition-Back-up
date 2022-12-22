@@ -14,7 +14,7 @@ public static class scr_Models
     }
      
     [System.Serializable]
-    public struct PlayerSettingModel
+    public class PlayerSettingModel
     {
         [Header("View Settings")]
         public float ViewXSencitivity;
@@ -24,9 +24,9 @@ public static class scr_Models
         [Header("Movement - Running")]
         public float RunningForwardSpeed; 
         public float RunningStrafeSpeed; 
-        [Header("Sprint")]
+        [Header("Movement - Settings")]
         public bool SprintHold;
-
+        public float MovementSmoothing;
         [Header("Movement - Walking")]
         public float WalkingForwardSpeed;
         public float WalkingBackwardSpeed;
@@ -35,6 +35,12 @@ public static class scr_Models
         [Header("Jump Settings")]
         public float JumpingHeight;
         public float JumpingFallof;
+        public float FallingSmoothing;
+        [Header("Speed Effectors")]
+        public float SpeedEffector = 1f;
+        public float CrouchSpeedEffector;
+        public float ProneSpeedEffector;
+        public float FallingSpeedEffector;
 
 
     }

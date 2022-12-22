@@ -129,7 +129,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23334
+  m_Name: pb_Mesh22798
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -629,14 +629,20 @@ MonoBehaviour:
     ViewYSencitivity: 10
     ViewXInverted: 0
     ViewYInverted: 0
-    RunningForwardSpeed: 10
-    RunningStrafeSpeed: 8
+    RunningForwardSpeed: 8
+    RunningStrafeSpeed: 4
     SprintHold: 1
+    MovementSmoothing: 0.1
     WalkingForwardSpeed: 4
     WalkingBackwardSpeed: 2
     WalkingStrafeSpeed: 3
     JumpingHeight: 5
     JumpingFallof: 0.4
+    FallingSmoothing: 0.2
+    SpeedEffector: 1
+    CrouchSpeedEffector: 0.6
+    ProneSpeedEffector: 0.4
+    FallingSpeedEffector: 0.8
   ViewClampYmin: -70
   ViewClampYmax: 80
   PlayerMask:
