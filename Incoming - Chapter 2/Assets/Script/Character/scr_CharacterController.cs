@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static scr_Models;
 
@@ -7,7 +5,8 @@ public class scr_CharacterController : MonoBehaviour
 {
     DefaultInputs DefaultInput;
     Vector2 Input_Movement;
-    Vector2 Input_View;
+    [HideInInspector]
+    public Vector2 Input_View;
     Vector3 NewCameraRotation;
     Vector3 NewCharacterRotation;
     CharacterController characterController;
@@ -41,8 +40,8 @@ public class scr_CharacterController : MonoBehaviour
     private float StanceCapsuleHieghtVelocity;
     private Vector3 newMovementSpeed;
     private Vector3 newMovementSpeedVelocity;
-
     private bool IsSprinting;
+    public scr_WeaponController currentWeapon;
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
@@ -54,12 +53,14 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
         DefaultInput.Character.SprintRealesed.performed += e => StopSprint();
         DefaultInput.Enable();
-
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
-        //Cursor.lockState = CursorLockMode.Locked;
+        if (currentWeapon)
+        {
+            currentWeapon.Initialize(this);
+        }
     }
     private void Update()
     {
@@ -84,20 +85,22 @@ public class scr_CharacterController : MonoBehaviour
         {
             IsSprinting = false;
         }
-        var verticalSpeed = PlayerSettings.WalkingForwardSpeed;
-        var horizontalSpeed = PlayerSettings.WalkingStrafeSpeed;
+        var verticalSpeed = PlayerSettings.WalkingStrafeSpeed;
+        var horizontalSpeed = PlayerSettings.WalkingForwardSpeed;
         if (IsSprinting)
         {
-            verticalSpeed = PlayerSettings.RunningForwardSpeed;
-            horizontalSpeed = PlayerSettings.RunningStrafeSpeed;
+            verticalSpeed = PlayerSettings.RunningStrafeSpeed;
+            horizontalSpeed = PlayerSettings.RunningForwardSpeed;
         }
         if (!characterController.isGrounded)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
-        }else if (playerStance == PlayerStance.Crouch)
+        }
+        else if (playerStance == PlayerStance.Crouch)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
-        }else if (playerStance == PlayerStance.Prone)
+        } 
+        else if (playerStance == PlayerStance.Prone)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
         }
