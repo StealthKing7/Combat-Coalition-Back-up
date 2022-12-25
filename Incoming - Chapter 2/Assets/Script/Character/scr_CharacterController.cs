@@ -41,6 +41,7 @@ public class scr_CharacterController : MonoBehaviour
     private Vector3 newMovementSpeed;
     private Vector3 newMovementSpeedVelocity;
     private bool IsSprinting;
+    [Header("Weapon")]
     public scr_WeaponController currentWeapon;
     private void Awake()
     {
@@ -73,8 +74,6 @@ public class scr_CharacterController : MonoBehaviour
     {
         NewCharacterRotation.y += PlayerSettings.ViewXSencitivity * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
         transform.localRotation=Quaternion.Euler(NewCharacterRotation);
-
-
         NewCameraRotation.x += PlayerSettings.ViewYSencitivity * (PlayerSettings.ViewYInverted? Input_View.y:-Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
         CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation);
