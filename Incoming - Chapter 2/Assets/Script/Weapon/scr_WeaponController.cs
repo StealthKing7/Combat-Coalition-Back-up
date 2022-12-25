@@ -11,6 +11,10 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 newWeaponRotationVelocity;
     private Vector3 TargetWeaponRotation;
     private Vector3 TargetWeaponRotationVelocity;
+    private Vector3 newWeaponMovementRotation;
+    private Vector3 newWeaponMovementRotationVelocity;
+    private Vector3 TargetWeaponMovementRotation;
+    private Vector3 TargetWeaponMovementRotationVelocity;
     [Header("Settings")]
     public WeaponSettingsModel Settings;
 
@@ -39,7 +43,15 @@ public class scr_WeaponController : MonoBehaviour
         TargetWeaponRotation.z = TargetWeaponRotation.y;
         TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, Settings.SwayResetSmoothing);
         newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, Settings.SwaySmoothing);
-        transform.localRotation = Quaternion.Euler(newWeaponRotation);
+
+        TargetWeaponMovementRotation.z = Settings.MovementSwayX * (Settings.MovementSwayXInverted ? -characterController.Input_Movement.x : characterController.Input_Movement.x);
+        TargetWeaponMovementRotation.x = Settings.MovementSwayY * (Settings.MovementSwayYInverted ? -characterController.Input_Movement.y : characterController.Input_Movement.y);
+
+        TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, Settings.SwaySmoothing);
+        newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, Settings.SwaySmoothing);
+
+
+        transform.localRotation = Quaternion.Euler(newWeaponRotation + newWeaponMovementRotation);
 
 
     }

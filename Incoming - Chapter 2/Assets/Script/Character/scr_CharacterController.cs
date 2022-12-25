@@ -4,7 +4,8 @@ using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
     DefaultInputs DefaultInput;
-    Vector2 Input_Movement;
+    [HideInInspector]
+    public Vector2 Input_Movement;
     [HideInInspector]
     public Vector2 Input_View;
     Vector3 NewCameraRotation;
@@ -61,6 +62,7 @@ public class scr_CharacterController : MonoBehaviour
         if (currentWeapon)
         {
             currentWeapon.Initialize(this);
+            
         }
     }
     private void Update()
