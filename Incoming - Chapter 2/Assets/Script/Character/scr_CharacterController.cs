@@ -44,6 +44,7 @@ public class scr_CharacterController : MonoBehaviour
     private bool IsSprinting;
     [Header("Weapon")]
     public scr_WeaponController currentWeapon;
+    public float WeaponAnimationSpeed;
     private void Awake()
     {
         DefaultInput = new DefaultInputs();
@@ -59,10 +60,13 @@ public class scr_CharacterController : MonoBehaviour
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
+
+    }
+    private void Start()
+    {
         if (currentWeapon)
         {
             currentWeapon.Initialize(this);
-            
         }
     }
     private void Update()
@@ -110,7 +114,12 @@ public class scr_CharacterController : MonoBehaviour
             PlayerSettings.SpeedEffector = 1;
         }
 
-
+        WeaponAnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
+        if (WeaponAnimationSpeed > 1)
+        {
+            WeaponAnimationSpeed = 1f;
+        }
+        currentWeapon.GetWeaponSpeed(WeaponAnimationSpeed);
         verticalSpeed *= PlayerSettings.SpeedEffector;
         horizontalSpeed *= PlayerSettings.SpeedEffector;
         newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, characterController.isGrounded ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
