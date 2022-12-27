@@ -17,6 +17,7 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 TargetWeaponMovementRotationVelocity;
     [SerializeField] Animator animator;
     private float animatorSpeed;
+    private bool IsSprinting;
     [Header("Settings")]
     public WeaponSettingsModel Settings;
 
@@ -34,19 +35,23 @@ public class scr_WeaponController : MonoBehaviour
     {
         animatorSpeed = _speed;
     }
+    public void GetWeaponAnimationBool(bool _isSprinting)
+    {
+        IsSprinting = _isSprinting;
+    }
     private void Update()
     {
         if (!IsInitialized)
         {
             return;
         }
-        animator.speed = animatorSpeed;
-        Sway();
-
+        CalculateWeaponRotation();
+        SetWeaponAnimations();
 
     }
-    void Sway()
+    void CalculateWeaponRotation()
     {
+        animator.speed = animatorSpeed;
         TargetWeaponRotation.y += Settings.SwayAmount * (Settings.SwayXInverted ? -characterController.Input_View.x : characterController.Input_View.x) * Time.deltaTime;
         TargetWeaponRotation.x += Settings.SwayAmount * (Settings.SwayYInverted ? characterController.Input_View.y : -characterController.Input_View.y) * Time.deltaTime;
         TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -Settings.SwayClampX, Settings.SwayClampX);
@@ -54,14 +59,14 @@ public class scr_WeaponController : MonoBehaviour
         TargetWeaponRotation.z = TargetWeaponRotation.y;
         TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, Settings.SwayResetSmoothing);
         newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, Settings.SwaySmoothing);
-
         TargetWeaponMovementRotation.z = Settings.MovementSwayX * (Settings.MovementSwayXInverted ? -characterController.Input_Movement.x : characterController.Input_Movement.x);
         TargetWeaponMovementRotation.x = Settings.MovementSwayY * (Settings.MovementSwayYInverted ? -characterController.Input_Movement.y : characterController.Input_Movement.y);
-
         TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, Settings.SwayResetSmoothing);
         newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, Settings.SwaySmoothing);
-
-
         transform.localRotation = Quaternion.Euler(newWeaponRotation + newWeaponMovementRotation);
+    }
+    void SetWeaponAnimations()
+    {
+        animator.SetBool("IsSprinting", IsSprinting);
     }
 }

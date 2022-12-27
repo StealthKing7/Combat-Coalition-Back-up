@@ -231,10 +231,12 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         IsSprinting = !IsSprinting;
+        currentWeapon.GetWeaponAnimationBool(IsSprinting);
     }
     void StopSprint()
     {
         if(PlayerSettings.SprintHold)
         IsSprinting = false;
+        currentWeapon.GetWeaponAnimationBool(IsSprinting);
     }
 }
