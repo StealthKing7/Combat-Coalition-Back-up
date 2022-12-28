@@ -19,7 +19,7 @@ public class scr_WeaponController : MonoBehaviour
     private float animatorSpeed;
     private bool IsSprinting;
     [Header("Settings")]
-    public WeaponSettingsModel Settings;
+    [SerializeField] WeaponSettingsModel Settings;
 
 
     private void Start()

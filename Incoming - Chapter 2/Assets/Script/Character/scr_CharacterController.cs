@@ -14,20 +14,17 @@ public class scr_CharacterController : MonoBehaviour
     [Header("References")]
     [SerializeField] Transform CameraHolder;
     [SerializeField] Transform feetTransfrom;
-
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
     [SerializeField] float ViewClampYmin = -70;
     [SerializeField] float ViewClampYmax = 80;
     [SerializeField] LayerMask PlayerMask;
-
     [Header("Gravity")]
     [SerializeField] float GravityAmount;
     [SerializeField] float GravityMin;
     private  float PlayerGravity;
     [SerializeField] Vector3 JumpingForce;
     private Vector3 JumpingForceVelocity;
-
     [Header("Stance")]
     [SerializeField] PlayerStance playerStance;
     [SerializeField] float PlayerStanceSmoothing;
@@ -45,8 +42,10 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Weapon")]
     public scr_WeaponController currentWeapon;
     public float WeaponAnimationSpeed;
+    #region-Awake-
     private void Awake()
     {
+        
         DefaultInput = new DefaultInputs();
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
         DefaultInput.Character.View.performed += e => Input_View = e.ReadValue<Vector2>();
@@ -60,15 +59,13 @@ public class scr_CharacterController : MonoBehaviour
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
-
-    }
-    private void Start()
-    {
         if (currentWeapon)
         {
             currentWeapon.Initialize(this);
         }
     }
+    #endregion
+    #region -Update-
     private void Update()
     {
         CalculateView();
@@ -76,6 +73,8 @@ public class scr_CharacterController : MonoBehaviour
         CalculateJump();
         CalculateStance();
     }
+    #endregion
+    #region -View/Movement-
     void CalculateView()
     {
         NewCharacterRotation.y += PlayerSettings.ViewXSencitivity * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
@@ -139,24 +138,8 @@ public class scr_CharacterController : MonoBehaviour
         movementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(movementSpeed);
     }
-    void CalculateStance()
-    {
-        var currentStance = playerStandStance;
-        if (playerStance == PlayerStance.Crouch)
-        {
-            currentStance = playerCrouchStance;
-        }else if(playerStance == PlayerStance.Prone)
-        {
-            currentStance = playerProneStance;
-        }
-
-
-        CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
-        CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
-
-        characterController.height = Mathf.SmoothDamp(characterController.height, currentStance.StanceCollider.height, ref StanceCapsuleHieghtVelocity, PlayerStanceSmoothing);
-        characterController.center = Vector3.SmoothDamp(characterController.center, currentStance.StanceCollider.center, ref StanceCapsuleCenterVeloctiy, PlayerStanceSmoothing);
-    }
+    #endregion
+    #region -Jumping-
     void CalculateJump()
     {
         JumpingForce = Vector3.SmoothDamp(JumpingForce, Vector3.zero, ref JumpingForceVelocity, PlayerSettings.JumpingFallof);
@@ -180,6 +163,26 @@ public class scr_CharacterController : MonoBehaviour
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
         PlayerGravity = 0;
+    }
+    #endregion
+    #region -Stance- 
+    void CalculateStance()
+    {
+        var currentStance = playerStandStance;
+        if (playerStance == PlayerStance.Crouch)
+        {
+            currentStance = playerCrouchStance;
+        }else if(playerStance == PlayerStance.Prone)
+        {
+            currentStance = playerProneStance;
+        }
+
+
+        CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
+        CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
+
+        characterController.height = Mathf.SmoothDamp(characterController.height, currentStance.StanceCollider.height, ref StanceCapsuleHieghtVelocity, PlayerStanceSmoothing);
+        characterController.center = Vector3.SmoothDamp(characterController.center, currentStance.StanceCollider.center, ref StanceCapsuleCenterVeloctiy, PlayerStanceSmoothing);
     }
     void Crouch()
     {
@@ -212,8 +215,7 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         playerStance = PlayerStance.Prone;
-    }
-     
+    }   
     bool StanceCheck(float _StanceCheckHeight)
     {
         var Start = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + characterController.radius + StanceCheckErrorMargin, feetTransfrom.position.z);
@@ -222,7 +224,8 @@ public class scr_CharacterController : MonoBehaviour
 
         return Physics.CheckCapsule(Start, End, characterController.radius, PlayerMask);
     }
-
+    #endregion
+    #region -Sprinting-
     void ToggleSprint()
     {
         if (Input_Movement.y <= 0.2f)
@@ -239,4 +242,5 @@ public class scr_CharacterController : MonoBehaviour
         IsSprinting = false;
         currentWeapon.GetWeaponAnimationBool(IsSprinting);
     }
+    #endregion
 }
