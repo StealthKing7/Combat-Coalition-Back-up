@@ -41,7 +41,9 @@ public static class scr_Models
         public float CrouchSpeedEffector;
         public float ProneSpeedEffector;
         public float FallingSpeedEffector;
-
+        [Header("Is Grounded/Falling")]
+        public float IsGroundedRadius;
+        public float IsFallingSpeed;
 
     }
     [System.Serializable]

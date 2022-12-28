@@ -524,7 +524,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.23
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -654,7 +654,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1184896760}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.4, y: 2.01, z: -22.1}
+  m_LocalPosition: {x: 16.4, y: 2.453, z: -22.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 744866038}
@@ -697,9 +697,14 @@ MonoBehaviour:
     CrouchSpeedEffector: 0.6
     ProneSpeedEffector: 0.4
     FallingSpeedEffector: 0.8
+    IsGroundedRadius: 0.1
+    IsFallingSpeed: 0
   ViewClampYmin: -70
   ViewClampYmax: 80
   PlayerMask:
+    serializedVersion: 2
+    m_Bits: 55
+  GroundMask:
     serializedVersion: 2
     m_Bits: 55
   GravityAmount: 0.03
@@ -718,6 +723,8 @@ MonoBehaviour:
     StanceCollider: {fileID: 1184896762}
   currentWeapon: {fileID: 2048449083}
   WeaponAnimationSpeed: 0
+  IsGrounded: 0
+  IsFalling: 0
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0

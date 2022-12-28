@@ -19,6 +19,7 @@ public class scr_CharacterController : MonoBehaviour
     [SerializeField] float ViewClampYmin = -70;
     [SerializeField] float ViewClampYmax = 80;
     [SerializeField] LayerMask PlayerMask;
+    [SerializeField] LayerMask GroundMask;
     [Header("Gravity")]
     [SerializeField] float GravityAmount;
     [SerializeField] float GravityMin;
@@ -42,6 +43,9 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Weapon")]
     public scr_WeaponController currentWeapon;
     public float WeaponAnimationSpeed;
+
+    [SerializeField] bool IsGrounded;
+    [SerializeField] bool IsFalling;
     #region-Awake-
     private void Awake()
     {
@@ -72,6 +76,16 @@ public class scr_CharacterController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+    }
+    #endregion
+    #region -IsGrounded / IsFalling
+    void SetIsGrounded()
+    {
+
+    }
+    void SetIsFalling()
+    {
+
     }
     #endregion
     #region -View/Movement-
@@ -241,6 +255,12 @@ public class scr_CharacterController : MonoBehaviour
         if(PlayerSettings.SprintHold)
         IsSprinting = false;
         currentWeapon.GetWeaponAnimationBool(IsSprinting);
+    }
+    #endregion
+    #region -Gizmos-
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(feetTransfrom.position, PlayerSettings.IsGroundedRadius);
     }
     #endregion
 }
