@@ -18,6 +18,9 @@ public class scr_WeaponController : MonoBehaviour
     [SerializeField] Animator animator;
     private float animatorSpeed;
     private bool IsSprinting;
+    private bool IsGroundedTrigger;
+    private float FallingDelay;
+    private bool IsGrounded;
     [Header("Settings")]
     [SerializeField] WeaponSettingsModel Settings;
 
@@ -39,6 +42,10 @@ public class scr_WeaponController : MonoBehaviour
     {
         IsSprinting = _isSprinting;
     }
+    public void GetIsGrounded(bool _IsGrounded)
+    {
+        IsGrounded = _IsGrounded;
+    }
     private void Update()
     {
         if (!IsInitialized)
@@ -48,10 +55,16 @@ public class scr_WeaponController : MonoBehaviour
         CalculateWeaponRotation();
         SetWeaponAnimations();
 
+
+    }
+    public void TriggerJump()
+    {
+        IsGroundedTrigger = false;
+        animator.SetTrigger("Jump");
+
     }
     void CalculateWeaponRotation()
     {
-        animator.speed = animatorSpeed;
         TargetWeaponRotation.y += Settings.SwayAmount * (Settings.SwayXInverted ? -characterController.Input_View.x : characterController.Input_View.x) * Time.deltaTime;
         TargetWeaponRotation.x += Settings.SwayAmount * (Settings.SwayYInverted ? characterController.Input_View.y : -characterController.Input_View.y) * Time.deltaTime;
         TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -Settings.SwayClampX, Settings.SwayClampX);
@@ -67,6 +80,25 @@ public class scr_WeaponController : MonoBehaviour
     }
     void SetWeaponAnimations()
     {
+        if (IsGroundedTrigger)
+        {
+            FallingDelay = 0;
+        }
+        else
+        {
+            FallingDelay += Time.deltaTime;
+        }
+        if (IsGrounded && !IsGroundedTrigger && FallingDelay > 0.1f)
+        {
+            animator.SetTrigger("Land");
+            IsGroundedTrigger = true;
+        }
+        else if (!IsGrounded && IsGroundedTrigger)
+        {
+            animator.SetTrigger("Falling");
+            IsGroundedTrigger = false;
+        }
         animator.SetBool("IsSprinting", IsSprinting);
+        animator.SetFloat("WalkingSpeed", animatorSpeed);
     }
 }

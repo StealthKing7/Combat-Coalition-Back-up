@@ -43,9 +43,6 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Weapon")]
     public scr_WeaponController currentWeapon;
     public float WeaponAnimationSpeed;
-
-    [SerializeField] bool IsGrounded;
-    [SerializeField] bool IsFalling;
     #region-Awake-
     private void Awake()
     {
@@ -72,19 +69,24 @@ public class scr_CharacterController : MonoBehaviour
     #region -Update-
     private void Update()
     {
+        IsGrounded();
+        currentWeapon.GetIsGrounded(IsGrounded());
+        IsFalling();
         CalculateView();
         CalculateMovement();
         CalculateJump();
         CalculateStance();
     }
     #endregion
-    #region -IsGrounded / IsFalling
-    void SetIsGrounded()
+    #region - IsGrounded / IsFalling -
+    bool IsGrounded()
     {
-
+        return Physics.CheckSphere(feetTransfrom.position, PlayerSettings.IsGroundedRadius, GroundMask);
     }
-    void SetIsFalling()
+    bool IsFalling()
     {
+        
+        return (!IsGrounded() && characterController.velocity.magnitude >= PlayerSettings.IsFallingSpeed);
 
     }
     #endregion
@@ -110,7 +112,7 @@ public class scr_CharacterController : MonoBehaviour
             verticalSpeed = PlayerSettings.RunningStrafeSpeed;
             horizontalSpeed = PlayerSettings.RunningForwardSpeed;
         }
-        if (!characterController.isGrounded)
+        if (!IsGrounded())
         {
             PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
         }
@@ -135,7 +137,7 @@ public class scr_CharacterController : MonoBehaviour
         currentWeapon.GetWeaponSpeed(WeaponAnimationSpeed);
         verticalSpeed *= PlayerSettings.SpeedEffector;
         horizontalSpeed *= PlayerSettings.SpeedEffector;
-        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, characterController.isGrounded ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
+        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
         var movementSpeed = transform.TransformDirection(newMovementSpeed);
         if (PlayerGravity > GravityMin)
         {
@@ -143,7 +145,7 @@ public class scr_CharacterController : MonoBehaviour
             PlayerGravity -= GravityAmount * Time.deltaTime;
         }
 
-        if (PlayerGravity < -0.1f && characterController.isGrounded)
+        if (PlayerGravity < -0.1f && IsGrounded())
         {
             PlayerGravity = -0.1f;
         }
@@ -160,7 +162,7 @@ public class scr_CharacterController : MonoBehaviour
     }
     void Jump()
     {
-        if (!characterController.isGrounded || playerStance == PlayerStance.Prone)
+        if (!IsGrounded() || playerStance == PlayerStance.Prone)
         {
             return;
         }
@@ -177,6 +179,7 @@ public class scr_CharacterController : MonoBehaviour
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
         PlayerGravity = 0;
+        currentWeapon.TriggerJump();
     }
     #endregion
     #region -Stance- 
@@ -190,7 +193,7 @@ public class scr_CharacterController : MonoBehaviour
         {
             currentStance = playerProneStance;
         }
-
+        
 
         CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
         CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
