@@ -147,12 +147,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27673275}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1947687521}
-  m_Father: {fileID: 2048449082}
+  m_Father: {fileID: 1345365601}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &27673277
@@ -674,8 +674,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c039b2f2176247c498a3458ba1ab62a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Input_Movement: {x: 0, y: 0}
-  Input_View: {x: 0, y: 0}
   CameraHolder: {fileID: 744866038}
   feetTransfrom: {fileID: 643222813}
   PlayerSettings:
@@ -723,8 +721,6 @@ MonoBehaviour:
     StanceCollider: {fileID: 1184896762}
   currentWeapon: {fileID: 2048449083}
   WeaponAnimationSpeed: 0
-  IsGrounded: 0
-  IsFalling: 0
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0
@@ -757,6 +753,37 @@ CapsuleCollider:
   m_Height: 1.1041293
   m_Direction: 1
   m_Center: {x: 0, y: -0.44793534, z: 0}
+--- !u!1 &1345365600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1345365601}
+  m_Layer: 8
+  m_Name: WeaponSway
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1345365601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1345365600}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 27673276}
+  m_Father: {fileID: 2048449082}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1593135591
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,7 +1076,7 @@ Transform:
   m_LocalPosition: {x: 0.0217, y: -0.0391, z: 0.0557}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 27673276}
+  - {fileID: 1345365601}
   m_Father: {fileID: 744866038}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1079,6 +1106,13 @@ MonoBehaviour:
     MovementSwayYInverted: 1
     MovementSwayXInverted: 1
     MovementSwaySmoothing: 1
+  SwayObj: {fileID: 1345365601}
+  SwayAmountA: 1
+  SwayAmountB: 2
+  SwayScale: 700
+  SwayLerpSpeed: 14
+  SwayTime: 0
+  SwayPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &2099876226
 GameObject:
   m_ObjectHideFlags: 0
