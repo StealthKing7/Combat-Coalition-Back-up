@@ -152,6 +152,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1947687521}
+  - {fileID: 1474177805}
   m_Father: {fileID: 1345365601}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -180,7 +181,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh22816
+  m_Name: pb_Mesh22836
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -721,6 +722,7 @@ MonoBehaviour:
     StanceCollider: {fileID: 1184896762}
   currentWeapon: {fileID: 2048449083}
   WeaponAnimationSpeed: 0
+  isAiming: 0
 --- !u!143 &1184896766
 CharacterController:
   m_ObjectHideFlags: 0
@@ -783,6 +785,36 @@ Transform:
   - {fileID: 27673276}
   m_Father: {fileID: 2048449082}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1474177804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1474177805}
+  m_Layer: 8
+  m_Name: WeaponSight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1474177805
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1474177804}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0014, y: 0.0294, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 27673276}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1593135591
 GameObject:
@@ -1111,8 +1143,7 @@ MonoBehaviour:
   SwayAmountB: 2
   SwayScale: 700
   SwayLerpSpeed: 14
-  SwayTime: 0
-  SwayPosition: {x: 0, y: 0, z: 0}
+  isAiming: 0
 --- !u!1 &2099876226
 GameObject:
   m_ObjectHideFlags: 0

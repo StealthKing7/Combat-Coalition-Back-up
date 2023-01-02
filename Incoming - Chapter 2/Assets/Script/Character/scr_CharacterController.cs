@@ -41,7 +41,8 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] scr_WeaponController currentWeapon;
     [SerializeField] float WeaponAnimationSpeed;
-
+    [Header("Aiming")]
+    [SerializeField] bool isAiming;
 
     #region-Awake-
     private void Awake()
@@ -55,6 +56,8 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
         DefaultInput.Character.SprintRealesed.performed += e => StopSprint();
+        DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
+        DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
         DefaultInput.Enable();
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
@@ -74,9 +77,29 @@ public class scr_CharacterController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+        CalcutaleAiming();
     }
     #endregion
 
+    #region - Aiming In -
+
+    void AimingInPressed()
+    {
+        isAiming = true;
+    }
+    void AimingInReleased()
+    {
+        isAiming = false;
+    }
+    void CalcutaleAiming()
+    {
+        if (!currentWeapon)
+        {
+            return;
+        }
+        currentWeapon.isAiming = isAiming;
+    }
+    #endregion
 
     #region - IsGrounded / IsFalling -
     bool IsGrounded()

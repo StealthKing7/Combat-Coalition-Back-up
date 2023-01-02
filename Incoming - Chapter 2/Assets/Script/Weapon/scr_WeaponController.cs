@@ -2,7 +2,6 @@ using UnityEngine;
 using static scr_Models;
 
 
-
 public class scr_WeaponController : MonoBehaviour
 {
     private Vector3 Input_View;
@@ -31,6 +30,9 @@ public class scr_WeaponController : MonoBehaviour
     [SerializeField] float SwayLerpSpeed = 14;
     private float SwayTime;
     private Vector3 SwayPosition;
+    [Header("Aiming")]
+    [HideInInspector]
+    public bool isAiming;
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
