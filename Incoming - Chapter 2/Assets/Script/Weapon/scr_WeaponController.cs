@@ -4,6 +4,7 @@ using static scr_Models;
 
 public class scr_WeaponController : MonoBehaviour
 {
+    //Rotation
     private Vector3 Input_View;
     private Vector3 Input_Movement;
     private Vector3 newWeaponRotation;
@@ -14,14 +15,18 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 newWeaponMovementRotationVelocity;
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
+    private Transform CameraHolder;
+    //Animation
     [SerializeField] Animator animator;
     private float animatorSpeed;
     private bool IsSprinting;
     private bool IsGroundedTrigger;
     private float FallingDelay;
     private bool IsGrounded;
+    //Setting
     [Header("Settings")]
     [SerializeField] WeaponSettingsModel Settings;
+    //Breathing
     [Header("Weapon Sway")]
     [SerializeField] Transform SwayObj;
     [SerializeField] float SwayAmountA = 1;
@@ -30,7 +35,12 @@ public class scr_WeaponController : MonoBehaviour
     [SerializeField] float SwayLerpSpeed = 14;
     private float SwayTime;
     private Vector3 SwayPosition;
-    [Header("Aiming")]
+    [Header("Sight")]
+    [SerializeField] Transform SightTaregt;
+    [SerializeField] float SightOffset;
+    [SerializeField] float ADSTime;
+    private Vector3 WeaponSwayPosition;
+    private Vector3 WeaponSwayPositionVelocity;
     [HideInInspector]
     public bool isAiming;
     private void Start()
@@ -47,6 +57,10 @@ public class scr_WeaponController : MonoBehaviour
     public void GetWeaponAnimationBool(bool _isSprinting)
     {
         IsSprinting = _isSprinting;
+    }
+    public void GetCameraHolder(Transform camholder)
+    {
+        CameraHolder = camholder;
     }
     public void GetIsGrounded(bool _IsGrounded)
     {
@@ -68,6 +82,19 @@ public class scr_WeaponController : MonoBehaviour
         CalculateWeaponRotation();
         SetWeaponAnimations();
         CalculateWeaponSway();
+        CalculateAimingIn();
+    }
+
+    void CalculateAimingIn()
+    {
+        var targetPosition = transform.position;
+        if (isAiming)
+        {
+            targetPosition = CameraHolder.position + (SwayObj.position - SightTaregt.position) + (CameraHolder.transform.forward * SightOffset);
+        }
+        WeaponSwayPosition = SwayObj.position;
+        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity, ADSTime);
+        SwayObj.position = WeaponSwayPosition + SwayPosition;
     }
     public void TriggerJump()
     {
@@ -77,15 +104,15 @@ public class scr_WeaponController : MonoBehaviour
     }
     void CalculateWeaponRotation()
     {
-        TargetWeaponRotation.y += Settings.SwayAmount * (Settings.SwayXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
-        TargetWeaponRotation.x += Settings.SwayAmount * (Settings.SwayYInverted ? Input_View.y : -Input_View.y) * Time.deltaTime;
+        TargetWeaponRotation.y += (isAiming ? Settings.SwayAmount / 2 : Settings.SwayAmount) * (Settings.SwayXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
+        TargetWeaponRotation.x += (isAiming ? Settings.SwayAmount / 2 : Settings.SwayAmount) * (Settings.SwayYInverted ? Input_View.y : -Input_View.y) * Time.deltaTime;
         TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -Settings.SwayClampX, Settings.SwayClampX);
         TargetWeaponRotation.y = Mathf.Clamp(TargetWeaponRotation.y, -Settings.SwayClampY, Settings.SwayClampY);
-        TargetWeaponRotation.z = TargetWeaponRotation.y;
+        TargetWeaponRotation.z = isAiming ? 0 : TargetWeaponRotation.y;
         TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, Settings.SwayResetSmoothing);
         newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, Settings.SwaySmoothing);
-        TargetWeaponMovementRotation.z = Settings.MovementSwayX * (Settings.MovementSwayXInverted ? -Input_Movement.x : Input_Movement.x);
-        TargetWeaponMovementRotation.x = Settings.MovementSwayY * (Settings.MovementSwayYInverted ? -Input_Movement.y : Input_Movement.y);
+        TargetWeaponMovementRotation.z = (isAiming ? Settings.MovementSwayX / 2 : Settings.MovementSwayX) * (Settings.MovementSwayXInverted ? -Input_Movement.x : Input_Movement.x);
+        TargetWeaponMovementRotation.x = (isAiming ? Settings.MovementSwayY / 2 : Settings.MovementSwayY) * (Settings.MovementSwayYInverted ? -Input_Movement.y : Input_Movement.y);
         TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, Settings.SwayResetSmoothing);
         newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, Settings.SwaySmoothing);
         transform.localRotation = Quaternion.Euler(newWeaponRotation + newWeaponMovementRotation);
@@ -115,14 +142,14 @@ public class scr_WeaponController : MonoBehaviour
     }
     void CalculateWeaponSway()
     {
-        var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / SwayScale;
+        var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / (isAiming ? SwayScale * 4 : SwayScale);
         SwayPosition = Vector3.Lerp(SwayPosition, targetPos, Time.smoothDeltaTime * SwayLerpSpeed);
         SwayTime += Time.deltaTime;
         if (SwayTime > 6.3f)
         {
             SwayTime = 0;
         }
-        SwayObj.localPosition = SwayPosition;
+        //SwayObj.localPosition = SwayPosition;
 
     }
     private Vector3 Curve(float Time, float A, float B)

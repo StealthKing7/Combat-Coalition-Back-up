@@ -680,6 +680,7 @@ MonoBehaviour:
   PlayerSettings:
     ViewXSencitivity: 10
     ViewYSencitivity: 10
+    AimSensitivityEffector: 2.5
     ViewXInverted: 0
     ViewYInverted: 0
     RunningForwardSpeed: 8
@@ -696,6 +697,7 @@ MonoBehaviour:
     CrouchSpeedEffector: 0.6
     ProneSpeedEffector: 0.4
     FallingSpeedEffector: 0.8
+    AimSpeedEffector: 0.5
     IsGroundedRadius: 0.1
     IsFallingSpeed: 1
   ViewClampYmin: -70
@@ -810,7 +812,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1474177804}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0014, y: 0.0294, z: 0}
+  m_LocalPosition: {x: 0.001, y: 0.032, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 27673276}
@@ -1141,8 +1143,11 @@ MonoBehaviour:
   SwayObj: {fileID: 1345365601}
   SwayAmountA: 1
   SwayAmountB: 2
-  SwayScale: 700
+  SwayScale: 5600
   SwayLerpSpeed: 14
+  SightTaregt: {fileID: 1474177805}
+  SightOffset: 0.03
+  ADSTime: 0.1
   isAiming: 0
 --- !u!1 &2099876226
 GameObject:

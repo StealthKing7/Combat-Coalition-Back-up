@@ -1,6 +1,5 @@
 using UnityEngine;
 using static scr_Models;
-
 public class scr_CharacterController : MonoBehaviour
 {
     DefaultInputs DefaultInput;
@@ -63,6 +62,7 @@ public class scr_CharacterController : MonoBehaviour
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
+        currentWeapon.GetCameraHolder(CameraHolder);
     }
     #endregion
 
@@ -118,9 +118,9 @@ public class scr_CharacterController : MonoBehaviour
     #region -View/Movement-
     void CalculateView()
     {
-        NewCharacterRotation.y += PlayerSettings.ViewXSencitivity * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
+        NewCharacterRotation.y += (isAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
         transform.localRotation=Quaternion.Euler(NewCharacterRotation);
-        NewCameraRotation.x += PlayerSettings.ViewYSencitivity * (PlayerSettings.ViewYInverted? Input_View.y:-Input_View.y) * Time.deltaTime;
+        NewCameraRotation.x += (isAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? Input_View.y : -Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
         CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation);
         currentWeapon.GetView(Input_View);
@@ -149,6 +149,10 @@ public class scr_CharacterController : MonoBehaviour
         else if (playerStance == PlayerStance.Prone)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
+        }
+        else if (isAiming)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
         }
         else
         {

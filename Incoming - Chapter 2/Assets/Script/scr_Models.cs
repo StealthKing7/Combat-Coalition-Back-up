@@ -17,8 +17,9 @@ public static class scr_Models
     public class PlayerSettingModel
     {
         [Header("View Settings")]
-        public float ViewXSencitivity;
+        public  float ViewXSencitivity;
         public float ViewYSencitivity;
+        public float AimSensitivityEffector;
         public bool ViewXInverted;
         public bool ViewYInverted;
         [Header("Movement - Running")]
@@ -41,6 +42,7 @@ public static class scr_Models
         public float CrouchSpeedEffector;
         public float ProneSpeedEffector;
         public float FallingSpeedEffector;
+        public float AimSpeedEffector;
         [Header("Is Grounded/Falling")]
         public float IsGroundedRadius;
         public float IsFallingSpeed;
