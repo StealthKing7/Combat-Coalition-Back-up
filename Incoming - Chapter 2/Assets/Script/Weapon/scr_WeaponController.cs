@@ -1,5 +1,7 @@
-using UnityEngine;
+using System.Collections.Generic;
 using static scr_Models;
+using System.Linq;
+using UnityEngine;
 
 
 public class scr_WeaponController : MonoBehaviour
@@ -15,9 +17,11 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 newWeaponMovementRotationVelocity;
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
-    private Transform CameraHolder;
-    //Animation
+    private Transform MainCamera;
+    [Header("References")]
     [SerializeField] Animator animator;
+    [SerializeField] GameObject BulletPrefab;
+    //Animation
     private float animatorSpeed;
     private bool IsSprinting;
     private bool IsGroundedTrigger;
@@ -43,10 +47,27 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 WeaponSwayPositionVelocity;
     [HideInInspector]
     public bool isAiming;
+    /*[Header("Shooting")]
+    [SerializeField] float RateOfFire;
+    private float CurrentFireRate;
+    [SerializeField] List<WeaponFireType> AllowedFireTypes;
+    [SerializeField] WeaponFireType currentFireType;*/
+
+    #region - Start/Upadate
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
+
+        //currentFireType = AllowedFireTypes.First();
     }
+    private void Update()
+    {
+        CalculateWeaponRotation();
+        SetWeaponAnimations();
+        CalculateWeaponSway();
+        CalculateAimingIn();
+    }
+    #endregion
 
     #region References
 
@@ -58,50 +79,49 @@ public class scr_WeaponController : MonoBehaviour
     {
         IsSprinting = _isSprinting;
     }
-    public void GetCameraHolder(Transform camholder)
+    public void GetCamera(Transform cam)
     {
-        CameraHolder = camholder;
+        MainCamera = cam;
     }
     public void GetIsGrounded(bool _IsGrounded)
     {
         IsGrounded = _IsGrounded;
     }
-    public  void GetMovement(Vector3 _Input_Movement)
+    public void GetMovement(Vector3 _Input_Movement)
     {
         Input_Movement = _Input_Movement;
     }
-    public  void GetView(Vector3 _Input_View)
+    public void GetView(Vector3 _Input_View)
     {
         Input_View = _Input_View;
     }
 
     #endregion
 
-    private void Update()
-    {
-        CalculateWeaponRotation();
-        SetWeaponAnimations();
-        CalculateWeaponSway();
-        CalculateAimingIn();
-    }
-
+    #region - AimingIn -
     void CalculateAimingIn()
     {
         var targetPosition = transform.position;
         if (isAiming)
         {
-            targetPosition = CameraHolder.position + (SwayObj.position - SightTaregt.position) + (CameraHolder.transform.forward * SightOffset);
+            targetPosition = MainCamera.position + (SwayObj.position - SightTaregt.position) + (MainCamera.transform.forward * SightOffset);
         }
         WeaponSwayPosition = SwayObj.position;
         WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity, ADSTime);
         SwayObj.position = WeaponSwayPosition + SwayPosition;
     }
+    #endregion
+
+    #region  - Jumping -
     public void TriggerJump()
     {
         IsGroundedTrigger = false;
         animator.SetTrigger("Jump");
 
     }
+    #endregion
+    
+    #region - Rotation - 
     void CalculateWeaponRotation()
     {
         TargetWeaponRotation.y += (isAiming ? Settings.SwayAmount / 2 : Settings.SwayAmount) * (Settings.SwayXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
@@ -117,6 +137,9 @@ public class scr_WeaponController : MonoBehaviour
         newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, Settings.SwaySmoothing);
         transform.localRotation = Quaternion.Euler(newWeaponRotation + newWeaponMovementRotation);
     }
+    #endregion
+
+    #region - Animations - 
     void SetWeaponAnimations()
     {
         if (IsGroundedTrigger)
@@ -140,6 +163,9 @@ public class scr_WeaponController : MonoBehaviour
         animator.SetBool("IsSprinting", IsSprinting);
         animator.SetFloat("WalkingSpeed", animatorSpeed);
     }
+    #endregion
+
+    #region - Sway -
     void CalculateWeaponSway()
     {
         var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / (isAiming ? SwayScale * 4 : SwayScale);
@@ -156,4 +182,5 @@ public class scr_WeaponController : MonoBehaviour
     {
         return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
+    #endregion
 }

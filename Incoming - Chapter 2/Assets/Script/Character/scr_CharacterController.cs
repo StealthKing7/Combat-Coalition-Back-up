@@ -10,7 +10,9 @@ public class scr_CharacterController : MonoBehaviour
     CharacterController characterController;
     [Header("References")]
     [SerializeField] Transform CameraHolder;
+    [SerializeField] Transform MainCamera;
     [SerializeField] Transform feetTransfrom;
+    [SerializeField] UnityEngine.UI.Text fpsText;
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
     [SerializeField] float ViewClampYmin = -70;
@@ -40,13 +42,24 @@ public class scr_CharacterController : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] scr_WeaponController currentWeapon;
     [SerializeField] float WeaponAnimationSpeed;
+    [Header("Leaning")]
+    [SerializeField] Transform LeanPiviot;
+    [SerializeField] float LeanAngle;
+    [SerializeField] float LeanSmoothing;
+    private float CurrentLean;
+    private float TargetLean;
+    private float TargetLeanVelocity;
+    private bool isLeaningLeft;
+    private bool isLeaningRight;
     [Header("Aiming")]
-    [SerializeField] bool isAiming;
-
+    private bool isAiming;
+    float frameRate;
+    float timer;
     #region-Awake-
     private void Awake()
     {
-        
+        /*Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;*/
         DefaultInput = new DefaultInputs();
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
         DefaultInput.Character.View.performed += e => Input_View = e.ReadValue<Vector2>();
@@ -54,7 +67,15 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Crouch.performed += e => Crouch();
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
-        DefaultInput.Character.SprintRealesed.performed += e => StopSprint();
+        DefaultInput.Character.SprintReleased.performed += e => StopSprint();
+
+        DefaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
+        DefaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
+
+        DefaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
+        DefaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
+
+
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
         DefaultInput.Enable();
@@ -62,7 +83,7 @@ public class scr_CharacterController : MonoBehaviour
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
-        currentWeapon.GetCameraHolder(CameraHolder);
+        currentWeapon.GetCamera(MainCamera);
     }
     #endregion
 
@@ -70,6 +91,17 @@ public class scr_CharacterController : MonoBehaviour
     #region -Update-
     private void Update()
     {
+
+        fpsText.text = frameRate + " fps";
+        if (timer > 1f)
+        {
+            frameRate = (int)(1f / Time.unscaledDeltaTime);
+            timer = 0f;
+        }
+        else
+        {
+            timer += Time.deltaTime;
+        }
         IsGrounded();
         currentWeapon.GetIsGrounded(IsGrounded());
         IsFalling();
@@ -77,6 +109,7 @@ public class scr_CharacterController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+        CalculateLeaning();
         CalcutaleAiming();
     }
     #endregion
@@ -137,6 +170,7 @@ public class scr_CharacterController : MonoBehaviour
         {
             verticalSpeed = PlayerSettings.RunningStrafeSpeed;
             horizontalSpeed = PlayerSettings.RunningForwardSpeed;
+            isAiming = false;
         }
         if (!IsGrounded())
         {
@@ -185,6 +219,29 @@ public class scr_CharacterController : MonoBehaviour
         movementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(movementSpeed);
     }
+    #endregion
+
+
+    #region - Leaning -
+    void CalculateLeaning()
+    {
+        if (isLeaningLeft)
+        {
+            TargetLean = LeanAngle;
+        }
+        else if (isLeaningRight)
+        {
+            TargetLean = -LeanAngle;
+        }
+        else
+        {
+            TargetLean = 0;
+        }
+
+        CurrentLean = Mathf.SmoothDamp(CurrentLean, TargetLean, ref TargetLeanVelocity, LeanSmoothing);
+        LeanPiviot.localRotation = Quaternion.Euler(new Vector3(0, 0, CurrentLean));
+    } 
+
     #endregion
 
 
