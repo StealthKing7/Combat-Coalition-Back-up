@@ -774,6 +774,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1089397184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1089397185}
+  m_Layer: 8
+  m_Name: BulletSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1089397185
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1089397184}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0062, y: 0.0132, z: 0.1647}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2048449082}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1184896760
 GameObject:
   m_ObjectHideFlags: 0
@@ -1191,8 +1221,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1604958029}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.92, y: 2.3810434, z: -16.61}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 15.92, y: 2.2141, z: -16.61}
+  m_LocalScale: {x: 1, y: 0.6662, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -1300,6 +1330,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1345365601}
+  - {fileID: 1089397185}
   m_Father: {fileID: 167813986}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1316,7 +1347,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 27673277}
-  BulletPrefab: {fileID: 0}
+  BulletPrefab: {fileID: 3009495485232135984, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
+  BulletSpawn: {fileID: 1089397185}
+  SightTaregt: {fileID: 1474177805}
+  SwayObj: {fileID: 1345365601}
   Settings:
     SwayAmount: 6
     SwayYInverted: 0
@@ -1330,15 +1364,17 @@ MonoBehaviour:
     MovementSwayYInverted: 1
     MovementSwayXInverted: 1
     MovementSwaySmoothing: 1
-  SwayObj: {fileID: 1345365601}
   SwayAmountA: 1
   SwayAmountB: 2
   SwayScale: 5600
   SwayLerpSpeed: 14
-  SightTaregt: {fileID: 1474177805}
   SightOffset: 0.03
   ADSTime: 0.1
   isAiming: 0
+  RateOfFire: 0
+  AllowedFireTypes: 00000000
+  currentFireType: 0
+  IsShooting: 0
 --- !u!1 &2099876226
 GameObject:
   m_ObjectHideFlags: 0

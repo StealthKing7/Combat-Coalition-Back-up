@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class scr_WeaponController : MonoBehaviour
 {
+
+
     //Rotation
     private Vector3 Input_View;
     private Vector3 Input_Movement;
@@ -21,6 +23,9 @@ public class scr_WeaponController : MonoBehaviour
     [Header("References")]
     [SerializeField] Animator animator;
     [SerializeField] GameObject BulletPrefab;
+    [SerializeField] Transform BulletSpawn;
+    [SerializeField] Transform SightTaregt;
+    [SerializeField] Transform SwayObj;
     //Animation
     private float animatorSpeed;
     private bool IsSprinting;
@@ -32,7 +37,6 @@ public class scr_WeaponController : MonoBehaviour
     [SerializeField] WeaponSettingsModel Settings;
     //Breathing
     [Header("Weapon Sway")]
-    [SerializeField] Transform SwayObj;
     [SerializeField] float SwayAmountA = 1;
     [SerializeField] float SwayAmountB = 2;
     [SerializeField] float SwayScale = 600;
@@ -40,25 +44,28 @@ public class scr_WeaponController : MonoBehaviour
     private float SwayTime;
     private Vector3 SwayPosition;
     [Header("Sight")]
-    [SerializeField] Transform SightTaregt;
     [SerializeField] float SightOffset;
     [SerializeField] float ADSTime;
     private Vector3 WeaponSwayPosition;
     private Vector3 WeaponSwayPositionVelocity;
     [HideInInspector]
     public bool isAiming;
-    /*[Header("Shooting")]
+    [Header("Shooting")]
     [SerializeField] float RateOfFire;
     private float CurrentFireRate;
     [SerializeField] List<WeaponFireType> AllowedFireTypes;
-    [SerializeField] WeaponFireType currentFireType;*/
+    [SerializeField] WeaponFireType currentFireType;
+    [HideInInspector]
+    public bool IsShooting;
 
-    #region - Start/Upadate
+
+
+    #region - Start/Upadate -
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
 
-        //currentFireType = AllowedFireTypes.First();
+        currentFireType = AllowedFireTypes.First();
     }
     private void Update()
     {
@@ -66,10 +73,11 @@ public class scr_WeaponController : MonoBehaviour
         SetWeaponAnimations();
         CalculateWeaponSway();
         CalculateAimingIn();
+        CalculateShooting();
     }
     #endregion
 
-    #region References
+    #region  - References -
 
     public void GetWeaponSpeed(float _speed)
     {
@@ -93,7 +101,7 @@ public class scr_WeaponController : MonoBehaviour
     }
     public void GetView(Vector3 _Input_View)
     {
-        Input_View = _Input_View;
+        Input_View = _Input_View;   
     }
 
     #endregion
@@ -112,6 +120,26 @@ public class scr_WeaponController : MonoBehaviour
     }
     #endregion
 
+    #region - Shooting -
+    
+    void CalculateShooting()
+    {
+        if (IsShooting)
+        {
+            Shoot();
+            if(currentFireType== WeaponFireType.SemiAuto)
+            {
+                IsShooting = false;
+            }
+        }
+    }
+    void Shoot()
+    {
+        var bullet = Instantiate(BulletPrefab, BulletSpawn.position, Quaternion.identity);
+    }
+
+    #endregion
+    
     #region  - Jumping -
     public void TriggerJump()
     {

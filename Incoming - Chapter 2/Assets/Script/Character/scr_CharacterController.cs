@@ -2,6 +2,10 @@ using UnityEngine;
 using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
+    #region - Parameters -
+
+
+
     DefaultInputs DefaultInput;
     private Vector2 Input_Movement;
     private Vector2 Input_View;
@@ -55,11 +59,17 @@ public class scr_CharacterController : MonoBehaviour
     private bool isAiming;
     float frameRate;
     float timer;
-    #region-Awake-
+
+
+
+
+    #endregion
+
+    
+    #region - Awake/Update -
     private void Awake()
     {
-        /*Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;*/
+        //Player Input
         DefaultInput = new DefaultInputs();
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
         DefaultInput.Character.View.performed += e => Input_View = e.ReadValue<Vector2>();
@@ -68,27 +78,23 @@ public class scr_CharacterController : MonoBehaviour
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
         DefaultInput.Character.SprintReleased.performed += e => StopSprint();
-
         DefaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
         DefaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
-
         DefaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
         DefaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
-
-
+        //Weapon Input
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
+        DefaultInput.Weapon.Fire1Pressed.performed += e => currentWeapon.IsShooting = true;
+        DefaultInput.Weapon.Fire1Released.performed += e => currentWeapon.IsShooting = false;
         DefaultInput.Enable();
+
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
         currentWeapon.GetCamera(MainCamera);
     }
-    #endregion
-
-
-    #region -Update-
     private void Update()
     {
 
@@ -112,8 +118,10 @@ public class scr_CharacterController : MonoBehaviour
         CalculateLeaning();
         CalcutaleAiming();
     }
-    #endregion
 
+    #endregion 
+
+    
     #region - Aiming In -
 
     void AimingInPressed()
@@ -134,6 +142,7 @@ public class scr_CharacterController : MonoBehaviour
     }
     #endregion
 
+    
     #region - IsGrounded / IsFalling -
     bool IsGrounded()
     {
@@ -170,7 +179,6 @@ public class scr_CharacterController : MonoBehaviour
         {
             verticalSpeed = PlayerSettings.RunningStrafeSpeed;
             horizontalSpeed = PlayerSettings.RunningForwardSpeed;
-            isAiming = false;
         }
         if (!IsGrounded())
         {
@@ -245,7 +253,7 @@ public class scr_CharacterController : MonoBehaviour
     #endregion
 
 
-    #region -Jumping-
+    #region - Jumping -
     void CalculateJump()
     {
         JumpingForce = Vector3.SmoothDamp(JumpingForce, Vector3.zero, ref JumpingForceVelocity, PlayerSettings.JumpingFallof);
@@ -274,7 +282,7 @@ public class scr_CharacterController : MonoBehaviour
     #endregion
 
 
-    #region -Stance- 
+    #region - Stance - 
     void CalculateStance()
     {
         var currentStance = playerStandStance;
@@ -336,7 +344,7 @@ public class scr_CharacterController : MonoBehaviour
     #endregion
 
 
-    #region -Sprinting-
+    #region - Sprinting -
     void ToggleSprint()
     {
         if (Input_Movement.y <= 0.2f)
@@ -356,7 +364,7 @@ public class scr_CharacterController : MonoBehaviour
     #endregion
 
 
-    #region -Gizmos-
+    #region - Gizmos -
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(feetTransfrom.position, PlayerSettings.IsGroundedRadius);
