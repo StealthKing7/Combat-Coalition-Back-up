@@ -289,11 +289,15 @@ public class scr_CharacterController : MonoBehaviour
         if (playerStance == PlayerStance.Crouch)
         {
             currentStance = playerCrouchStance;
-        }else if(playerStance == PlayerStance.Prone)
+        }
+        else if (playerStance == PlayerStance.Prone)
         {
             currentStance = playerProneStance;
         }
-        
+        if (IsFalling())
+        {
+            playerStance = PlayerStance.Stand;
+        }
 
         CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
         CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
@@ -337,8 +341,6 @@ public class scr_CharacterController : MonoBehaviour
     {
         var Start = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + characterController.radius + StanceCheckErrorMargin, feetTransfrom.position.z);
         var End = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + _StanceCheckHeight - characterController.radius - StanceCheckErrorMargin, feetTransfrom.position.z);
-
-
         return Physics.CheckCapsule(Start, End, characterController.radius, PlayerMask);
     }
     #endregion

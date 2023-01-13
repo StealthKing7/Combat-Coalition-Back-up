@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public static class scr_Models
 {
@@ -13,7 +14,7 @@ public static class scr_Models
         Prone
     }
      
-    [System.Serializable]
+    [Serializable]
     public class PlayerSettingModel
     {
         [Header("View Settings")]
@@ -48,7 +49,7 @@ public static class scr_Models
         public float IsFallingSpeed;
 
     }
-    [System.Serializable]
+    [Serializable]
     public class CharacterStance
     {
         public float CameraHeight;
@@ -66,7 +67,7 @@ public static class scr_Models
         FullyAuto
     }
 
-    [System.Serializable]
+    [Serializable]
     public class WeaponSettingsModel
     {
         [Header("Weapon Sway")]

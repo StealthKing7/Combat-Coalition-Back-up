@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class scr_WeaponController : MonoBehaviour
 {
+    #region - Parameters -
 
 
     //Rotation
@@ -58,7 +59,7 @@ public class scr_WeaponController : MonoBehaviour
     [HideInInspector]
     public bool IsShooting;
 
-
+    #endregion
 
     #region - Start/Upadate -
     private void Start()
