@@ -87,6 +87,22 @@ public static class scr_Models
     }
 
     #endregion
+
+    #region - Enemy -
+
+    [Serializable]
+    public class EnemySettings
+    {
+        public float Range;
+        public float RoamingRange;
+        public float Speed;
+    }
+
+    public static Vector3 GetRoamingDir()
+    {
+        return new Vector3(UnityEngine.Random.Range(-1, 1), 0, UnityEngine.Random.Range(-1, 1)).normalized;
+    }
+    #endregion
 }
 
 
