@@ -89,18 +89,20 @@ public static class scr_Models
     #endregion
 
     #region - Enemy -
-
+    public enum EState
+    {
+        Idle,
+        Patrol,
+        AlertAudio,
+        AlertVisual
+    }
     [Serializable]
     public class EnemySettings
     {
-        public float Range;
-        public float RoamingRange;
+        public float IldeMinTime = 5f;
+        public float IldeMaxTime = 10f;
+        public float PatrollingReachedThreshHold = 0.5f;
         public float Speed;
-    }
-
-    public static Vector3 GetRoamingDir()
-    {
-        return new Vector3(UnityEngine.Random.Range(-1, 1), 0, UnityEngine.Random.Range(-1, 1)).normalized;
     }
     #endregion
 }
