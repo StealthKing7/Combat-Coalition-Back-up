@@ -103,6 +103,10 @@ public static class scr_Models
         public float IldeMaxTime = 10f;
         public float PatrollingReachedThreshHold = 0.5f;
         public float Speed;
+        public float ListenTimeRemaing = 5f;
+        public float StoppingDistance;
+        public float AttackSpeed;
+        public GameObject BulletPrefab;
     }
     #endregion
 }
