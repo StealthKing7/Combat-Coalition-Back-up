@@ -53,7 +53,6 @@ public class scr_WeaponController : MonoBehaviour
     public bool isAiming;
     [Header("Shooting")]
     [SerializeField] float RateOfFire;
-    private float CurrentFireRate;
     [SerializeField] List<WeaponFireType> AllowedFireTypes;
     [SerializeField] WeaponFireType currentFireType;
     [HideInInspector]
@@ -140,7 +139,7 @@ public class scr_WeaponController : MonoBehaviour
     }
 
     #endregion
-    
+
     #region  - Jumping -
     public void TriggerJump()
     {

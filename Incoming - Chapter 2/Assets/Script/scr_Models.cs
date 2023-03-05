@@ -107,6 +107,7 @@ public static class scr_Models
         public float StoppingDistance;
         public float AttackSpeed;
         public GameObject BulletPrefab;
+        public Vector3 RecoilPosition;
     }
     #endregion
 }
