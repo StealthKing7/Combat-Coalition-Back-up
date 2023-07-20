@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using static scr_Models;
+using UnityEngine.Animations;
 using System.Linq;
 using UnityEngine;
 
@@ -21,11 +22,15 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
     private Transform MainCamera;
+    private scr_Weapon weapon;
+    [SerializeField] LayerMask WeaponLayerMask;
     [Header("References")]
+    [SerializeField] scr_WeaponSO weaponSO;
+    [SerializeField] Transform[] ArmsPoints;
+    [SerializeField] GameObject WeaponObject;
     [SerializeField] Animator animator;
-    [SerializeField] GameObject BulletPrefab;
     [SerializeField] Transform BulletSpawn;
-    [SerializeField] Transform SightTaregt;
+    [SerializeField] Transform SightTarget;
     [SerializeField] Transform SwayObj;
     //Animation
     private float animatorSpeed;
@@ -44,31 +49,34 @@ public class scr_WeaponController : MonoBehaviour
     [SerializeField] float SwayLerpSpeed = 14;
     private float SwayTime;
     private Vector3 SwayPosition;
-    [Header("Sight")]
-    [SerializeField] float SightOffset;
-    [SerializeField] float ADSTime;
     private Vector3 WeaponSwayPosition;
     private Vector3 WeaponSwayPositionVelocity;
     [HideInInspector]
     public bool isAiming;
     [Header("Shooting")]
     [SerializeField] float RateOfFire;
-    [SerializeField] List<WeaponFireType> AllowedFireTypes;
     [SerializeField] WeaponFireType currentFireType;
     [HideInInspector]
     public bool IsShooting;
 
     #endregion
 
-    #region - Start/Upadate -
+    #region - Awake/Start/Upadate -
+
+    private void Awake()
+    {
+        weapon = weaponSO.GetWeapon();
+        weapon.SetWeapon(weapon);
+        weapon.SetUp(WeaponObject, animator, ArmsPoints,SightTarget);
+    }
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
-
-        currentFireType = AllowedFireTypes.First();
+        currentFireType = weapon.GetWeaponSO().AllowedFireTypes.First();
     }
     private void Update()
     {
+        CheckForWeapon();
         CalculateWeaponRotation();
         SetWeaponAnimations();
         CalculateWeaponSway();
@@ -112,10 +120,10 @@ public class scr_WeaponController : MonoBehaviour
         var targetPosition = transform.position;
         if (isAiming)
         {
-            targetPosition = MainCamera.position + (SwayObj.position - SightTaregt.position) + (MainCamera.transform.forward * SightOffset);
+            targetPosition = MainCamera.position + (SwayObj.position - SightTarget.position) + (MainCamera.transform.forward * weapon.GetWeaponSO().SightOffset);
         }
         WeaponSwayPosition = SwayObj.position;
-        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity, ADSTime);
+        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity,weapon.GetWeaponSO().ADSTime);
         SwayObj.position = WeaponSwayPosition + SwayPosition;
     }
     #endregion
@@ -126,16 +134,12 @@ public class scr_WeaponController : MonoBehaviour
     {
         if (IsShooting)
         {
-            Shoot();
+            weapon.Shoot(BulletSpawn);
             if(currentFireType== WeaponFireType.SemiAuto)
             {
                 IsShooting = false;
             }
         }
-    }
-    void Shoot()
-    {
-        var bullet = Instantiate(BulletPrefab, BulletSpawn.position, Quaternion.identity);
     }
 
     #endregion
@@ -211,4 +215,23 @@ public class scr_WeaponController : MonoBehaviour
         return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
     #endregion
+
+    void CheckForWeapon()
+    {
+        if (Physics.SphereCast(transform.position, Settings.WeaponSearchRaduis, MainCamera.forward, out RaycastHit hit))
+        {
+            if (hit.collider.TryGetComponent(out scr_Weapon _Weapon))
+            {
+                if (Input.GetKey(KeyCode.F))
+                {
+                    weapon.ClearWeapon();
+                    weapon = _Weapon;
+                    weapon.SetWeapon(_Weapon);
+                    weaponSO = weapon.GetWeaponSO();
+                    weapon.SetUp(WeaponObject, animator, ArmsPoints, SightTarget);
+                    Destroy(_Weapon.gameObject);
+                }
+            }
+        }
+    }
 }

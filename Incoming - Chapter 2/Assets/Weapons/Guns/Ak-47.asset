@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de2be1b51532b84f9f37431b67feff3, type: 3}
+  m_Name: Ak-47
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1959877373009829114, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
+  _Weapon: {fileID: -1131585253535507789, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
+  controller: {fileID: 9100000, guid: ed21b4d741285da4faf86ab32a273953, type: 2}
+  SightPos: {x: 0.001, y: 0.035, z: -0.01}
+  SightOffset: 0.03
+  ADSTime: 0.1
+  Bullet: {fileID: 3009495485232135984, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
+  AllowedFireTypes: 00000000
+  GunPosition:
+    Position: {x: 0.0013007168, y: -0.017900102, z: -0.009700473}
+    Rotation: {x: 270, y: 91.15948, z: 0}
+  ArmIKs:
+  - Position: {x: 0.02270031, y: -0.02399993, z: -0.0423}
+    Rotation: {x: 8.303189, y: 166.70238, z: 51.765476}
+  - Position: {x: 0.0222, y: -0.049, z: -0.1242}
+    Rotation: {x: 0, y: 0, z: 0}
+  - Position: {x: -0.015099525, y: -0.007999897, z: 0.07489967}
+    Rotation: {x: 15.540421, y: 228.60573, z: 230.2991}
+  - Position: {x: -0.0565, y: -0.0324, z: 0.001}
+    Rotation: {x: 0, y: 0, z: 0}

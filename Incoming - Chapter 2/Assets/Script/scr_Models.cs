@@ -15,7 +15,7 @@ public static class scr_Models
     }
      
     [Serializable]
-    public class PlayerSettingModel
+    public struct PlayerSettingModel
     {
         [Header("View Settings")]
         public  float ViewXSencitivity;
@@ -39,7 +39,7 @@ public static class scr_Models
         public float JumpingFallof;
         public float FallingSmoothing;
         [Header("Speed Effectors")]
-        public float SpeedEffector = 1f;
+        public float SpeedEffector; // 1
         public float CrouchSpeedEffector;
         public float ProneSpeedEffector;
         public float FallingSpeedEffector;
@@ -68,8 +68,9 @@ public static class scr_Models
     }
 
     [Serializable]
-    public class WeaponSettingsModel
+    public struct WeaponSettingsModel
     {
+        public float WeaponSearchRaduis;
         [Header("Weapon Sway")]
         public float SwayAmount;
         public bool SwayYInverted; 
@@ -85,7 +86,12 @@ public static class scr_Models
         public bool MovementSwayXInverted;
         public float MovementSwaySmoothing;
     }
-
+    [Serializable]
+    public struct MyTransform
+    {
+        public Vector3 Position;
+        public Vector3 Rotation;
+    }
     #endregion
 
     #region - Enemy -

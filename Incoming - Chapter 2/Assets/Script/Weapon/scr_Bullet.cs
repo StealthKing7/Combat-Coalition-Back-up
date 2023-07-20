@@ -6,8 +6,6 @@ public class scr_Bullet : MonoBehaviour
 {
     [Header("Setting")]
     public float LifeTime;
-
-
     private void Awake()
     {
         Destroy(gameObject,LifeTime);

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de2be1b51532b84f9f37431b67feff3, type: 3}
+  m_Name: Shotgun
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 3780998823877256281, guid: 6b01fd42384b573458f5b4cfb98cf4b6, type: 3}
+  controller: {fileID: 9100000, guid: ed21b4d741285da4faf86ab32a273953, type: 2}
+  SightPos: {x: 0.005, y: 0.03, z: 0.01}
+  SightOffset: 0.05
+  ADSTime: 0.2
+  Bullet: {fileID: 1200469148204484895, guid: 8d346d15ca945ac48814d6046ab550cc, type: 3}
+  AllowedFireTypes: 00000000
+  GunPosition:
+    Position: {x: 0.005300522, y: -0.009400129, z: -0.027000427}
+    Rotation: {x: 0, y: 0, z: 0}
+  ArmIKs:
+  - Position: {x: 0.028100014, y: -0.007600069, z: -0.06159973}
+    Rotation: {x: 351.411, y: 164.17981, z: 57.469486}
+  - Position: {x: 0.0509, y: -0.0515, z: -0.1425}
+    Rotation: {x: 0, y: 0, z: 0}
+  - Position: {x: -0.0091, y: -0.0094, z: 0.0935}
+    Rotation: {x: 1.7143798, y: 212.01643, z: 234.16357}
+  - Position: {x: -0.0512, y: -0.0256, z: 0.0108}
+    Rotation: {x: 0, y: 0, z: 0}
