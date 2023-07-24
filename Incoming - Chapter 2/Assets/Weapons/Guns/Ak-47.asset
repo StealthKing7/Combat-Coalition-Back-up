@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6de2be1b51532b84f9f37431b67feff3, type: 3}
   m_Name: Ak-47
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1959877373009829114, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
-  _Weapon: {fileID: -1131585253535507789, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
+  <weapon>k__BackingField: {fileID: -1131585253535507789, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
   controller: {fileID: 9100000, guid: ed21b4d741285da4faf86ab32a273953, type: 2}
   SightPos: {x: 0.001, y: 0.035, z: -0.01}
   SightOffset: 0.03
@@ -21,8 +20,8 @@ MonoBehaviour:
   Bullet: {fileID: 3009495485232135984, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
   AllowedFireTypes: 00000000
   GunPosition:
-    Position: {x: 0.0013007168, y: -0.017900102, z: -0.009700473}
-    Rotation: {x: 270, y: 91.15948, z: 0}
+    Position: {x: 0, y: 0, z: 0}
+    Rotation: {x: 0, y: 0, z: 0}
   ArmIKs:
   - Position: {x: 0.02270031, y: -0.02399993, z: -0.0423}
     Rotation: {x: 8.303189, y: 166.70238, z: 51.765476}

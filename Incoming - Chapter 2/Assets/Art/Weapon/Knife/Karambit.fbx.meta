@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 317b75bc9fa55a645a85e0263979c713
+guid: ca121014ee51e4f4d95cc91804dc091b
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable: []
@@ -7,13 +7,13 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Metall_ak-47
-    second: {fileID: 2100000, guid: c404431314bc1ce4a97226e2893ca192, type: 2}
+      name: Steel
+    second: {fileID: 2100000, guid: 768325cb56d8bc448a7c13721c5ce06f, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Wood_ak-47
-    second: {fileID: 2100000, guid: cebaad56fe848154181fd935e0028b21, type: 2}
+      name: aiStandardSurface2
+    second: {fileID: 2100000, guid: 6fd4468fa8474d3499e6363087997c6f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -44,7 +44,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 25
+    globalScale: 0.002
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -95,7 +95,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 0.25
+    globalScale: 0.000020000001
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

@@ -5,38 +5,34 @@ using UnityEngine.Rendering;
 
 public class scr_BaseWeapon : MonoBehaviour
 {
-    private scr_Weapon weapon;
-    private GameObject WeaponObject;
+    [SerializeField] scr_WeaponSO WeaponSO;
+    private scr_BaseWeapon WeaponObject;
 
-    public void ClearWeapon()
+
+    public virtual void Shoot(Transform BulletSpawn)
     {
-        weapon = null;
-        Destroy(WeaponObject);
+        Debug.Log("Base.Shoot()");
     }
-    public void SetWeapon(scr_Weapon _Weapon)
+    public scr_WeaponSO GetWeaponSO()
     {
-        weapon = _Weapon;
-    }
-    public scr_Weapon GetWeapon()
-    {
-        return weapon;
+        return WeaponSO;
     }
     void SetArms(Transform[] arms)
     {
         for (int i = 0; i < arms.Length; i++)
         {
-            arms[i].localPosition = weapon.GetWeaponSO().ArmIKs[i].Position;
-            arms[i].localRotation = Quaternion.Euler(weapon.GetWeaponSO().ArmIKs[i].Rotation);
+            arms[i].localPosition = WeaponSO.ArmIKs[i].Position;
+            arms[i].localRotation = Quaternion.Euler(WeaponSO.ArmIKs[i].Rotation);
         }
     }
     public void SetUp(GameObject weaponParent, Animator animator, Transform[] arms, Transform sightTarget)
     {
         SetArms(arms);
-        sightTarget.localPosition = weapon.GetWeaponSO().SightPos;
-        WeaponObject = Instantiate(weapon.GetWeaponSO().prefab, weaponParent.transform);
-        WeaponObject.transform.localPosition = weapon.GetWeaponSO().GunPosition.Position;
-        WeaponObject.transform.localRotation = Quaternion.Euler(weapon.GetWeaponSO().GunPosition.Rotation);
-        animator.runtimeAnimatorController = weapon.GetWeaponSO().controller;
+        sightTarget.localPosition = WeaponSO.SightPos;
+        WeaponObject = Instantiate(WeaponSO.weapon, weaponParent.transform);
+        WeaponObject.transform.localPosition = WeaponSO.GunPosition.Position;
+        WeaponObject.transform.localRotation = Quaternion.Euler(WeaponSO.GunPosition.Rotation);
+        animator.runtimeAnimatorController = WeaponSO.controller;
     }
 
 }

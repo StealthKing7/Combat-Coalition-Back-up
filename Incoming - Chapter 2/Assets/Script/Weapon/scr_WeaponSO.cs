@@ -6,8 +6,8 @@ using static scr_Models;
 [CreateAssetMenu(fileName = "Gun", menuName = "Weapons")]
 public class scr_WeaponSO : ScriptableObject
 {
+    [field:SerializeField]public scr_BaseWeapon weapon { get; private set; }
     [Header("Gun Properties")]
-    public GameObject prefab;
     public RuntimeAnimatorController controller;
     [Header("Sight")]
     public Vector3 SightPos;
@@ -19,9 +19,5 @@ public class scr_WeaponSO : ScriptableObject
     [Header("Transforms")]
     public MyTransform GunPosition;
     public MyTransform[] ArmIKs;
-    public scr_Weapon GetWeapon()
-    {
-        return prefab.GetComponent<scr_Weapon>();
-    }
 
 }

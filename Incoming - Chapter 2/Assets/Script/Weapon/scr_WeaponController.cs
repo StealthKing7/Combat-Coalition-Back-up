@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 
 
-public class scr_WeaponController : MonoBehaviour
+public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 {
     #region - Parameters -
 
@@ -21,9 +21,10 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 newWeaponMovementRotationVelocity;
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
+    public bool isAiming { get; private set; }
     private Transform MainCamera;
-    private scr_Weapon weapon;
-    [SerializeField] LayerMask WeaponLayerMask;
+    private scr_BaseWeapon weapon;
+    private scr_InputManeger inputManeger;
     [Header("References")]
     [SerializeField] scr_WeaponSO weaponSO;
     [SerializeField] Transform[] ArmsPoints;
@@ -51,13 +52,10 @@ public class scr_WeaponController : MonoBehaviour
     private Vector3 SwayPosition;
     private Vector3 WeaponSwayPosition;
     private Vector3 WeaponSwayPositionVelocity;
-    [HideInInspector]
-    public bool isAiming;
+
     [Header("Shooting")]
     [SerializeField] float RateOfFire;
     [SerializeField] WeaponFireType currentFireType;
-    [HideInInspector]
-    public bool IsShooting;
 
     #endregion
 
@@ -65,18 +63,21 @@ public class scr_WeaponController : MonoBehaviour
 
     private void Awake()
     {
-        weapon = weaponSO.GetWeapon();
-        weapon.SetWeapon(weapon);
+        weapon = weaponSO.weapon;
         weapon.SetUp(WeaponObject, animator, ArmsPoints,SightTarget);
     }
     private void Start()
     {
+        inputManeger = scr_InputManeger.Instance;
+        inputManeger.AimingInPressed += AimingInPressed;
+        inputManeger.AimingInReleased += AimingInReleased;
+        inputManeger.Interact += CheckForWeapon;
+
         newWeaponRotation = transform.localRotation.eulerAngles;
         currentFireType = weapon.GetWeaponSO().AllowedFireTypes.First();
     }
     private void Update()
     {
-        CheckForWeapon();
         CalculateWeaponRotation();
         SetWeaponAnimations();
         CalculateWeaponSway();
@@ -126,18 +127,26 @@ public class scr_WeaponController : MonoBehaviour
         WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity,weapon.GetWeaponSO().ADSTime);
         SwayObj.position = WeaponSwayPosition + SwayPosition;
     }
+    void AimingInPressed()
+    {
+        isAiming = true;
+    }
+    void AimingInReleased()
+    {
+        isAiming = false;
+    }
     #endregion
 
     #region - Shooting -
-    
+
     void CalculateShooting()
     {
-        if (IsShooting)
+        if (inputManeger.IsShooting)
         {
             weapon.Shoot(BulletSpawn);
             if(currentFireType== WeaponFireType.SemiAuto)
             {
-                IsShooting = false;
+                inputManeger.IsShooting = false;
             }
         }
     }
@@ -220,18 +229,30 @@ public class scr_WeaponController : MonoBehaviour
     {
         if (Physics.SphereCast(transform.position, Settings.WeaponSearchRaduis, MainCamera.forward, out RaycastHit hit))
         {
-            if (hit.collider.TryGetComponent(out scr_Weapon _Weapon))
+            if (hit.collider.TryGetComponent(out scr_Gun _weapon))
             {
-                if (Input.GetKey(KeyCode.F))
-                {
-                    weapon.ClearWeapon();
-                    weapon = _Weapon;
-                    weapon.SetWeapon(_Weapon);
-                    weaponSO = weapon.GetWeaponSO();
-                    weapon.SetUp(WeaponObject, animator, ArmsPoints, SightTarget);
-                    Destroy(_Weapon.gameObject);
-                }
+                _weapon.EquipWeapon(this);
             }
         }
+        
+    }
+
+    public bool HasWeapon()
+    {
+        return weapon != null;
+    }
+    public void SetWeapon(scr_BaseWeapon _weapon)
+    {
+        weapon = _weapon;
+        weapon.SetUp(WeaponObject, animator, ArmsPoints, SightTarget);
+    }
+    public scr_BaseWeapon GetWeapon()
+    {
+        return weapon;
+    }
+
+    public void DropWeapon()
+    {
+        Debug.Log("Weapon Drop");
     }
 }

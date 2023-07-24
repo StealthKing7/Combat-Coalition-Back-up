@@ -1,22 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.XR;
 using UnityEngine;
 
 public class scr_InputManeger : MonoBehaviour
 {
     public static scr_InputManeger Instance { get; private set; }
     DefaultInputs DefaultInput;
-    scr_WeaponController currentWeapon;
-    private Vector2 Input_Movement;
-    private Vector2 Input_View;
-    private bool isLeaningLeft, isLeaningRight;
-    public Action Jump,Crouch,Prone,ToggleSprint,StopSprint,AimingInPressed, AimingInReleased;
-    public void SetWeapon(scr_WeaponController scr_WeaponController)
-    {
-        currentWeapon = scr_WeaponController;
-    }
+    public Vector2 Input_Movement { get; private set; }
+    public Vector2 Input_View { get; private set; }
+    public bool isLeaningLeft { get; private set; }
+    public bool isLeaningRight { get; private set; }
+    public bool IsShooting { get;  set; }
+    public Action Jump { get;  set; }
+    public Action Crouch { get; set; }
+    public Action Prone { get; set; }
+    public Action ToggleSprint { get; set; }
+    public Action StopSprint { get; set; }
+    public Action AimingInPressed { get; set; }
+    public Action AimingInReleased { get; set; }
+    public Action Interact { get; set; }
     private void Awake()
     {
         if (Instance == null)
@@ -37,14 +40,15 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
         DefaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
         DefaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
+        DefaultInput.Character.Interact.performed += e => Interact();
         //Weapon Input
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
-        DefaultInput.Weapon.Fire1Pressed.performed += e => currentWeapon.IsShooting = true;
-        DefaultInput.Weapon.Fire1Released.performed += e => currentWeapon.IsShooting = false;
+        DefaultInput.Weapon.Fire1Pressed.performed += e => IsShooting = true;
+        DefaultInput.Weapon.Fire1Released.performed += e => IsShooting = false;
         DefaultInput.Enable();
     }
-    public bool GetIsLeaningLeft()
+    /*public bool GetIsLeaningLeft()
     {
         return isLeaningLeft;
     }
@@ -60,5 +64,9 @@ public class scr_InputManeger : MonoBehaviour
     {
         return Input_View;
     }
+    public bool GetIsShooting()
+    {
+        return IsShooting;
+    }*/
 
 }

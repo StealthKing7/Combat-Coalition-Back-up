@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6de2be1b51532b84f9f37431b67feff3, type: 3}
   m_Name: Shotgun
   m_EditorClassIdentifier: 
-  prefab: {fileID: 3780998823877256281, guid: 6b01fd42384b573458f5b4cfb98cf4b6, type: 3}
+  <weapon>k__BackingField: {fileID: 3780998823877256282, guid: 6b01fd42384b573458f5b4cfb98cf4b6, type: 3}
   controller: {fileID: 9100000, guid: ed21b4d741285da4faf86ab32a273953, type: 2}
   SightPos: {x: 0.005, y: 0.03, z: 0.01}
   SightOffset: 0.05
