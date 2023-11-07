@@ -8,5 +8,7 @@ public interface scr_WeaponHolder
     public void SetWeapon(scr_BaseWeapon weapon);
     public scr_BaseWeapon GetWeapon();
     public void DropWeapon();
-
+    public Camera Cam();
+    public Transform GetWeaponParent();
+    public scr_WeaponController GetWeaponController();
 }

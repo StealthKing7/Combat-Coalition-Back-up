@@ -48,25 +48,4 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Weapon.Fire1Released.performed += e => IsShooting = false;
         DefaultInput.Enable();
     }
-    /*public bool GetIsLeaningLeft()
-    {
-        return isLeaningLeft;
-    }
-    public bool GetIsLeaningRight()
-    {
-        return isLeaningRight;
-    }
-    public Vector3 GetInput_Movement()
-    {
-        return Input_Movement;
-    }
-    public Vector3 GetInput_View()
-    {
-        return Input_View;
-    }
-    public bool GetIsShooting()
-    {
-        return IsShooting;
-    }*/
-
 }

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74d921bd787b1ae4a82ec144a53eb7c2, type: 3}
+  m_Name: Karamit
+  m_EditorClassIdentifier: 
+  WeaponName: Karamit
+  WeaponPos: {x: 0.164, y: 0.252, z: 0.429}
+  <Weapon>k__BackingField: {fileID: 2542967205652421567, guid: 68d864f361acb494ab6626ab2e7f26a6, type: 3}
+  controller: {fileID: 9100000, guid: 0683ec5755656f04b94b9f7f986e7282, type: 2}
+  Is2Handed: 0
+  WeaponType: 1
+  <WeaponPickable>k__BackingField: {fileID: 6914693892246897855, guid: 3c591e610f552dd4a8b4ac07fa07461c, type: 3}

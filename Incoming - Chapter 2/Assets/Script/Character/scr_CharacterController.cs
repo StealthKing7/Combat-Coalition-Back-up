@@ -1,22 +1,58 @@
+using System;
 using UnityEngine;
 using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
     #region - Parameters -
+    //Private
+    private scr_InputManeger inputManeger;
+    private CharacterController characterController;
+    private Vector3 NewCameraRotation;
+    private Vector3 NewCharacterRotation;
+    private Vector3 StanceCapsuleCenterVeloctiy;
+    private Vector3 newMovementSpeed;
+    private Vector3 newMovementSpeedVelocity;
+    private float StanceCheckErrorMargin = 0.05f;
+    private float CameraHeight;
+    private float CameraHeightVelocity;
+    private float StanceCapsuleHieghtVelocity;
+    private float CurrentLean;
+    private float TargetLean;
+    private float TargetLeanVelocity;
+    private float frameRate;
+    private float FpsTimer;
+    private float DefautYPos;
+    private float HeadBobTimer;
+    private bool IsSprinting;
+    //Events
+    public event EventHandler<CharacterMovementAnimationEventArgs> CharacterMovementAnimationEvent;
+    public class CharacterMovementAnimationEventArgs : EventArgs
+    {
+        public Vector3 dir;
+        public bool isSprinting; 
+    }
+    public event EventHandler CharacterJumpAnimationEvent;
+    public event EventHandler<OnStanceChangedEventArgs> OnStanceChanged;
+    public class OnStanceChangedEventArgs : EventArgs
+    {
+        public PlayerStance stance;
+    }
+    public event EventHandler<OnFpsUpdateTextEventArgs> OnFpsUpdateText;
+    public class OnFpsUpdateTextEventArgs : EventArgs
+    {
+        public float FrameRate;
+    }
 
-    scr_InputManeger inputManeger;
-    Vector3 NewCameraRotation;
-    Vector3 NewCharacterRotation;
-    CharacterController characterController;
     [Header("References")]
+    [SerializeField] Transform CameraTarget;
     [SerializeField] Transform CameraHolder;
-    [SerializeField] Transform MainCamera;
+    [field: SerializeField] public Camera MainCamera { get; private set; }
+
     [SerializeField] Transform feetTransfrom;
-    [SerializeField] UnityEngine.UI.Text fpsText;
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
-    [SerializeField] float ViewClampYmin = -70;
-    [SerializeField] float ViewClampYmax = 80;
+    [SerializeField] float ViewClampYmin = -60;
+    [SerializeField] float ViewClampYmax = 60;
     [SerializeField] LayerMask PlayerMask;
     [SerializeField] LayerMask GroundMask;
     [Header("Gravity")]
@@ -31,42 +67,30 @@ public class scr_CharacterController : MonoBehaviour
     [SerializeField] CharacterStance playerStandStance;
     [SerializeField] CharacterStance playerCrouchStance;
     [SerializeField] CharacterStance playerProneStance;
-    private float StanceCheckErrorMargin = 0.05f;
-    private float CameraHeight;
-    private float CameraHeightVelocity;
-    private Vector3 StanceCapsuleCenterVeloctiy;
-    private float StanceCapsuleHieghtVelocity;
-    private Vector3 newMovementSpeed;
-    private Vector3 newMovementSpeedVelocity;
-    private bool IsSprinting;
+    [field: SerializeField] public scr_WeaponController WeaponController { get; private set; }
     [Header("Weapon")]
-    [SerializeField] scr_WeaponController currentWeapon;
-    [SerializeField] float WeaponAnimationSpeed;
+    [SerializeField] float AnimationSpeed;
     [Header("Leaning")]
     [SerializeField] Transform LeanPiviot;
     [SerializeField] float LeanAngle;
     [SerializeField] float LeanSmoothing;
-    private float CurrentLean;
-    private float TargetLean;
-    private float TargetLeanVelocity;
-    float frameRate;
-    float timer;
     #endregion
 
-    
-    #region - Awake/Update -
+    #region - Awake/Start/Update/LateUpdate -
     private void Awake()
     {
+        Cursor.lockState = CursorLockMode.Locked;
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
-        currentWeapon.GetCamera(MainCamera);
+        WeaponController.SetCharcterController(this);
+        DefautYPos = CameraTarget.localPosition.y;
     }
     private void Start()
     {
         inputManeger = scr_InputManeger.Instance;
-        scr_InputManeger.Instance.Jump += Jump;
+        inputManeger.Jump += Jump;
         inputManeger.Crouch += Crouch;
         inputManeger.Prone += Prone;
         inputManeger.ToggleSprint += ToggleSprint;
@@ -75,29 +99,31 @@ public class scr_CharacterController : MonoBehaviour
     }
     private void Update()
     {
-
-        fpsText.text = frameRate + " fps";
-        if (timer > 1f)
+        OnFpsUpdateText?.Invoke(this,new OnFpsUpdateTextEventArgs { FrameRate = frameRate });
+        if (FpsTimer > 1f)
         {
             frameRate = (int)(1f / Time.unscaledDeltaTime);
-            timer = 0f;
+            FpsTimer = 0f;
         }
         else
         {
-            timer += Time.deltaTime;
+            FpsTimer += Time.deltaTime;
         }
         IsGrounded();
-        currentWeapon.GetIsGrounded(IsGrounded());
         IsFalling();
         CalculateView();
         CalculateMovement();
+        CalculateHeadBob();
         CalculateJump();
         CalculateStance();
         CalculateLeaning();
     }
+    private void LateUpdate()
+    {
+        CalculateCameraPosition();
+    }
+    #endregion
 
-    #endregion 
- 
     #region - IsGrounded / IsFalling -
     bool IsGrounded()
     {
@@ -113,12 +139,15 @@ public class scr_CharacterController : MonoBehaviour
     #region -View/Movement-
     void CalculateView()
     {
-        NewCharacterRotation.y += (currentWeapon.isAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -inputManeger.Input_View.x : inputManeger.Input_View.x) * Time.deltaTime;
+        NewCharacterRotation.y += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -inputManeger.Input_View.x : inputManeger.Input_View.x) * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(NewCharacterRotation);
-        NewCameraRotation.x += (currentWeapon.isAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? inputManeger.Input_View.y : -inputManeger.Input_View.y) * Time.deltaTime;
+        NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? inputManeger.Input_View.y : -inputManeger.Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
         CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation);
-        currentWeapon.GetView(inputManeger.Input_View);
+    }
+    void CalculateCameraPosition()
+    {
+        MainCamera.transform.position = CameraTarget.position;
     }
     void CalculateMovement()
     {
@@ -145,7 +174,7 @@ public class scr_CharacterController : MonoBehaviour
         {
             PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
         }
-        else if (currentWeapon.isAiming)
+        else if (WeaponController.GetWeapon().IsAiming)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
         }
@@ -154,16 +183,20 @@ public class scr_CharacterController : MonoBehaviour
             PlayerSettings.SpeedEffector = 1;
         }
 
-        WeaponAnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
-        if (WeaponAnimationSpeed > 1)
+        AnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
+        if (AnimationSpeed > 1)
         {
-            WeaponAnimationSpeed = 1f;
+            AnimationSpeed = 1;
         }
-        currentWeapon.GetWeaponSpeed(WeaponAnimationSpeed);
+        var direction = transform.InverseTransformDirection(characterController.velocity);
+        CharacterMovementAnimationEvent?.Invoke(this, new CharacterMovementAnimationEventArgs
+        {
+            dir = direction,
+            isSprinting = IsSprinting
+        });
         verticalSpeed *= PlayerSettings.SpeedEffector;
         horizontalSpeed *= PlayerSettings.SpeedEffector;
         newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * inputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * inputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
-        currentWeapon.GetMovement(inputManeger.Input_Movement);
         var movementSpeed = transform.TransformDirection(newMovementSpeed);
         if (PlayerGravity > GravityMin)
         {
@@ -230,7 +263,7 @@ public class scr_CharacterController : MonoBehaviour
 
         JumpingForce = Vector3.up * PlayerSettings.JumpingHeight;
         PlayerGravity = 0;
-        currentWeapon.TriggerJump();
+        CharacterJumpAnimationEvent?.Invoke(this, EventArgs.Empty);
     }
     #endregion
 
@@ -253,10 +286,10 @@ public class scr_CharacterController : MonoBehaviour
         }
 
         CameraHeight = Mathf.SmoothDamp(CameraHolder.localPosition.y, currentStance.CameraHeight, ref CameraHeightVelocity, PlayerStanceSmoothing);
-        CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, CameraHolder.localPosition.z);
-
+        CameraHolder.localPosition = new Vector3(CameraHolder.localPosition.x, CameraHeight, currentStance.ForwardPos);
         characterController.height = Mathf.SmoothDamp(characterController.height, currentStance.StanceCollider.height, ref StanceCapsuleHieghtVelocity, PlayerStanceSmoothing);
         characterController.center = Vector3.SmoothDamp(characterController.center, currentStance.StanceCollider.center, ref StanceCapsuleCenterVeloctiy, PlayerStanceSmoothing);
+        OnStanceChanged?.Invoke(this, new OnStanceChangedEventArgs { stance = playerStance });
     }
     void Crouch()
     {
@@ -289,7 +322,8 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         playerStance = PlayerStance.Prone;
-    }   
+        //ViewClampYmin = ViewClampYmin / 2;
+    }
     bool StanceCheck(float _StanceCheckHeight)
     {
         var Start = new Vector3(feetTransfrom.position.x, feetTransfrom.position.y + characterController.radius + StanceCheckErrorMargin, feetTransfrom.position.z);
@@ -308,16 +342,37 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         IsSprinting = !IsSprinting;
-        currentWeapon.GetWeaponAnimationBool(IsSprinting);
     }
     void StopSprint()
     {
         if(PlayerSettings.SprintHold)
         IsSprinting = false;
-        currentWeapon.GetWeaponAnimationBool(IsSprinting);
     }
     #endregion
 
+    #region - HeadBob -
+
+    void CalculateHeadBob()
+    {
+        if (!IsGrounded())
+            return;
+
+        if (inputManeger.Input_Movement != Vector2.zero)
+        {
+            HeadBobTimer += Time.deltaTime *
+                (playerStance == PlayerStance.Crouch ? PlayerSettings.CrouchBobSpeed :
+                playerStance == PlayerStance.Prone ? PlayerSettings.ProneBobSpeed :
+                IsSprinting ? PlayerSettings.SprintBobSpeed : PlayerSettings.WalkBobSpeed);
+            CameraTarget.localPosition = Vector3.up * (DefautYPos + Mathf.Sin(HeadBobTimer) *
+                (playerStance == PlayerStance.Crouch ? PlayerSettings.CrouchBobAmount :
+                playerStance == PlayerStance.Prone ? PlayerSettings.ProneBobAmount :
+                IsSprinting ? PlayerSettings.SprintBobAmount : PlayerSettings.WalkBobAmount));
+        }
+        CameraTarget.localPosition = Vector3.Lerp(CameraTarget.localPosition, Vector3.up*DefautYPos, 0.2f);
+    }
+
+
+    #endregion
 
     #region - Gizmos -
     private void OnDrawGizmos()

@@ -3,256 +3,187 @@ using static scr_Models;
 using UnityEngine.Animations;
 using System.Linq;
 using UnityEngine;
-
+using System;
+using System.Collections;
 
 public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 {
     #region - Parameters -
 
-
-    //Rotation
-    private Vector3 Input_View;
-    private Vector3 Input_Movement;
-    private Vector3 newWeaponRotation;
-    private Vector3 newWeaponRotationVelocity;
-    private Vector3 TargetWeaponRotation;
-    private Vector3 TargetWeaponRotationVelocity;
-    private Vector3 newWeaponMovementRotation;
-    private Vector3 newWeaponMovementRotationVelocity;
-    private Vector3 TargetWeaponMovementRotation;
-    private Vector3 TargetWeaponMovementRotationVelocity;
-    public bool isAiming { get; private set; }
-    private Transform MainCamera;
-    private scr_BaseWeapon weapon;
+    public Transform debugobj;
+    public event EventHandler<OnWeaponEquipedEventArgs> OnWeaponEquiped;
+    public class OnWeaponEquipedEventArgs : EventArgs 
+    {
+        public Animator controller;
+        public scr_BaseWeapon weapon;
+        public float _SwayAmountA;
+        public float _SwayAmountB;
+        public float _SwayScale;
+        public float _SwayLerpSpeed;
+        public Transform _SwayObj;
+    }
+    private scr_BaseWeapon CurrentWeapon;
+    private scr_Pickable InRangeWeapon;
     private scr_InputManeger inputManeger;
+    private RaycastHit[] hitInfo = new RaycastHit[1];
+    private scr_CharacterController CharacterController;
+    [SerializeField] LayerMask RetractLayerMask;
+    [SerializeField] LayerMask WeaponLayerMask;
+    [field: SerializeField] public LayerMask BulletIgnoreLayer { get; private set; }
+    [field:SerializeField] public scr_WeaponSO weaponSO { get; private set; }
     [Header("References")]
-    [SerializeField] scr_WeaponSO weaponSO;
-    [SerializeField] Transform[] ArmsPoints;
-    [SerializeField] GameObject WeaponObject;
+    [SerializeField] Transform WeaponAimPiviot;
+    [SerializeField] Transform WeaponParent;
     [SerializeField] Animator animator;
-    [SerializeField] Transform BulletSpawn;
-    [SerializeField] Transform SightTarget;
     [SerializeField] Transform SwayObj;
-    //Animation
-    private float animatorSpeed;
-    private bool IsSprinting;
-    private bool IsGroundedTrigger;
-    private float FallingDelay;
-    private bool IsGrounded;
     //Setting
-    [Header("Settings")]
-    [SerializeField] WeaponSettingsModel Settings;
+    [field: SerializeField] public WeaponSettingsModel Settings { get; private set; }
     //Breathing
     [Header("Weapon Sway")]
     [SerializeField] float SwayAmountA = 1;
     [SerializeField] float SwayAmountB = 2;
     [SerializeField] float SwayScale = 600;
     [SerializeField] float SwayLerpSpeed = 14;
-    private float SwayTime;
-    private Vector3 SwayPosition;
-    private Vector3 WeaponSwayPosition;
-    private Vector3 WeaponSwayPositionVelocity;
-
     [Header("Shooting")]
     [SerializeField] float RateOfFire;
     [SerializeField] WeaponFireType currentFireType;
-
+    private Vector3 LastWeaponPos;
     #endregion
 
-    #region - Awake/Start/Upadate -
+    #region - Awake/Start/Update/LateUpdate -
 
     private void Awake()
     {
-        weapon = weaponSO.weapon;
-        weapon.SetUp(WeaponObject, animator, ArmsPoints,SightTarget);
+        SetWeapon(scr_BaseWeapon.SpawnWeapon(weaponSO, this));
+        
+        CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
     }
     private void Start()
     {
         inputManeger = scr_InputManeger.Instance;
-        inputManeger.AimingInPressed += AimingInPressed;
-        inputManeger.AimingInReleased += AimingInReleased;
-        inputManeger.Interact += CheckForWeapon;
-
-        newWeaponRotation = transform.localRotation.eulerAngles;
-        currentFireType = weapon.GetWeaponSO().AllowedFireTypes.First();
+        inputManeger.Interact += Equip;
+        animator.runtimeAnimatorController = weaponSO.controller;
+        StartCoroutine(EquipCoroutine());
+        //currentFireType = CurrentWeapon.GetScr_WeaponSO().AllowedFireTypes.First();
     }
     private void Update()
     {
-        CalculateWeaponRotation();
-        SetWeaponAnimations();
-        CalculateWeaponSway();
-        CalculateAimingIn();
-        CalculateShooting();
+        CalculateAttack();
+        CalculateWeaponAimTarget();
+        CalculateEqupingWeapon();
     }
     #endregion
 
-    #region  - References -
+    #region - Attack -
 
-    public void GetWeaponSpeed(float _speed)
+    void CalculateAttack()
     {
-        animatorSpeed = _speed;
-    }
-    public void GetWeaponAnimationBool(bool _isSprinting)
-    {
-        IsSprinting = _isSprinting;
-    }
-    public void GetCamera(Transform cam)
-    {
-        MainCamera = cam;
-    }
-    public void GetIsGrounded(bool _IsGrounded)
-    {
-        IsGrounded = _IsGrounded;
-    }
-    public void GetMovement(Vector3 _Input_Movement)
-    {
-        Input_Movement = _Input_Movement;
-    }
-    public void GetView(Vector3 _Input_View)
-    {
-        Input_View = _Input_View;   
-    }
-
-    #endregion
-
-    #region - AimingIn -
-    void CalculateAimingIn()
-    {
-        var targetPosition = transform.position;
-        if (isAiming)
+        if (inputManeger.IsShooting && CurrentWeapon != null)
         {
-            targetPosition = MainCamera.position + (SwayObj.position - SightTarget.position) + (MainCamera.transform.forward * weapon.GetWeaponSO().SightOffset);
-        }
-        WeaponSwayPosition = SwayObj.position;
-        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, targetPosition, ref WeaponSwayPositionVelocity,weapon.GetWeaponSO().ADSTime);
-        SwayObj.position = WeaponSwayPosition + SwayPosition;
-    }
-    void AimingInPressed()
-    {
-        isAiming = true;
-    }
-    void AimingInReleased()
-    {
-        isAiming = false;
-    }
-    #endregion
-
-    #region - Shooting -
-
-    void CalculateShooting()
-    {
-        if (inputManeger.IsShooting)
-        {
-            weapon.Shoot(BulletSpawn);
-            if(currentFireType== WeaponFireType.SemiAuto)
+            CurrentWeapon.Execute();
+            if (currentFireType == WeaponFireType.SemiAuto)
             {
                 inputManeger.IsShooting = false;
             }
         }
     }
 
-    #endregion
+    #endregion    
 
-    #region  - Jumping -
-    public void TriggerJump()
-    {
-        IsGroundedTrigger = false;
-        animator.SetTrigger("Jump");
-
-    }
-    #endregion
-    
     #region - Rotation - 
-    void CalculateWeaponRotation()
-    {
-        TargetWeaponRotation.y += (isAiming ? Settings.SwayAmount / 2 : Settings.SwayAmount) * (Settings.SwayXInverted ? -Input_View.x : Input_View.x) * Time.deltaTime;
-        TargetWeaponRotation.x += (isAiming ? Settings.SwayAmount / 2 : Settings.SwayAmount) * (Settings.SwayYInverted ? Input_View.y : -Input_View.y) * Time.deltaTime;
-        TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -Settings.SwayClampX, Settings.SwayClampX);
-        TargetWeaponRotation.y = Mathf.Clamp(TargetWeaponRotation.y, -Settings.SwayClampY, Settings.SwayClampY);
-        TargetWeaponRotation.z = isAiming ? 0 : TargetWeaponRotation.y;
-        TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, Settings.SwayResetSmoothing);
-        newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, Settings.SwaySmoothing);
-        TargetWeaponMovementRotation.z = (isAiming ? Settings.MovementSwayX / 2 : Settings.MovementSwayX) * (Settings.MovementSwayXInverted ? -Input_Movement.x : Input_Movement.x);
-        TargetWeaponMovementRotation.x = (isAiming ? Settings.MovementSwayY / 2 : Settings.MovementSwayY) * (Settings.MovementSwayYInverted ? -Input_Movement.y : Input_Movement.y);
-        TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, Settings.SwayResetSmoothing);
-        newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, Settings.SwaySmoothing);
-        transform.localRotation = Quaternion.Euler(newWeaponRotation + newWeaponMovementRotation);
-    }
-    #endregion
 
-    #region - Animations - 
-    void SetWeaponAnimations()
+    void CalculateWeaponAimTarget()
     {
-        if (IsGroundedTrigger)
+        if (!Physics.Raycast(CharacterController.MainCamera.transform.position, CharacterController.MainCamera.transform.forward, 1f, RetractLayerMask))
         {
-            FallingDelay = 0;
+            WeaponAimPiviot.localRotation = Quaternion.Slerp(WeaponAimPiviot.localRotation, Quaternion.identity, Settings.RetractSmoothing);
         }
         else
         {
-            FallingDelay += Time.deltaTime;
+            WeaponAimPiviot.localRotation = Quaternion.Slerp(WeaponAimPiviot.localRotation, Quaternion.Euler(Settings.RetractAngle), Settings.RetractSmoothing);
         }
-        if (IsGrounded && !IsGroundedTrigger && FallingDelay > 0.1f)
-        {
-            animator.SetTrigger("Land");
-            IsGroundedTrigger = true;
-        }
-        else if (!IsGrounded && IsGroundedTrigger)
-        {
-            animator.SetTrigger("Falling");
-            IsGroundedTrigger = false;
-        }
-        animator.SetBool("IsSprinting", IsSprinting);
-        animator.SetFloat("WalkingSpeed", animatorSpeed);
     }
     #endregion
 
-    #region - Sway -
-    void CalculateWeaponSway()
+
+    #region  - Equiping Weapon -
+    IEnumerator EquipCoroutine()
     {
-        var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / (isAiming ? SwayScale * 4 : SwayScale);
-        SwayPosition = Vector3.Lerp(SwayPosition, targetPos, Time.smoothDeltaTime * SwayLerpSpeed);
-        SwayTime += Time.deltaTime;
-        if (SwayTime > 6.3f)
+        yield return null;
+        OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs { weapon = CurrentWeapon, controller = animator });
+    }
+    void CalculateEqupingWeapon()
+    {
+        Ray camRay = Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
+        var RaycastInt = Physics.RaycastNonAlloc(camRay, hitInfo, Settings.WeaponSearchRaduis, WeaponLayerMask, QueryTriggerInteraction.Ignore);
+        if (RaycastInt > 0)
         {
-            SwayTime = 0;
+            InRangeWeapon = hitInfo[0].collider.gameObject.GetComponent<scr_Pickable>();
         }
-        //SwayObj.localPosition = SwayPosition;
-
-    }
-    private Vector3 Curve(float Time, float A, float B)
-    {
-        return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
-    }
-    #endregion
-
-    void CheckForWeapon()
-    {
-        if (Physics.SphereCast(transform.position, Settings.WeaponSearchRaduis, MainCamera.forward, out RaycastHit hit))
+        else
         {
-            if (hit.collider.TryGetComponent(out scr_Gun _weapon))
+            InRangeWeapon = null;
+        }
+    }
+    void Equip()
+    {
+        if (InRangeWeapon == null) return;
+        if (HasWeapon() && InRangeWeapon.Weapon.GetScr_WeaponSO() != CurrentWeapon.GetScr_WeaponSO())
+        {
+            LastWeaponPos = InRangeWeapon.transform.position;
+            SetWeapon(scr_BaseWeapon.SpawnWeapon(InRangeWeapon.Weapon.GetScr_WeaponSO(), this));
+            OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
             {
-                _weapon.EquipWeapon(this);
-            }
+                controller = animator,
+                weapon = CurrentWeapon,
+                _SwayAmountA = SwayAmountA,
+                _SwayAmountB = SwayAmountB,
+                _SwayLerpSpeed = SwayLerpSpeed,
+                _SwayObj = SwayObj,
+                _SwayScale = SwayScale,
+            });
+            CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
+            weaponSO = CurrentWeapon.GetScr_WeaponSO();
+            InRangeWeapon.DestroySelf();
+            Cam().fieldOfView = 60f;
         }
-        
+    }
+    #endregion
+
+    public void SetCharcterController(scr_CharacterController characterController)
+    {
+        CharacterController = characterController;
     }
 
+    #region - Holder -
     public bool HasWeapon()
     {
-        return weapon != null;
+        return CurrentWeapon != null;
     }
     public void SetWeapon(scr_BaseWeapon _weapon)
     {
-        weapon = _weapon;
-        weapon.SetUp(WeaponObject, animator, ArmsPoints, SightTarget);
+        CurrentWeapon = _weapon;
     }
     public scr_BaseWeapon GetWeapon()
     {
-        return weapon;
+        return CurrentWeapon;
     }
-
+    public Transform GetWeaponParent()
+    {
+        return WeaponParent;
+    }
     public void DropWeapon()
     {
-        Debug.Log("Weapon Drop");
+        scr_BaseWeapon.SpawnWeaponInWorld(weaponSO, LastWeaponPos);
+        CurrentWeapon.DestroySelf();
     }
+    public Camera Cam()
+    {
+        return CharacterController.MainCamera;
+    }
+    public scr_WeaponController GetWeaponController()
+    {
+        return this;
+    }
+    #endregion
 }

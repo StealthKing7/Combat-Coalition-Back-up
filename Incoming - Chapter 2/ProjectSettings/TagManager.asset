@@ -10,17 +10,17 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Level
   - Water
   - UI
-  - 
+  - Character
   - Obstcale
   - Player
   - Weapon
-  - 
-  - 
-  - 
-  - 
+  - WeaponCamPost-Processing
+  - Bullet
+  - Pickables
+  - Global Post Processing
   - 
   - 
   - 

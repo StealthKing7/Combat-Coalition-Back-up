@@ -964,10 +964,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c039b2f2176247c498a3458ba1ab62a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CameraTarget: {fileID: 0}
   CameraHolder: {fileID: 744866038}
-  MainCamera: {fileID: 2099876230}
+  <MainCamera>k__BackingField: {fileID: 0}
   feetTransfrom: {fileID: 643222813}
-  fpsText: {fileID: 537212703}
   PlayerSettings:
     ViewXSencitivity: 10
     ViewYSencitivity: 10
@@ -991,6 +991,14 @@ MonoBehaviour:
     AimSpeedEffector: 0.5
     IsGroundedRadius: 0.1
     IsFallingSpeed: 1
+    WalkBobSpeed: 14
+    WalkBobAmount: 0.5
+    SprintBobSpeed: 18
+    SprintBobAmount: 1
+    CrouchBobSpeed: 8
+    CrouchBobAmount: 0.25
+    ProneBobSpeed: 6
+    ProneBobAmount: 0.125
   ViewClampYmin: -70
   ViewClampYmax: 80
   PlayerMask:
@@ -1006,15 +1014,19 @@ MonoBehaviour:
   PlayerStanceSmoothing: 0.15
   playerStandStance:
     CameraHeight: 0.7
+    ForwardPos: 0
     StanceCollider: {fileID: 1184896761}
   playerCrouchStance:
     CameraHeight: 0
+    ForwardPos: 0
     StanceCollider: {fileID: 1184896767}
   playerProneStance:
     CameraHeight: -0.58
+    ForwardPos: 0
     StanceCollider: {fileID: 1184896762}
-  currentWeapon: {fileID: 2048449083}
-  WeaponAnimationSpeed: 0
+  <WeaponController>k__BackingField: {fileID: 2048449083}
+  isAiming: 0
+  AnimationSpeed: 0
   LeanPiviot: {fileID: 167813986}
   LeanAngle: 35
   LeanSmoothing: 0.3
@@ -1515,35 +1527,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3306ddf970d562543aa983a053579457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WeaponMask:
+    serializedVersion: 2
+    m_Bits: 0
+  <weaponSO>k__BackingField: {fileID: 0}
+  WeaponAimPiviot: {fileID: 0}
+  WeaponParent: {fileID: 0}
   animator: {fileID: 27673277}
-  BulletPrefab: {fileID: 3009495485232135984, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
-  BulletSpawn: {fileID: 1089397185}
-  SightTaregt: {fileID: 1474177805}
   SwayObj: {fileID: 1345365601}
-  Settings:
-    SwayAmount: 6
+  <Settings>k__BackingField:
+    WeaponSearchRaduis: 0
+    SwayAmount: 0
     SwayYInverted: 0
     SwayXInverted: 0
-    SwaySmoothing: 0.1
-    SwayResetSmoothing: 0.1
-    SwayClampX: 4
-    SwayClampY: 4
-    MovementSwayX: 10
-    MovementSwayY: 3
-    MovementSwayYInverted: 1
-    MovementSwayXInverted: 1
-    MovementSwaySmoothing: 1
+    SwaySmoothing: 0
+    SwayResetSmoothing: 0
+    SwayClampX: 0
+    SwayClampY: 0
+    MovementSwayX: 0
+    MovementSwayY: 0
+    MovementSwayYInverted: 0
+    MovementSwayXInverted: 0
+    MovementSwaySmoothing: 0
+    RetractAngle: {x: 0, y: 0, z: 0}
+    RetractSmoothing: 0
   SwayAmountA: 1
   SwayAmountB: 2
   SwayScale: 5600
   SwayLerpSpeed: 14
-  SightOffset: 0.03
-  ADSTime: 0.1
-  isAiming: 0
   RateOfFire: 0
-  AllowedFireTypes: 00000000
   currentFireType: 0
-  IsShooting: 0
 --- !u!1 &2099876226
 GameObject:
   m_ObjectHideFlags: 0
