@@ -9,9 +9,9 @@ public class scr_InputManeger : MonoBehaviour
     DefaultInputs DefaultInput;
     public Vector2 Input_Movement { get; private set; }
     public Vector2 Input_View { get; private set; }
-    public bool isLeaningLeft { get; private set; }
-    public bool isLeaningRight { get; private set; }
-    public bool IsShooting { get;  set; }
+    public bool IsLeaningLeft { get; private set; }
+    public bool IsLeaningRight { get; private set; }
+    public bool RightClick { get;  set; }
     public Action Jump { get;  set; }
     public Action Crouch { get; set; }
     public Action Prone { get; set; }
@@ -36,16 +36,16 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Character.Prone.performed += e => Prone();
         DefaultInput.Character.Sprint.performed += e => ToggleSprint();
         DefaultInput.Character.SprintReleased.performed += e => StopSprint();
-        DefaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
-        DefaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
-        DefaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
-        DefaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
+        DefaultInput.Character.LeanLeftPressed.performed += e => IsLeaningLeft = true;
+        DefaultInput.Character.LeanLeftReleased.performed += e => IsLeaningLeft = false;
+        DefaultInput.Character.LeanRightPressed.performed += e => IsLeaningRight = true;
+        DefaultInput.Character.LeanRightReleased.performed += e => IsLeaningRight = false;
         DefaultInput.Character.Interact.performed += e => Interact();
         //Weapon Input
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
-        DefaultInput.Weapon.Fire1Pressed.performed += e => IsShooting = true;
-        DefaultInput.Weapon.Fire1Released.performed += e => IsShooting = false;
+        DefaultInput.Weapon.Fire1Pressed.performed += e => RightClick = true;
+        DefaultInput.Weapon.Fire1Released.performed += e => RightClick = false;
         DefaultInput.Enable();
     }
 }

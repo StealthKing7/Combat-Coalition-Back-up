@@ -15,7 +15,9 @@ MonoBehaviour:
   WeaponName: Knife
   WeaponPos: {x: 0.172, y: 0.22, z: 0.427}
   <Weapon>k__BackingField: {fileID: 6561577242114653612, guid: 01ad89922b32b9646bf640787fc6fb5f, type: 3}
+  <WeaponPickable>k__BackingField: {fileID: 6271992921122925625, guid: e7d92be89ac14864f81761cacfd641c7, type: 3}
+  <WeaponAttachmentModel>k__BackingField: {fileID: 8331310063957795423, guid: eb3a89890fb6bdb48b4fd0bdef591125, type: 3}
   controller: {fileID: 9100000, guid: d52b5f00569a4184bbf1b63aa076cc57, type: 2}
   Is2Handed: 0
   WeaponType: 1
-  <WeaponPickable>k__BackingField: {fileID: 6271992921122925625, guid: e7d92be89ac14864f81761cacfd641c7, type: 3}
+  EquipingTime: 1

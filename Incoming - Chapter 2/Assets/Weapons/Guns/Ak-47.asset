@@ -15,14 +15,20 @@ MonoBehaviour:
   WeaponName: AK-47
   WeaponPos: {x: 0.06, y: 0.16, z: 0.2}
   <Weapon>k__BackingField: {fileID: -1131585253535507789, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
+  <WeaponPickable>k__BackingField: {fileID: 398383627595106642, guid: 69c91a033b2bf7f4fa43b58f5ae7e566, type: 3}
+  <WeaponAttachmentModel>k__BackingField: {fileID: 7343335096897272494, guid: e105478a9692e3d49a1e642fbd8aff4d, type: 3}
   controller: {fileID: 9100000, guid: ed21b4d741285da4faf86ab32a273953, type: 2}
   Is2Handed: 1
   WeaponType: 0
-  <WeaponPickable>k__BackingField: {fileID: 398383627595106642, guid: 69c91a033b2bf7f4fa43b58f5ae7e566, type: 3}
+  EquipingTime: 1
   SightPos: {x: -0.06, y: -0.01, z: -0.02}
   SightOffset: 0
   FOV: 45
   ADSTime: 0.1
+  Rectile: {fileID: 8794419430945407474, guid: d1e20d94da67816418ddf173a11cf045, type: 3}
+  DefaultAttachments:
+  - {fileID: 11400000, guid: fb7086493147aeb4f820f8591baf2560, type: 2}
+  ValidAttachments: {fileID: 11400000, guid: 08a1aa6f79b70b149a57ca5a530d95e1, type: 2}
   Bullet: {fileID: 3009495485232135985, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
   BulletSpeed: 80
   AllowedFireTypes: 00000000
@@ -293,4 +299,4 @@ MonoBehaviour:
     m_ConstantMin: 0
     m_ConstantMax: 0
   KickBackYMultiplier: 10
-  FireRate: 0.25
+  RecoilSmoothing: 0.2

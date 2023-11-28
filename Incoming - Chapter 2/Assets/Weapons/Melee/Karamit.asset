@@ -15,7 +15,9 @@ MonoBehaviour:
   WeaponName: Karamit
   WeaponPos: {x: 0.164, y: 0.252, z: 0.429}
   <Weapon>k__BackingField: {fileID: 2542967205652421567, guid: 68d864f361acb494ab6626ab2e7f26a6, type: 3}
+  <WeaponPickable>k__BackingField: {fileID: 6914693892246897855, guid: 3c591e610f552dd4a8b4ac07fa07461c, type: 3}
+  <WeaponAttachmentModel>k__BackingField: {fileID: 2210736764638630788, guid: a6e3df45402e77243a8e814eaac5be90, type: 3}
   controller: {fileID: 9100000, guid: 0683ec5755656f04b94b9f7f986e7282, type: 2}
   Is2Handed: 0
   WeaponType: 1
-  <WeaponPickable>k__BackingField: {fileID: 6914693892246897855, guid: 3c591e610f552dd4a8b4ac07fa07461c, type: 3}
+  EquipingTime: 1

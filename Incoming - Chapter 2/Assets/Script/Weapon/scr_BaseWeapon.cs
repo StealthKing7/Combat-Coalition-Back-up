@@ -36,12 +36,7 @@ public class scr_BaseWeapon : MonoBehaviour
     #region - Start/Update/LateUpdate -
     private void Start()
     {
-        if (holder != null)
-        {
-            newWeaponRotation = transform.localRotation.eulerAngles;
-            holder.GetWeaponController().OnWeaponEquiped += Scr_BaseWeapon_OnWeaponEquiped;
-        }
-
+        newWeaponRotation = transform.localRotation.eulerAngles;
     }
     private void Update()
     {
@@ -52,10 +47,6 @@ public class scr_BaseWeapon : MonoBehaviour
         CalculateWeaponSway();  
     }
     #endregion
-    private void Scr_BaseWeapon_OnWeaponEquiped(object sender, OnWeaponEquipedEventArgs e)
-    {
-        e.controller.runtimeAnimatorController = GetScr_WeaponSO().controller;
-    }
 
     public void SetUp(float _SwayAmountA,float _SwayAmountB,float _SwayLerpSpeed,Transform _SwayObj, float _SwayScale)
     {
@@ -69,10 +60,6 @@ public class scr_BaseWeapon : MonoBehaviour
     #region - Sway -
     void CalculateWeaponSway()
     {
-        if (holder == null)
-        {
-            return;
-        }
         var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / (IsAiming ? SwayScale * 4 : SwayScale);
         SwayPosition = Vector3.Lerp(SwayPosition, targetPos, Time.smoothDeltaTime * SwayLerpSpeed);
         SwayTime += Time.deltaTime;
@@ -92,21 +79,18 @@ public class scr_BaseWeapon : MonoBehaviour
 
     void CalculateWeaponRotation()
     {
-        if (holder != null)
-        {
-            TargetWeaponRotation.y += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayXInverted ? -scr_InputManeger.Instance.Input_View.x : scr_InputManeger.Instance.Input_View.x) * Time.deltaTime;
-            TargetWeaponRotation.x += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayYInverted ? scr_InputManeger.Instance.Input_View.y : -scr_InputManeger.Instance.Input_View.y) * Time.deltaTime;
-            TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -holder.GetWeaponController().Settings.SwayClampX, holder.GetWeaponController().Settings.SwayClampX);
-            TargetWeaponRotation.y = Mathf.Clamp(TargetWeaponRotation.y, -holder.GetWeaponController().Settings.SwayClampY, holder.GetWeaponController().Settings.SwayClampY);
-            TargetWeaponRotation.z = IsAiming ? 0 : TargetWeaponRotation.y;
-            TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
-            newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
-            TargetWeaponMovementRotation.z = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayX / 2 : holder.GetWeaponController().Settings.MovementSwayX) * (holder.GetWeaponController().Settings.MovementSwayXInverted ? -scr_InputManeger.Instance.Input_Movement.x : scr_InputManeger.Instance.Input_Movement.x);
-            TargetWeaponMovementRotation.x = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayY / 2 : holder.GetWeaponController().Settings.MovementSwayY) * (holder.GetWeaponController().Settings.MovementSwayYInverted ? -scr_InputManeger.Instance.Input_Movement.y : scr_InputManeger.Instance.Input_Movement.y);
-            TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
-            newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
-            SwayObj.localRotation = Quaternion.Euler(newWeaponRotation - newWeaponMovementRotation);
-        }
+        TargetWeaponRotation.y += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayXInverted ? -scr_InputManeger.Instance.Input_View.x : scr_InputManeger.Instance.Input_View.x) * Time.deltaTime;
+        TargetWeaponRotation.x += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayYInverted ? scr_InputManeger.Instance.Input_View.y : -scr_InputManeger.Instance.Input_View.y) * Time.deltaTime;
+        TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -holder.GetWeaponController().Settings.SwayClampX, holder.GetWeaponController().Settings.SwayClampX);
+        TargetWeaponRotation.y = Mathf.Clamp(TargetWeaponRotation.y, -holder.GetWeaponController().Settings.SwayClampY, holder.GetWeaponController().Settings.SwayClampY);
+        TargetWeaponRotation.z = IsAiming ? 0 : TargetWeaponRotation.y;
+        TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
+        newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
+        TargetWeaponMovementRotation.z = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayX / 2 : holder.GetWeaponController().Settings.MovementSwayX) * (holder.GetWeaponController().Settings.MovementSwayXInverted ? -scr_InputManeger.Instance.Input_Movement.x : scr_InputManeger.Instance.Input_Movement.x);
+        TargetWeaponMovementRotation.x = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayY / 2 : holder.GetWeaponController().Settings.MovementSwayY) * (holder.GetWeaponController().Settings.MovementSwayYInverted ? -scr_InputManeger.Instance.Input_Movement.y : scr_InputManeger.Instance.Input_Movement.y);
+        TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
+        newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
+        SwayObj.localRotation = Quaternion.Euler(newWeaponRotation - newWeaponMovementRotation);
     }
     #endregion
   

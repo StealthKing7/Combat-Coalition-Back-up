@@ -79,6 +79,7 @@ public class scr_CharacterController : MonoBehaviour
     #region - Awake/Start/Update/LateUpdate -
     private void Awake()
     {
+        scr_UI_Maneger.Instance.SetPlayer(this);
         Cursor.lockState = CursorLockMode.Locked;
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;
@@ -95,7 +96,6 @@ public class scr_CharacterController : MonoBehaviour
         inputManeger.Prone += Prone;
         inputManeger.ToggleSprint += ToggleSprint;
         inputManeger.StopSprint += StopSprint;
-
     }
     private void Update()
     {
@@ -219,11 +219,11 @@ public class scr_CharacterController : MonoBehaviour
     #region - Leaning -
     void CalculateLeaning()
     {
-        if (inputManeger.isLeaningLeft)
+        if (inputManeger.IsLeaningLeft)
         {
             TargetLean = LeanAngle;
         }
-        else if (inputManeger.isLeaningRight)
+        else if (inputManeger.IsLeaningRight)
         {
             TargetLean = -LeanAngle;
         }

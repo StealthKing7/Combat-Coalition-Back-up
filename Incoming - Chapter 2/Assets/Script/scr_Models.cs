@@ -102,6 +102,28 @@ public static class scr_Models
     #endregion
 
     #region - Gun - 
+    [Serializable]
+    public class AttachmentsPoints
+    {
+        public AttachmentTypes AttachmentType;
+        public Transform Point;
+    }
+    public class AttachedWeaponPart
+    {
+        public AttachmentsPoints AttachmentTypePoint;
+        public scr_Attachment_SO weaponPartSO;
+        public Transform spawnedTransform;
+    }
+    public enum AttachmentTypes
+    {
+        Barrel,
+        Grip,
+        Magzine,
+        Muzzle,
+        Sight,
+        Stock,
+        UnderBarrel,
+    }
 
     //Integration method 3
     //upVec is a vector perpendicular (in the upwards direction) to the direction the bullet is travelling in

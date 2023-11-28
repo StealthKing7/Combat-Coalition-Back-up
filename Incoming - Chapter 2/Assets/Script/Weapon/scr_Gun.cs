@@ -1,22 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static scr_Models;
 
 public class scr_Gun : scr_BaseWeapon
 {
     #region - Parameters - 
     private Ray ray;
     private List<scr_Bullet> bullets = new List<scr_Bullet>();
-    private GameObject TargetObj;
+    [SerializeField] AttachmentsPoints[] _AttachmentsPoints;
     [SerializeField] Transform BulletSpawn;
     private float RecoilTime;
     private Vector3 WeaponSwayPosition;
     private Vector3 WeaponSwayPositionVelocity;
     private float FOVFloatVelocity;
-    public Vector3 RecoilTargetPos;
+    private Vector3 RecoilTargetPos;
     private Vector3 RecoilTargetPosVelocity;
-    public Vector3 RecoilTargetRot;
+    private Vector3 RecoilTargetRot;
     private Vector3 RecoilTargetRotVelocity;
     private Vector3 BulletTargetPos;
     private scr_GunSO _GunSO;
@@ -36,11 +38,13 @@ public class scr_Gun : scr_BaseWeapon
         {
             holder.GetWeaponController().debugobj.position = BulletTargetPos = hitInfo.point;
         }
-        /*foreach (var bullet in bullets)
+        foreach (var bullet in bullets)
         {
-            
-        }*/
-
+            if((BulletTargetPos - bullet.transform.position).magnitude <= 0)
+            {
+                Debug.Log("Hit");
+            }
+        }
     }
     void Shoot()
     {
@@ -55,49 +59,51 @@ public class scr_Gun : scr_BaseWeapon
     }
     #endregion
 
-    #region - Start/Update/FixedUpdate -
+    #region - Awake/Start/Update/FixedUpdate -
+
     private void Start()
     {
-        if (holder == null) return;
-
         scr_InputManeger.Instance.AimingInPressed += AimingInPressed;
         scr_InputManeger.Instance.AimingInReleased += AimingInReleased;
-        _GunSO = GetScr_WeaponSO() as scr_GunSO;  
+        holder.GetWeaponController().OnWeaponEquiped += Scr_Gun_OnWeaponEquiped;
+        _GunSO = GetScr_WeaponSO() as scr_GunSO;
     }
+
+    private void Scr_Gun_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
+    {
+        Debug.Log(sender);
+        LoadAttachments(e.attachment_SO);
+    }
+
     private void Update()
     {
-        if (holder == null) return;
         CalculateShooting();
         CalculateAimingIn();
         CalculateRecoil();
     }
     #endregion
 
-    public void Reload()
-    {
-        
-    }
-
     #region - AimingIn -
     void CalculateAimingIn()
     {
         var AimTargetPos = Vector3.zero;
         var targetFOV = 60f;
-        if (IsAiming && holder.HasWeapon())
+        //scr_Attachment_SO sight;
+        if (IsAiming)
         {
-            AimTargetPos = _GunSO.SightPos;
+            AimTargetPos = _GunSO.SightPos; //+ (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).SightOffset : Vector3.zero);
             targetFOV = _GunSO.FOV;
         }
-        holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);
+        holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);//+ (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).ADS : 0));
         WeaponSwayPosition = transform.localPosition;
-        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, AimTargetPos, ref WeaponSwayPositionVelocity, _GunSO.ADSTime);
+        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, AimTargetPos, ref WeaponSwayPositionVelocity, _GunSO.ADSTime);// + (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).ADS : 0));
         transform.localPosition = WeaponSwayPosition;
     }
-    public void AimingInPressed()
+    void AimingInPressed()
     {
         IsAiming = true;
     }
-    public void AimingInReleased()
+    void AimingInReleased()
     {
         IsAiming = false;
     }
@@ -121,9 +127,9 @@ public class scr_Gun : scr_BaseWeapon
         RecoilTargetRot = Vector3.zero;
         if (RecoilTime > 0)
         {
-            float fraction = RecoilTime / _GunSO.FireRate;
+            float fraction = RecoilTime / _GunSO.RecoilSmoothing;
             RecoilTime += Time.deltaTime;
-            if (RecoilTime > _GunSO.FireRate)
+            if (RecoilTime > _GunSO.RecoilSmoothing)
             {
                 RecoilTime = 0;
                 fraction = 0;
@@ -138,4 +144,15 @@ public class scr_Gun : scr_BaseWeapon
         transform.localRotation = Quaternion.Euler(Recoilrotation);
     }
     #endregion
+    void LoadAttachments(List<scr_Attachment_SO> attachment_SOs)
+    {
+        for (int i = 0; i < _AttachmentsPoints.Length; i++)
+        {
+            var validAttachment = attachment_SOs.Find(e => e.AttachmentType == _AttachmentsPoints[i].AttachmentType);
+            if (validAttachment != null)
+            {
+                Instantiate(validAttachment.Model, _AttachmentsPoints[i].Point);
+            }
+        }
+    }
 }

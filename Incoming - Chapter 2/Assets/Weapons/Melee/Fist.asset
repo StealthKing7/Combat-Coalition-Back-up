@@ -15,7 +15,9 @@ MonoBehaviour:
   WeaponName: Fist
   WeaponPos: {x: 0, y: 0, z: 0}
   <Weapon>k__BackingField: {fileID: 3626034352399976282, guid: 26514e934633e9a4a941aa88bc168747, type: 3}
+  <WeaponPickable>k__BackingField: {fileID: 0}
+  <WeaponAttachmentModel>k__BackingField: {fileID: 3885813245153728907, guid: b94012faf48189d4ab3dd60836d66ca2, type: 3}
   controller: {fileID: 9100000, guid: 1bfe54ab0b34bc844a844c73ef1d8dd7, type: 2}
   Is2Handed: 1
   WeaponType: 1
-  <WeaponPickable>k__BackingField: {fileID: 0}
+  EquipingTime: 1

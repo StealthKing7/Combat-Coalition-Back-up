@@ -9,18 +9,13 @@ using System.Collections;
 public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 {
     #region - Parameters -
-
     public Transform debugobj;
     public event EventHandler<OnWeaponEquipedEventArgs> OnWeaponEquiped;
     public class OnWeaponEquipedEventArgs : EventArgs 
     {
         public Animator controller;
         public scr_BaseWeapon weapon;
-        public float _SwayAmountA;
-        public float _SwayAmountB;
-        public float _SwayScale;
-        public float _SwayLerpSpeed;
-        public Transform _SwayObj;
+        public List<scr_Attachment_SO> attachment_SO;
     }
     private scr_BaseWeapon CurrentWeapon;
     private scr_Pickable InRangeWeapon;
@@ -30,7 +25,9 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] LayerMask RetractLayerMask;
     [SerializeField] LayerMask WeaponLayerMask;
     [field: SerializeField] public LayerMask BulletIgnoreLayer { get; private set; }
-    [field:SerializeField] public scr_WeaponSO weaponSO { get; private set; }
+    public scr_WeaponSO weaponSO { get; private set; }
+    private scr_GunSO GunSO;
+    private scr_MeleeSO MeleeSO;
     [Header("References")]
     [SerializeField] Transform WeaponAimPiviot;
     [SerializeField] Transform WeaponParent;
@@ -54,8 +51,16 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 
     private void Awake()
     {
+        weaponSO = scr_GameManeger.Instance._WeaponSO;
+        if (weaponSO.WeaponType == WeaponType.Gun)
+        {
+            GunSO = weaponSO as scr_GunSO;
+        }
+        else
+        {
+            MeleeSO = weaponSO as scr_MeleeSO;
+        }
         SetWeapon(scr_BaseWeapon.SpawnWeapon(weaponSO, this));
-        
         CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
     }
     private void Start()
@@ -64,7 +69,8 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         inputManeger.Interact += Equip;
         animator.runtimeAnimatorController = weaponSO.controller;
         StartCoroutine(EquipCoroutine());
-        //currentFireType = CurrentWeapon.GetScr_WeaponSO().AllowedFireTypes.First();
+        if (weaponSO.WeaponType == WeaponType.Gun)
+            currentFireType = GunSO.AllowedFireTypes.First();
     }
     private void Update()
     {
@@ -78,12 +84,12 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 
     void CalculateAttack()
     {
-        if (inputManeger.IsShooting && CurrentWeapon != null)
+        if (inputManeger.RightClick)
         {
             CurrentWeapon.Execute();
             if (currentFireType == WeaponFireType.SemiAuto)
             {
-                inputManeger.IsShooting = false;
+                inputManeger.RightClick = false;
             }
         }
     }
@@ -110,7 +116,12 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     IEnumerator EquipCoroutine()
     {
         yield return null;
-        OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs { weapon = CurrentWeapon, controller = animator });
+        OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
+        {
+            weapon = CurrentWeapon,
+            controller = animator,
+            attachment_SO = scr_GameManeger.Instance.attachment_SOs
+        });
     }
     void CalculateEqupingWeapon()
     {
@@ -128,21 +139,17 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     void Equip()
     {
         if (InRangeWeapon == null) return;
-        if (HasWeapon() && InRangeWeapon.Weapon.GetScr_WeaponSO() != CurrentWeapon.GetScr_WeaponSO())
+        if (HasWeapon())
         {
             LastWeaponPos = InRangeWeapon.transform.position;
             SetWeapon(scr_BaseWeapon.SpawnWeapon(InRangeWeapon.Weapon.GetScr_WeaponSO(), this));
+            CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
             OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
             {
                 controller = animator,
                 weapon = CurrentWeapon,
-                _SwayAmountA = SwayAmountA,
-                _SwayAmountB = SwayAmountB,
-                _SwayLerpSpeed = SwayLerpSpeed,
-                _SwayObj = SwayObj,
-                _SwayScale = SwayScale,
+                attachment_SO = scr_GameManeger.Instance.attachment_SOs
             });
-            CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
             weaponSO = CurrentWeapon.GetScr_WeaponSO();
             InRangeWeapon.DestroySelf();
             Cam().fieldOfView = 60f;
@@ -174,7 +181,10 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     }
     public void DropWeapon()
     {
-        scr_BaseWeapon.SpawnWeaponInWorld(weaponSO, LastWeaponPos);
+        if (weaponSO.WeaponPickable != null)
+        {
+            scr_BaseWeapon.SpawnWeaponInWorld(weaponSO, LastWeaponPos);
+        }
         CurrentWeapon.DestroySelf();
     }
     public Camera Cam()
