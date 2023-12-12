@@ -90,17 +90,16 @@ public class scr_Gun : scr_BaseWeapon
     void CalculateAimingIn()
     {
         //CurrentAttachments.TryGetValue(AttachmentTypes.Sight, out scr_Attachment_SO sight);
-        var AimTargetPos = Vector3.zero;
+        var AimTargetPos = Vector3.zero; //+ (holder.GetWeaponParent().localPosition - SwayObj.localPosition);
         var targetFOV = 60f;
         if (IsAiming)
         {
-            AimTargetPos = holder.Cam().transform.position + (transform.localPosition - SightTarget.localPosition) + (holder.Cam().transform.forward * _GunSO.SightOffset);
+            AimTargetPos = holder.Cam().transform.position - holder.GetWeaponParent().position + (transform.position - SightTarget.position) + (holder.Cam().transform.forward * _GunSO.SightOffset);
             targetFOV = _GunSO.FOV;
         }
         holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);
         GunAimPosition = transform.localPosition;
-        GunAimPosition = transform.InverseTransformVector(Vector3.SmoothDamp(GunAimPosition, AimTargetPos, ref GunAimPositionVelocity, _GunSO.ADSTime));
-        Debug.Log(GunAimPosition);
+        GunAimPosition = Vector3.SmoothDamp(GunAimPosition, transform.InverseTransformVector(AimTargetPos), ref GunAimPositionVelocity, _GunSO.ADSTime);
         transform.localPosition = GunAimPosition;
     }
     void AimingInPressed()
