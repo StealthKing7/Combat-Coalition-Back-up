@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class scr_CharacterController : MonoBehaviour
     [SerializeField] Transform CameraTarget;
     [SerializeField] Transform CameraHolder;
     [field: SerializeField] public Camera MainCamera { get; private set; }
-
+    [field: SerializeField] public Text FPSText { get; private set; }
     [SerializeField] Transform feetTransfrom;
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
@@ -79,7 +80,7 @@ public class scr_CharacterController : MonoBehaviour
     #region - Awake/Start/Update/LateUpdate -
     private void Awake()
     {
-        scr_UI_Maneger.Instance.SetPlayer(this);
+        scr_GameManeger.Instance.AddPlayer(this);
         Cursor.lockState = CursorLockMode.Locked;
         NewCharacterRotation = transform.localRotation.eulerAngles;
         NewCameraRotation = CameraHolder.localRotation.eulerAngles;

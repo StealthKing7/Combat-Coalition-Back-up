@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/GameScene.unity
+    path: Assets/Scenes/Fps Updates/GameScene.unity
     guid: a11821e268b091a498162d07099be4e0
   - enabled: 1
     path: Assets/Scenes/Fps Updates/Fps Updates.unity

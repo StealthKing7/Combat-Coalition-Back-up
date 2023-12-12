@@ -155,7 +155,6 @@ Transform:
   - {fileID: 316082127742620022}
   - {fileID: 3408098103729195318}
   - {fileID: 1397655985251664129}
-  - {fileID: 7430978434345920483}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -175,8 +174,6 @@ MonoBehaviour:
   AttachmentsPoints:
   - AttachmentType: 4
     Point: {fileID: 3408098103729195318}
-  - AttachmentType: 3
-    Point: {fileID: 7430978434345920483}
   PrefabUI: {fileID: 4237468593164457012, guid: 6efe6e9270936d545bb8f0cbccf4236a, type: 3}
 --- !u!1 &3950168415235333574
 GameObject:
@@ -202,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950168415235333574}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.12, z: -0.05}
+  m_LocalPosition: {x: 0.001, y: 0.1235, z: 0.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3780998823877256280}
@@ -237,36 +234,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3780998823877256280}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8816459735069325328
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7430978434345920483}
-  m_Layer: 0
-  m_Name: Muzzle
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7430978434345920483
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8816459735069325328}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.020357968, y: 0.069, z: 0.644}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3780998823877256280}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1508637481466242794
 PrefabInstance:

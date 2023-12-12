@@ -16,20 +16,10 @@ public class scr_UI_Maneger : MonoBehaviour
     [SerializeField] private Button togglePartsButton;
     private float CurrentRectileSize;
     private RectTransform Rectile;
-    [Header("References")]
-    private scr_CharacterController Player;
-    [SerializeField] Text FPSText;
     [Header("CrossHair")]
     [SerializeField] float MaxRectileSize;
     [SerializeField] float MinRectileSize;
     [SerializeField] float RectileSizeSmoothing;
-
-
-    public void SetPlayer(scr_CharacterController scr_Character)
-    {
-        Player = scr_Character;
-        IsSetup = true;
-    }
     private void Awake()
     {
         DontDestroyOnLoad(this);
@@ -44,12 +34,15 @@ public class scr_UI_Maneger : MonoBehaviour
 
     private void Instance_OnSceneChanged(object sender, System.EventArgs e)
     {
-        Player.OnFpsUpdateText += UpdateFPSText;
-        CurrentRectileSize = MinRectileSize;
-        if (Player.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
+        foreach (var Player in scr_GameManeger.Instance.GetPlayerList())
         {
-            var gunso = Player.WeaponController.GetWeapon().GetScr_WeaponSO() as scr_GunSO;
-            Rectile = Instantiate(gunso.Rectile);
+            Player.OnFpsUpdateText += UpdateFPSText;
+            CurrentRectileSize = MinRectileSize;
+            if (Player.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
+            {
+                var gunso = Player.WeaponController.GetWeapon().GetScr_WeaponSO() as scr_GunSO;
+                Rectile = Instantiate(gunso.Rectile);
+            }
         }
     }
     private void LateUpdate()
@@ -74,7 +67,10 @@ public class scr_UI_Maneger : MonoBehaviour
     }
     void UpdateFPSText(object sender,scr_CharacterController.OnFpsUpdateTextEventArgs e)
     {
-        FPSText.text = e.FrameRate + " fps";
+        foreach(var Player in scr_GameManeger.Instance.GetPlayerList())
+        {
+            Player.FPSText.text = e.FrameRate + " fps";
+        }
     }
     void MainMenu()
     {
@@ -101,8 +97,7 @@ public class scr_UI_Maneger : MonoBehaviour
             scr_GameManeger.Instance._WeaponSO = scr_GunAttachmentsSystem.Instance.GetWeaponBodySO();
             foreach (var i in scr_GunAttachmentsSystem.Instance.GetWeaponComplete().Save())
             {
-                Debug.Log(i.name);
-                scr_GameManeger.Instance.attachment_SOs.Add(i);
+                scr_GameManeger.Instance.AddAttachments(i);
             }
             scr_SceneManeger.Instance.SetScene(1);
         });

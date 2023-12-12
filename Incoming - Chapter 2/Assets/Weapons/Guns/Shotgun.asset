@@ -21,11 +21,11 @@ MonoBehaviour:
   Is2Handed: 1
   WeaponType: 0
   EquipingTime: 1
-  SightPos: {x: -0.04, y: 0.02, z: -0.06}
+  SightPos: {x: -0.04, y: -0.016, z: -0.06}
   SightOffset: 0
   FOV: 50
   ADSTime: 0.15
-  Rectile: {fileID: 0}
+  Rectile: {fileID: 8794419430945407474, guid: d1e20d94da67816418ddf173a11cf045, type: 3}
   DefaultAttachments: []
   ValidAttachments: {fileID: 11400000, guid: bb934a7e24bcc52468fa10d11fd77f5c, type: 2}
   Bullet: {fileID: -82625557584138955, guid: 8d346d15ca945ac48814d6046ab550cc, type: 3}

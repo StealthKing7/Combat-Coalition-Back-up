@@ -9,18 +9,21 @@ public class scr_Gun : scr_BaseWeapon
 {
     #region - Parameters - 
     private Ray ray;
+    private Dictionary<AttachmentTypes, scr_Attachment_SO> CurrentAttachments = new Dictionary<AttachmentTypes, scr_Attachment_SO>();
     private List<scr_Bullet> bullets = new List<scr_Bullet>();
     [SerializeField] AttachmentsPoints[] _AttachmentsPoints;
+    [SerializeField] Transform SightTarget;
     [SerializeField] Transform BulletSpawn;
     private float RecoilTime;
-    private Vector3 WeaponSwayPosition;
-    private Vector3 WeaponSwayPositionVelocity;
     private float FOVFloatVelocity;
+    private Vector3 GunAimPosition;
+    private Vector3 GunAimPositionVelocity;
     private Vector3 RecoilTargetPos;
     private Vector3 RecoilTargetPosVelocity;
     private Vector3 RecoilTargetRot;
     private Vector3 RecoilTargetRotVelocity;
     private Vector3 BulletTargetPos;
+    private Vector3 GunWorldPosition;
     private scr_GunSO _GunSO;
     #endregion
 
@@ -63,6 +66,7 @@ public class scr_Gun : scr_BaseWeapon
 
     private void Start()
     {
+        GunWorldPosition = transform.position;
         scr_InputManeger.Instance.AimingInPressed += AimingInPressed;
         scr_InputManeger.Instance.AimingInReleased += AimingInReleased;
         holder.GetWeaponController().OnWeaponEquiped += Scr_Gun_OnWeaponEquiped;
@@ -71,7 +75,6 @@ public class scr_Gun : scr_BaseWeapon
 
     private void Scr_Gun_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
     {
-        Debug.Log(sender);
         LoadAttachments(e.attachment_SO);
     }
 
@@ -86,18 +89,19 @@ public class scr_Gun : scr_BaseWeapon
     #region - AimingIn -
     void CalculateAimingIn()
     {
+        //CurrentAttachments.TryGetValue(AttachmentTypes.Sight, out scr_Attachment_SO sight);
         var AimTargetPos = Vector3.zero;
         var targetFOV = 60f;
-        //scr_Attachment_SO sight;
         if (IsAiming)
         {
-            AimTargetPos = _GunSO.SightPos; //+ (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).SightOffset : Vector3.zero);
+            AimTargetPos = holder.Cam().transform.position + (transform.localPosition - SightTarget.localPosition) + (holder.Cam().transform.forward * _GunSO.SightOffset);
             targetFOV = _GunSO.FOV;
         }
-        holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);//+ (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).ADS : 0));
-        WeaponSwayPosition = transform.localPosition;
-        WeaponSwayPosition = Vector3.SmoothDamp(WeaponSwayPosition, AimTargetPos, ref WeaponSwayPositionVelocity, _GunSO.ADSTime);// + (CurrentAttachments.TryGetValue(scr_Models.AttachmentTypes.Sight, out sight) ? (sight as scr_Sight_SO).ADS : 0));
-        transform.localPosition = WeaponSwayPosition;
+        holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);
+        GunAimPosition = transform.localPosition;
+        GunAimPosition = transform.InverseTransformVector(Vector3.SmoothDamp(GunAimPosition, AimTargetPos, ref GunAimPositionVelocity, _GunSO.ADSTime));
+        Debug.Log(GunAimPosition);
+        transform.localPosition = GunAimPosition;
     }
     void AimingInPressed()
     {
@@ -152,6 +156,7 @@ public class scr_Gun : scr_BaseWeapon
             if (validAttachment != null)
             {
                 Instantiate(validAttachment.Model, _AttachmentsPoints[i].Point);
+                CurrentAttachments.Add(validAttachment.AttachmentType, validAttachment);
             }
         }
     }

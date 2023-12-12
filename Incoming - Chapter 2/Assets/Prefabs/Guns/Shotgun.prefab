@@ -172,12 +172,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scr_Weapon: {fileID: 11400000, guid: 2e4440dc053d94f41a46b7eb595fa24b, type: 2}
-  attachment_SOs: []
   _AttachmentsPoints:
   - AttachmentType: 4
     Point: {fileID: 3408098103729195318}
   - AttachmentType: 3
     Point: {fileID: 7430978434345920483}
+  SightTarget: {fileID: 3408098103729195318}
   BulletSpawn: {fileID: 316082127742620022}
 --- !u!1 &3950168415235333574
 GameObject:
@@ -203,7 +203,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3950168415235333574}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.12, z: -0.05}
+  m_LocalPosition: {x: 0.001, y: 0.1235, z: 0.13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3780998823877256280}

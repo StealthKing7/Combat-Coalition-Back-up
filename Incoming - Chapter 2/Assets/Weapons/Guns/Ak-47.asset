@@ -21,7 +21,7 @@ MonoBehaviour:
   Is2Handed: 1
   WeaponType: 0
   EquipingTime: 1
-  SightPos: {x: -0.06, y: -0.01, z: -0.02}
+  SightPos: {x: -0.055, y: 0, z: -0.04}
   SightOffset: 0
   FOV: 45
   ADSTime: 0.1

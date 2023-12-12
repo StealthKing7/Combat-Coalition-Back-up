@@ -33,6 +33,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] Transform WeaponParent;
     [SerializeField] Animator animator;
     [SerializeField] Transform SwayObj;
+    [field: SerializeField] public Transform CameraTarget { get; private set; }
     //Setting
     [field: SerializeField] public WeaponSettingsModel Settings { get; private set; }
     //Breathing
@@ -120,7 +121,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         {
             weapon = CurrentWeapon,
             controller = animator,
-            attachment_SO = scr_GameManeger.Instance.attachment_SOs
+            attachment_SO = scr_GameManeger.Instance.GetAttachments()
         });
     }
     void CalculateEqupingWeapon()
@@ -148,7 +149,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
             {
                 controller = animator,
                 weapon = CurrentWeapon,
-                attachment_SO = scr_GameManeger.Instance.attachment_SOs
+                attachment_SO = InRangeWeapon.attachment_SOs
             });
             weaponSO = CurrentWeapon.GetScr_WeaponSO();
             InRangeWeapon.DestroySelf();

@@ -25,7 +25,7 @@ public class scr_BaseWeapon : MonoBehaviour
     private float SwayScale;
     private float SwayLerpSpeed;
     private float SwayTime;
-    private Transform SwayObj;
+    protected Transform SwayObj;
     public bool IsAiming { get; protected set; }
     #endregion
     public virtual void Execute()
