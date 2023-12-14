@@ -22,7 +22,7 @@ MonoBehaviour:
   WeaponType: 0
   EquipingTime: 1
   SightPos: {x: -0.04, y: -0.016, z: -0.06}
-  SightOffset: 0
+  SightOffset: 0.1
   FOV: 50
   ADSTime: 0.15
   Rectile: {fileID: 8794419430945407474, guid: d1e20d94da67816418ddf173a11cf045, type: 3}
@@ -325,4 +325,4 @@ MonoBehaviour:
     m_ConstantMin: 0
     m_ConstantMax: 0
   KickBackYMultiplier: 0.005
-  RecoilSmoothing: 0
+  RecoilSmoothing: 0.1
