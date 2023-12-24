@@ -1,21 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class scr_UI_Maneger : MonoBehaviour
 {
-    private bool IsSetup = false;
+    [SerializeField] Canvas canvas;
     public static scr_UI_Maneger Instance;
-    [SerializeField] private Button Assualt;
-    [SerializeField] private Button Shotgun;
-    [SerializeField] private Button Melee;
-    [SerializeField] private Button randomizeButton;
-    [SerializeField] private Button playButton;
-    [SerializeField] private Button togglePartsButton;
     private float CurrentRectileSize;
     private RectTransform Rectile;
+    [Header("Interact")]
+    [SerializeField] GameObject InteractObj;
+    [SerializeField] TextMeshProUGUI text;
+    [SerializeField] Slider slider;
     [Header("CrossHair")]
     [SerializeField] float MaxRectileSize;
     [SerializeField] float MinRectileSize;
@@ -24,15 +23,8 @@ public class scr_UI_Maneger : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         Instance = this;
-        if(scr_SceneManeger.Instance.GetSceneIndex() == 0)
-        MainMenu();
     }
     private void Start()
-    {
-        scr_SceneManeger.Instance.OnSceneChanged += Instance_OnSceneChanged;
-    }
-
-    private void Instance_OnSceneChanged(object sender, System.EventArgs e)
     {
         foreach (var Player in scr_GameManeger.Instance.GetPlayerList())
         {
@@ -41,13 +33,20 @@ public class scr_UI_Maneger : MonoBehaviour
             if (Player.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
             {
                 var gunso = Player.WeaponController.GetWeapon().GetScr_WeaponSO() as scr_GunSO;
-                Rectile = Instantiate(gunso.Rectile);
+                Rectile = Instantiate(gunso.Rectile, canvas.transform);
             }
         }
     }
-    private void LateUpdate()
+    public void Interact(scr_Pickable pickable,float holdTime)
     {
-        if (!IsSetup) return;
+        InteractObj.SetActive(pickable);
+        if (pickable == null) return;
+        Debug.Log(holdTime);
+        slider.value = holdTime;
+        text.text = pickable.Weapon.GetScr_WeaponSO().WeaponName;
+    }
+    private void LateUpdate()
+    { 
         UpdateRectileSize();
     }
     void UpdateRectileSize()
@@ -72,35 +71,4 @@ public class scr_UI_Maneger : MonoBehaviour
             Player.FPSText.text = e.FrameRate + " fps";
         }
     }
-    void MainMenu()
-    {
-        Assualt.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Gun));
-        });
-        Shotgun.onClick.AddListener(() => {
-            //scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList, scr_Models.WeaponType.Gun);
-        });
-        Melee.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Melee));
-        });
-
-        randomizeButton.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.RandomizeParts();
-        });
-
-        togglePartsButton.onClick.AddListener(() => {
-            scr_WeaponAttachmentUI.Instance.ToggleVisibility();
-        });
-
-        playButton.onClick.AddListener(() =>
-        {
-            scr_GameManeger.Instance._WeaponSO = scr_GunAttachmentsSystem.Instance.GetWeaponBodySO();
-            foreach (var i in scr_GunAttachmentsSystem.Instance.GetWeaponComplete().Save())
-            {
-                scr_GameManeger.Instance.AddAttachments(i);
-            }
-            scr_SceneManeger.Instance.SetScene(1);
-        });
-    }
-
 }

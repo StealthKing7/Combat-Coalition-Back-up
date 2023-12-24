@@ -9,6 +9,7 @@ public class scr_InputManeger : MonoBehaviour
     DefaultInputs DefaultInput;
     public Vector2 Input_Movement { get; private set; }
     public Vector2 Input_View { get; private set; }
+    public bool IsInteractPressed {  get;  set; }
     public bool IsLeaningLeft { get; private set; }
     public bool IsLeaningRight { get; private set; }
     public bool RightClick { get;  set; }
@@ -19,7 +20,6 @@ public class scr_InputManeger : MonoBehaviour
     public Action StopSprint { get; set; }
     public Action AimingInPressed { get; set; }
     public Action AimingInReleased { get; set; }
-    public Action Interact { get; set; }
     private void Awake()
     {
         if (Instance == null)
@@ -40,7 +40,8 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Character.LeanLeftReleased.performed += e => IsLeaningLeft = false;
         DefaultInput.Character.LeanRightPressed.performed += e => IsLeaningRight = true;
         DefaultInput.Character.LeanRightReleased.performed += e => IsLeaningRight = false;
-        DefaultInput.Character.Interact.performed += e => Interact();
+        DefaultInput.Character.InteractPressed.performed += e => IsInteractPressed = true;
+        DefaultInput.Character.InteractReleased.performed += e => IsInteractPressed = false;
         //Weapon Input
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();

@@ -105,12 +105,21 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Interact",
+                    "name": "InteractPressed",
                     "type": "Button",
                     "id": "f1051076-4988-44e2-abda-15eb95984706",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "InteractReleased",
+                    "type": "Button",
+                    "id": "7a9ca2e3-9100-411a-a2a0-9d45a67de03a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=1)",
                     "initialStateCheck": false
                 }
             ],
@@ -298,7 +307,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Interact",
+                    "action": "InteractPressed",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f074f3b8-cb78-4dff-bb7f-a17208e7802d",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InteractReleased",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

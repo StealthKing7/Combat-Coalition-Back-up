@@ -43,9 +43,11 @@ public class scr_Gun : scr_BaseWeapon
         }
         foreach (var bullet in bullets)
         {
-            if((BulletTargetPos - bullet.transform.position).magnitude <= 0)
+            float dis = Vector3.Distance(BulletTargetPos, bullet.transform.position);
+            if(dis <= 0.1f)
             {
                 Debug.Log("Hit");
+                Destroy(bullet.gameObject);
             }
         }
     }

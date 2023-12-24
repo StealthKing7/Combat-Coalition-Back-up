@@ -2528,7 +2528,7 @@ GameObject:
   - component: {fileID: 2104337501}
   - component: {fileID: 2104337500}
   m_Layer: 0
-  m_Name: UI Maneger
+  m_Name: MainMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2543,7 +2543,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2104337499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6f1405c53748274f957903ac49032b8, type: 3}
+  m_Script: {fileID: 11500000, guid: f380775c2bcefef4a8ea2c2d7a942eeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Assualt: {fileID: 939566033}
@@ -2552,9 +2552,6 @@ MonoBehaviour:
   randomizeButton: {fileID: 921572732}
   playButton: {fileID: 2142968774}
   togglePartsButton: {fileID: 985700511}
-  MaxRectileSize: 0
-  MinRectileSize: 0
-  RectileSizeSmoothing: 0
 --- !u!4 &2104337501
 Transform:
   m_ObjectHideFlags: 0

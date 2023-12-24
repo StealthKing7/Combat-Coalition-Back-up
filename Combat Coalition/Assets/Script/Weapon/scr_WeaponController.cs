@@ -46,6 +46,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] float RateOfFire;
     [SerializeField] WeaponFireType currentFireType;
     private Vector3 LastWeaponPos;
+    private float HoldTimeBegin;
     #endregion
 
     #region - Awake/Start/Update/LateUpdate -
@@ -67,7 +68,6 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     private void Start()
     {
         inputManeger = scr_InputManeger.Instance;
-        inputManeger.Interact += Equip;
         animator.runtimeAnimatorController = weaponSO.controller;
         StartCoroutine(EquipCoroutine());
         if (weaponSO.WeaponType == WeaponType.Gun)
@@ -128,18 +128,32 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     {
         Ray camRay = Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
         var RaycastInt = Physics.RaycastNonAlloc(camRay, hitInfo, Settings.WeaponSearchRaduis, WeaponLayerMask, QueryTriggerInteraction.Ignore);
-        if (RaycastInt > 0)
+        float holdTime = 0;
+        if (RaycastInt == 0)
         {
-            InRangeWeapon = hitInfo[0].collider.gameObject.GetComponent<scr_Pickable>();
+            InRangeWeapon = null;
+            scr_UI_Maneger.Instance.Interact(InRangeWeapon, holdTime);
+            return;
+        }
+        InRangeWeapon = hitInfo[0].collider.gameObject.GetComponent<scr_Pickable>();
+        if (!scr_InputManeger.Instance.IsInteractPressed)
+        {
+            HoldTimeBegin = Time.time;
         }
         else
         {
-            InRangeWeapon = null;
+            holdTime = Time.time - HoldTimeBegin;
         }
+        holdTime = Mathf.Clamp01(holdTime);
+        if (holdTime >= 1)
+        {
+            Equip();
+            scr_InputManeger.Instance.IsInteractPressed = false;
+        }
+        scr_UI_Maneger.Instance.Interact(InRangeWeapon,holdTime);
     }
     void Equip()
     {
-        if (InRangeWeapon == null) return;
         if (HasWeapon())
         {
             LastWeaponPos = InRangeWeapon.transform.position;
