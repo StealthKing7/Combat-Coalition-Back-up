@@ -2403,6 +2403,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: akmount
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3d75ae2e4cc00fd4bb4be549cea875e5, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3d75ae2e4cc00fd4bb4be549cea875e5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d75ae2e4cc00fd4bb4be549cea875e5, type: 3}
 --- !u!4 &2122897900475624813 stripped
