@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 
 public class scr_SceneManeger : MonoBehaviour
 {
     public static scr_SceneManeger Instance { get; private set; }
     public event EventHandler OnSceneChanged;
+    [SerializeField] AssetReference LoadingAssetReference;
+    [SerializeField] AssetReference LevelAssetReference;
     private void Awake()
     {
         Instance = this; 
@@ -22,10 +26,27 @@ public class scr_SceneManeger : MonoBehaviour
     {
         OnSceneChanged?.Invoke(this, EventArgs.Empty);
     }
-
-    public void SetScene(int Index)
+    public void LoadScene()
     {
-        SceneManager.LoadScene(Index);
+        LoadingAssetReference.LoadSceneAsync(LoadSceneMode.Single).Completed += (handle) =>
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                var asyncOp = LevelAssetReference.LoadSceneAsync(LoadSceneMode.Single);
+                asyncOp.Completed += (handle) =>
+                {
+                    if (handle.Status == AsyncOperationStatus.Succeeded)
+                    {
+                        handle.Result.ActivateAsync();
+                    }
+                };
+                if (asyncOp.IsValid())
+                {
+                    float percent = asyncOp.GetDownloadStatus().Percent;
+                    Debug.Log(percent * 100);
+                }
+            }
+        };
     }
     public int GetSceneIndex()
     {

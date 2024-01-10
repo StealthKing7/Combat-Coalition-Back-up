@@ -17,10 +17,10 @@ TagManager:
   - Obstcale
   - Player
   - Weapon
-  - WeaponCamPost-Processing
+  - Post - Processing
   - Bullet
   - Pickables
-  - Global Post Processing
+  - 
   - 
   - 
   - 

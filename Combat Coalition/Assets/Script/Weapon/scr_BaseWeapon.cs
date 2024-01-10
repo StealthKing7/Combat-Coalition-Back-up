@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static scr_WeaponController;
 
 public class scr_BaseWeapon : MonoBehaviour
 {

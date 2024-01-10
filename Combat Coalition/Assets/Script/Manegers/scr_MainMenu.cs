@@ -42,7 +42,7 @@ public class scr_MainMenu : MonoBehaviour
             {
                 scr_GameManeger.Instance.AddAttachments(i);
             }
-            scr_SceneManeger.Instance.SetScene(1);
+            scr_SceneManeger.Instance.LoadScene();
         });
     }
 

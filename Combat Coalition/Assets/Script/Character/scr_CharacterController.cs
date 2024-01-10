@@ -281,6 +281,10 @@ public class scr_CharacterController : MonoBehaviour
         {
             currentStance = playerProneStance;
         }
+        else if (playerStance == PlayerStance.Stand)
+        {
+            ViewClampYmin = -60;
+        }
         if (IsFalling())
         {
             playerStance = PlayerStance.Stand;
@@ -308,6 +312,7 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         playerStance = PlayerStance.Crouch;
+        ViewClampYmin = -60;
     }
     void Prone()
     {
@@ -323,7 +328,7 @@ public class scr_CharacterController : MonoBehaviour
             return;
         }
         playerStance = PlayerStance.Prone;
-        //ViewClampYmin = ViewClampYmin / 2;
+        ViewClampYmin = 0;
     }
     bool StanceCheck(float _StanceCheckHeight)
     {

@@ -31,7 +31,8 @@ MonoBehaviour:
   ValidAttachments: {fileID: 11400000, guid: 08a1aa6f79b70b149a57ca5a530d95e1, type: 2}
   Bullet: {fileID: 3009495485232135985, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
   BulletSpeed: 80
-  AllowedFireTypes: 00000000
+  AllowedFireTypes: 0100000000000000
+  FireRate: 7
   m: 7.9
   r: 0.05
   DragCoefficient: 0.5

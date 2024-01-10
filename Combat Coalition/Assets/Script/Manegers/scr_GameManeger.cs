@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-
 
 public class scr_GameManeger : MonoBehaviour
 {
@@ -10,11 +8,13 @@ public class scr_GameManeger : MonoBehaviour
     public  scr_WeaponSO _WeaponSO; 
     private List<scr_Attachment_SO> attachment_SOs = new List<scr_Attachment_SO>();
     private List<scr_CharacterController> Players = new List<scr_CharacterController>();
+
     private void Awake()
     {
         Instance = this;
         DontDestroyOnLoad(this);
     }
+
     public void AddPlayer(scr_CharacterController _player)
     {
         Players.Add(_player);

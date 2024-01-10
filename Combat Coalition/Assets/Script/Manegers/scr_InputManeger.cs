@@ -13,10 +13,12 @@ public class scr_InputManeger : MonoBehaviour
     public bool IsLeaningLeft { get; private set; }
     public bool IsLeaningRight { get; private set; }
     public bool RightClick { get;  set; }
+    public Action FireType { get; set; }
     public Action Jump { get;  set; }
     public Action Crouch { get; set; }
     public Action Prone { get; set; }
     public Action ToggleSprint { get; set; }
+    public Action Reload { get; set; }
     public Action StopSprint { get; set; }
     public Action AimingInPressed { get; set; }
     public Action AimingInReleased { get; set; }
@@ -47,6 +49,8 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
         DefaultInput.Weapon.Fire1Pressed.performed += e => RightClick = true;
         DefaultInput.Weapon.Fire1Released.performed += e => RightClick = false;
+        DefaultInput.Weapon.FireType.performed += e => FireType();
+        DefaultInput.Weapon.Reload.performed += e => Reload();
         DefaultInput.Enable();
     }
 }

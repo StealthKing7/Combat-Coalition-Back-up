@@ -43,10 +43,10 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] float SwayScale = 600;
     [SerializeField] float SwayLerpSpeed = 14;
     [Header("Shooting")]
-    [SerializeField] float RateOfFire;
     [SerializeField] WeaponFireType currentFireType;
     private Vector3 LastWeaponPos;
     private float HoldTimeBegin;
+    private float nextTimetoFire = 0f;
     #endregion
 
     #region - Awake/Start/Update/LateUpdate -
@@ -68,10 +68,11 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     private void Start()
     {
         inputManeger = scr_InputManeger.Instance;
+        inputManeger.FireType += ChangeFireType;
         animator.runtimeAnimatorController = weaponSO.controller;
         StartCoroutine(EquipCoroutine());
         if (weaponSO.WeaponType == WeaponType.Gun)
-            currentFireType = GunSO.AllowedFireTypes.First();
+            currentFireType = GunSO.AllowedFireTypes[0];
     }
     private void Update()
     {
@@ -85,13 +86,29 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 
     void CalculateAttack()
     {
-        if (inputManeger.RightClick)
+        if (!inputManeger.RightClick) return;
+        switch (weaponSO.WeaponType)
         {
-            CurrentWeapon.Execute();
-            if (currentFireType == WeaponFireType.SemiAuto)
-            {
+            case WeaponType.Gun:
+                switch (currentFireType)
+                {
+                    case WeaponFireType.FullyAuto:
+                        if (Time.time >= nextTimetoFire)
+                        {
+                            nextTimetoFire = Time.time + 1 / GunSO.FireRate;
+                            CurrentWeapon.Execute();
+                        }
+                        break;
+                    case WeaponFireType.SemiAuto:
+                        CurrentWeapon.Execute();
+                        inputManeger.RightClick = false;
+                        break;
+                }
+                break;
+            case WeaponType.Melee:
+                CurrentWeapon.Execute();
                 inputManeger.RightClick = false;
-            }
+                break;
         }
     }
 
@@ -112,6 +129,13 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     }
     #endregion
 
+    void ChangeFireType()
+    {
+        int index = GunSO.AllowedFireTypes.IndexOf(currentFireType);
+        if (weaponSO.WeaponType == WeaponType.Gun)
+            currentFireType = GunSO.AllowedFireTypes[(index + 1) % GunSO.AllowedFireTypes.Count];
+            
+    }
 
     #region  - Equiping Weapon -
     IEnumerator EquipCoroutine()
@@ -140,10 +164,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         {
             HoldTimeBegin = Time.time;
         }
-        else
-        {
-            holdTime = Time.time - HoldTimeBegin;
-        }
+        holdTime = Time.time - HoldTimeBegin;
         holdTime = Mathf.Clamp01(holdTime);
         if (holdTime >= 1)
         {

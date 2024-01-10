@@ -37,6 +37,8 @@ public class scr_UI_Maneger : MonoBehaviour
             }
         }
     }
+
+
     public void Interact(scr_Pickable pickable,float holdTime)
     {
         InteractObj.SetActive(pickable);

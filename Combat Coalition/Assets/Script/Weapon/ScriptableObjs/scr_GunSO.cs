@@ -20,6 +20,10 @@ public class scr_GunSO : scr_WeaponSO
     public scr_Bullet Bullet;
     public float BulletSpeed;
     public List<WeaponFireType> AllowedFireTypes;
+    public float FireRate = 10f;
+    [Header("Reloading Properties")]
+    public float MaxAmmo = 30f;
+    public float ReloadTime = 3f;
     //The initial speed [m/s]
     //Mass [kg]
     public float m = 0.2f;

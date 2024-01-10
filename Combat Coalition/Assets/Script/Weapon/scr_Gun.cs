@@ -23,14 +23,20 @@ public class scr_Gun : scr_BaseWeapon
     private Vector3 RecoilTargetRot;
     private Vector3 RecoilTargetRotVelocity;
     private Vector3 BulletTargetPos;
-    private Vector3 GunWorldPosition;
+    private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
+    private scr_InputManeger inputManeger;
     #endregion
 
 
     #region  - Shoot -
     public override void Execute()
     {
+        if (CurrentAmmo == 0f)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
         Shoot();
     }
     void CalculateShooting()
@@ -53,6 +59,7 @@ public class scr_Gun : scr_BaseWeapon
     }
     void Shoot()
     {
+        CurrentAmmo--;
         RecoilTime = Time.deltaTime;
         Vector3 dir = (BulletTargetPos - BulletSpawn.position).normalized;
         bullets.Add(Instantiate(_GunSO.Bullet));
@@ -68,11 +75,13 @@ public class scr_Gun : scr_BaseWeapon
 
     private void Start()
     {
-        GunWorldPosition = transform.position;
-        scr_InputManeger.Instance.AimingInPressed += AimingInPressed;
-        scr_InputManeger.Instance.AimingInReleased += AimingInReleased;
+        inputManeger = scr_InputManeger.Instance;
+        inputManeger.AimingInPressed += AimingInPressed;
+        inputManeger.AimingInReleased += AimingInReleased;
+        inputManeger.Reload += ReloadEvent;
         holder.GetWeaponController().OnWeaponEquiped += Scr_Gun_OnWeaponEquiped;
         _GunSO = GetScr_WeaponSO() as scr_GunSO;
+        CurrentAmmo = _GunSO.MaxAmmo;
     }
 
     private void Scr_Gun_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
@@ -87,7 +96,18 @@ public class scr_Gun : scr_BaseWeapon
         CalculateRecoil();
     }
     #endregion
-
+    #region - Reload -
+    void ReloadEvent()
+    {
+        StartCoroutine(Reload());
+    }
+    IEnumerator Reload()
+    {
+        //if (CurrentAmmo == _GunSO.MaxAmmo) yield break;
+        yield return new WaitForSeconds(_GunSO.ReloadTime);
+        CurrentAmmo = _GunSO.MaxAmmo;
+    }
+    #endregion
     #region - AimingIn -
     void CalculateAimingIn()
     {
