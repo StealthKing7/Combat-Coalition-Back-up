@@ -5,7 +5,7 @@ using System;
 
 public static class scr_Models
 {
-    private static Vector3 GravityVec = new Vector3(0, -9.81f, 0);
+    public static Vector3 GravityVec = new Vector3(0, -9.81f, 0);
     #region - Player -
 
     public static float ArmourHeath = 50f;

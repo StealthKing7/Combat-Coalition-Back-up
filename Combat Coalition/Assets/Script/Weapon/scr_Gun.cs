@@ -1,4 +1,4 @@
-using System;
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +23,9 @@ public class scr_Gun : scr_BaseWeapon
     private Vector3 RecoilTargetRot;
     private Vector3 RecoilTargetRotVelocity;
     private Vector3 BulletTargetPos;
+    private Vector3 CameraShakeVec;
+    private Vector3 CameraRecoilVec;
+    public Vector3 CamRecoil { get; private set; }
     private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
     private scr_InputManeger inputManeger;
@@ -144,11 +147,14 @@ public class scr_Gun : scr_BaseWeapon
         float RecoilRotX = _GunSO.RotationX.Evaluate(fraction) * _GunSO.RotationXMultiplier;
         RecoilTargetPos = new Vector3(0, RecoilPosY, RecoilPosZ);
         RecoilTargetRot =  new Vector3(RecoilRotX, RecoilRotY, 0);
+        CameraRecoilVec += new Vector3(-_GunSO.CameraRecoilX, Random.Range(-_GunSO.CameraRecoilY, _GunSO.CameraRecoilY), 0); 
+        CameraShakeVec += new Vector3(Random.Range(-_GunSO.CameraShake, 0), 0, 0);
     }
     void CalculateRecoil()
     {
         RecoilTargetPos = Vector3.zero;
         RecoilTargetRot = Vector3.zero;
+        CameraShakeVec = Vector3.zero;
         if (RecoilTime > 0)
         {
             float fraction = RecoilTime / _GunSO.RecoilSmoothing;
@@ -163,9 +169,13 @@ public class scr_Gun : scr_BaseWeapon
         Vector3 Recoilrotation = Vector3.zero;
         Recoilrotation = Vector3.SmoothDamp(Recoilrotation, RecoilTargetRot, ref RecoilTargetRotVelocity, RecoilTime * Time.deltaTime);
         Vector3 RecoilPos = Vector3.SmoothDamp(transform.localPosition, RecoilTargetPos, ref RecoilTargetPosVelocity, RecoilTime* Time.deltaTime);
-        //holder.Cam().transform.localRotation = Quaternion.Euler(Vector3.SmoothDamp(holder.Cam().transform.localRotation.eulerAngles, RecoilTargetRot, ref RecoilTargetRotVelocity, RecoilTime));
+        Vector3 camShake = Vector3.zero;
+        camShake = Vector3.SmoothDamp(camShake, CameraShakeVec, ref RecoilTargetRotVelocity, 1);
+        CameraRecoilVec = Vector3.Lerp(CameraRecoilVec, Vector3.zero, 2 * Time.deltaTime);
+        CamRecoil = Vector3.Slerp(CamRecoil, CameraRecoilVec, 6 * Time.fixedDeltaTime);
         transform.localPosition += RecoilPos;
         transform.localRotation = Quaternion.Euler(Recoilrotation);
+        holder.Cam().transform.localRotation = Quaternion.Euler(camShake);
     }
     #endregion
     void LoadAttachments(List<scr_Attachment_SO> attachment_SOs)

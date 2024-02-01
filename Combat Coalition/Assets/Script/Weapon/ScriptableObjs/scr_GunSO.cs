@@ -50,4 +50,8 @@ public class scr_GunSO : scr_WeaponSO
     public MinMaxCurve KickBackY = new MinMaxCurve(1, new AnimationCurve(), new AnimationCurve());
     public float KickBackYMultiplier;
     public float RecoilSmoothing;
+    [Header("Camera Recoil")]
+    public float CameraRecoilX;
+    public float CameraRecoilY;
+    public float CameraShake;
 }

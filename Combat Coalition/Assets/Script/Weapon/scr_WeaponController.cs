@@ -227,6 +227,10 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     {
         return CharacterController.MainCamera;
     }
+    public Transform CamHolder()
+    {
+        return CharacterController.CameraHolder;
+    }
     public scr_WeaponController GetWeaponController()
     {
         return this;

@@ -46,7 +46,7 @@ public class scr_CharacterController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] Transform CameraTarget;
-    [SerializeField] Transform CameraHolder;
+    [field: SerializeField] public Transform CameraHolder { get; private set; }
     [field: SerializeField] public Camera MainCamera { get; private set; }
     [field: SerializeField] public Text FPSText { get; private set; }
     [SerializeField] Transform feetTransfrom;
@@ -57,7 +57,7 @@ public class scr_CharacterController : MonoBehaviour
     [SerializeField] LayerMask PlayerMask;
     [SerializeField] LayerMask GroundMask;
     [Header("Gravity")]
-    [SerializeField] float GravityAmount;
+    //[SerializeField] float GravityAmount;
     [SerializeField] float GravityMin;
     private  float PlayerGravity;
     [SerializeField] Vector3 JumpingForce;
@@ -144,7 +144,7 @@ public class scr_CharacterController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(NewCharacterRotation);
         NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? inputManeger.Input_View.y : -inputManeger.Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
-        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation);
+        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + (WeaponController.GetWeapon() as scr_Gun).CamRecoil);
     }
     void CalculateCameraPosition()
     {
@@ -202,7 +202,7 @@ public class scr_CharacterController : MonoBehaviour
         if (PlayerGravity > GravityMin)
         {
 
-            PlayerGravity -= GravityAmount * Time.deltaTime;
+            PlayerGravity += GravityVec.y * Time.deltaTime;
         }
 
         if (PlayerGravity < -0.1f && IsGrounded())
