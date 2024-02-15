@@ -127,7 +127,13 @@ public static class scr_Models
         Stock,
         UnderBarrel,
     }
-
+    #endregion
+    #region - Bullet -
+    public struct BulletWithTarget
+    {
+        public scr_Bullet scr_Bullet;
+        public Vector3 BulletTarget;
+    }
     //Integration method 3
     //upVec is a vector perpendicular (in the upwards direction) to the direction the bullet is travelling in
     //is only needed if we calculate the lift force
@@ -168,13 +174,10 @@ public static class scr_Models
 
         newPos = currentPos + timeStep * 0.5f * (currentVel + newVelEuler);
     }
-    #endregion
-
-    #region - Bullet -
 
     //Calculate the bullet's drag acceleration
     public static Vector3 CalculateBulletDragAcc(Vector3 bulletVel, scr_GunSO bulletData)
-    {
+    { 
         //If you have a wind speed in your game, you can take that into account here:
         //https://www.youtube.com/watch?v=lGg7wNf1w-k
         Vector3 bulletVelRelativeToWindVel = bulletVel - bulletData.windSpeedVector;

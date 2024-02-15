@@ -17,6 +17,9 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         public scr_BaseWeapon weapon;
         public List<scr_Attachment_SO> attachment_SO;
     }
+
+    public event EventHandler<OnFireTypeChangeEventArgs> OnFireTypeChange;
+    public class OnFireTypeChangeEventArgs : EventArgs { public WeaponFireType FireType; }
     private scr_BaseWeapon CurrentWeapon;
     private scr_Pickable InRangeWeapon;
     private scr_InputManeger inputManeger;
@@ -72,7 +75,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         animator.runtimeAnimatorController = weaponSO.controller;
         StartCoroutine(EquipCoroutine());
         if (weaponSO.WeaponType == WeaponType.Gun)
-            currentFireType = GunSO.AllowedFireTypes[0];
+            currentFireType = GunSO.AllowedFireTypes.First();
     }
     private void Update()
     {
@@ -134,7 +137,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         int index = GunSO.AllowedFireTypes.IndexOf(currentFireType);
         if (weaponSO.WeaponType == WeaponType.Gun)
             currentFireType = GunSO.AllowedFireTypes[(index + 1) % GunSO.AllowedFireTypes.Count];
-            
+        OnFireTypeChange?.Invoke(this, new OnFireTypeChangeEventArgs { FireType = currentFireType });
     }
 
     #region  - Equiping Weapon -

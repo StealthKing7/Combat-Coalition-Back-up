@@ -144,7 +144,7 @@ public class scr_CharacterController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(NewCharacterRotation);
         NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? inputManeger.Input_View.y : -inputManeger.Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
-        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + (WeaponController.GetWeapon() as scr_Gun).CamRecoil);
+        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + ((WeaponController.weaponSO.WeaponType == WeaponType.Gun) ? ((WeaponController.GetWeapon() as scr_Gun).CamRecoil) : Vector3.zero));
     }
     void CalculateCameraPosition()
     {
@@ -199,17 +199,15 @@ public class scr_CharacterController : MonoBehaviour
         horizontalSpeed *= PlayerSettings.SpeedEffector;
         newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * inputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * inputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
         var movementSpeed = transform.TransformDirection(newMovementSpeed);
+        if (PlayerGravity < -0.1f && IsGrounded())
+        {
+            PlayerGravity = -0.1f;
+        }
         if (PlayerGravity > GravityMin)
         {
 
             PlayerGravity += GravityVec.y * Time.deltaTime;
         }
-
-        if (PlayerGravity < -0.1f && IsGrounded())
-        {
-            PlayerGravity = -0.1f;
-        }
-
         movementSpeed.y += PlayerGravity;
         movementSpeed += JumpingForce * Time.deltaTime;
         characterController.Move(movementSpeed);

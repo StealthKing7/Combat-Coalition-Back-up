@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using static scr_Models;
 
@@ -10,21 +9,27 @@ public class scr_Bullet : MonoBehaviour
     private Vector3 newPos;
     private Vector3 newVel;
     private scr_GunSO scr_gunSO;
-    private bool IsInitialized;
+    private bool _IsInitialized;
+    public event EventHandler<OnHitEventArgs> OnHit;
     [Header("Setting")]
-    public float LifeTime;
+    [SerializeField] private float LifeTime;
+    public class OnHitEventArgs:EventArgs
+    {
+        public GameObject hitObject;
+    }
+
+
     private void Awake()
     {
         Destroy(gameObject, LifeTime);
     }
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         MoveBulletOneStep();
     }
-
     void MoveBulletOneStep()
     {
-        if (!IsInitialized) return;
+        if (!_IsInitialized) return;
         //Use an integration method to calculate the new position of the bullet
         float timeStep = Time.fixedDeltaTime;
 
@@ -41,16 +46,25 @@ public class scr_Bullet : MonoBehaviour
 
         //Change so the bullet points in the velocity direction
         transform.forward = currentVel.normalized;
+        Debug.DrawRay(transform.position, transform.forward, Color.black, 5);
     }
-    //Set start values when we create the bullet
-    public void SetStartValues(scr_GunSO _scr_GunSO,Vector3 startPos, Vector3 startDir)
+    public void SetStartValues(scr_GunSO _scr_GunSO, Vector3 startPos, Vector3 startDir)
     {
-        IsInitialized = true;
+        _IsInitialized = true;
         scr_gunSO = _scr_GunSO;
         currentPos = startPos;
         currentVel = scr_gunSO.BulletSpeed * startDir;
 
         transform.position = startPos;
         transform.forward = startDir;
+    }
+    public bool IsInitialized()
+    {
+        return _IsInitialized;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        OnHit?.Invoke(this, new OnHitEventArgs { hitObject = other.gameObject });
+        Destroy(gameObject);
     }
 }

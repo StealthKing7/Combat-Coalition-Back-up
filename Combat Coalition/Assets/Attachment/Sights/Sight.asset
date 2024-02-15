@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttachmentType: 4
   Model: {fileID: 3750199962380759227, guid: 5ca2315c94d845f4c9c85dfa9ceb497a, type: 3}
-  SightOffset: {x: 0, y: 0, z: 0}
+  SightOffset: {x: 0, y: -0.01, z: 0}
   ADS: 0

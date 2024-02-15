@@ -24,6 +24,7 @@ public class scr_GunSO : scr_WeaponSO
     [Header("Reloading Properties")]
     public float MaxAmmo = 30f;
     public float ReloadTime = 3f;
+    [Header("Bullet Drop Properties")]
     //The initial speed [m/s]
     //Mass [kg]
     public float m = 0.2f;
