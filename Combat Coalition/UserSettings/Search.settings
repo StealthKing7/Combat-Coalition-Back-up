@@ -11,6 +11,9 @@ scopes = {
 	"last_search.310DEAF1" = "_CameraDepthAttachment_1920x991_Depth_MSAA4x t:RenderTexture"
 	"OpenInspectorPreview.310DEAF1" = "0"
 	"currentGroup.310DEAF1" = "asset"
+	"last_search.3BE40471" = "ca"
+	"OpenInspectorPreview.3BE40471" = "0"
+	"currentGroup.3BE40471" = "scene"
 }
 providers = {
 	log = {

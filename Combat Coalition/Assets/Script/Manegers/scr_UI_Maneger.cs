@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class scr_UI_Maneger : MonoBehaviour
 {
     [SerializeField] Canvas canvas;
+    [SerializeField] TextMeshProUGUI FPSText;
     public static scr_UI_Maneger Instance;
     private float CurrentRectileSize;
     private RectTransform Rectile;
@@ -26,9 +27,9 @@ public class scr_UI_Maneger : MonoBehaviour
     }
     private void Start()
     {
+        scr_GameManeger.Instance.OnFpsUpdateText += UpdateFPSText;
         foreach (var Player in scr_GameManeger.Instance.GetPlayerList())
         {
-            Player.OnFpsUpdateText += UpdateFPSText;
             CurrentRectileSize = MinRectileSize;
             if (Player.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
             {
@@ -66,11 +67,8 @@ public class scr_UI_Maneger : MonoBehaviour
             Rectile.sizeDelta = new Vector2(CurrentRectileSize, CurrentRectileSize);
         }
     }
-    void UpdateFPSText(object sender,scr_CharacterController.OnFpsUpdateTextEventArgs e)
+    void UpdateFPSText(object sender,scr_GameManeger.OnFpsUpdateTextEventArgs e)
     {
-        foreach(var Player in scr_GameManeger.Instance.GetPlayerList())
-        {
-            Player.FPSText.text = e.FrameRate + " fps";
-        }
+        FPSText.text = e.FrameRate + " fps";
     }
 }

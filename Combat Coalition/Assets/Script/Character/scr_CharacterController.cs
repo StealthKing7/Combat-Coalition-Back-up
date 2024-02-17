@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using static scr_Models;
 public class scr_CharacterController : MonoBehaviour
 {
@@ -20,8 +20,6 @@ public class scr_CharacterController : MonoBehaviour
     private float CurrentLean;
     private float TargetLean;
     private float TargetLeanVelocity;
-    private float frameRate;
-    private float FpsTimer;
     private float DefautYPos;
     private float HeadBobTimer;
     private bool IsSprinting;
@@ -38,17 +36,12 @@ public class scr_CharacterController : MonoBehaviour
     {
         public PlayerStance stance;
     }
-    public event EventHandler<OnFpsUpdateTextEventArgs> OnFpsUpdateText;
-    public class OnFpsUpdateTextEventArgs : EventArgs
-    {
-        public float FrameRate;
-    }
+
 
     [Header("References")]
     [SerializeField] Transform CameraTarget;
     [field: SerializeField] public Transform CameraHolder { get; private set; }
     [field: SerializeField] public Camera MainCamera { get; private set; }
-    [field: SerializeField] public Text FPSText { get; private set; }
     [SerializeField] Transform feetTransfrom;
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
@@ -100,16 +93,6 @@ public class scr_CharacterController : MonoBehaviour
     }
     private void Update()
     {
-        OnFpsUpdateText?.Invoke(this,new OnFpsUpdateTextEventArgs { FrameRate = frameRate });
-        if (FpsTimer > 1f)
-        {
-            frameRate = (int)(1f / Time.unscaledDeltaTime);
-            FpsTimer = 0f;
-        }
-        else
-        {
-            FpsTimer += Time.deltaTime;
-        }
         IsGrounded();
         IsFalling();
         CalculateView();
