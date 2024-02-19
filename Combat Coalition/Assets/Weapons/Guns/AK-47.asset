@@ -35,7 +35,7 @@ MonoBehaviour:
   AllowedFireTypes: 0100000000000000
   FireRate: 7
   MaxAmmo: 30
-  ReloadTime: 3
+  ReloadTime: 1
   m: 7.9
   r: 0.05
   DragCoefficient: 0.5
@@ -304,6 +304,6 @@ MonoBehaviour:
     m_ConstantMax: 0
   KickBackYMultiplier: 10
   RecoilSmoothing: 0.2
-  CameraRecoilX: 0.5
+  CameraRecoilX: 1.2
   CameraRecoilY: 2
   CameraShake: 4

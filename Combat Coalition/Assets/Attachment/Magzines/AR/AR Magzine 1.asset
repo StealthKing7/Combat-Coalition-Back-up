@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: AR Magzine 1
   m_EditorClassIdentifier: 
   AttachmentType: 2
-  Model: {fileID: 1955974639306498300, guid: 54d8b3c04a610fa4f903f3da6ee831fb, type: 3}
+  Model: {fileID: 1955974639306498303, guid: 54d8b3c04a610fa4f903f3da6ee831fb, type: 3}
