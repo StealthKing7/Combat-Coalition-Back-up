@@ -15,16 +15,10 @@ public class scr_BaseWeapon : MonoBehaviour
     private Vector3 newWeaponMovementRotationVelocity;
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
-
     [SerializeField] scr_WeaponSO scr_Weapon;
     private Vector3 SwayPosition;
     protected scr_WeaponHolder holder;
-    private float SwayAmountA;
-    private float SwayAmountB;
-    private float SwayScale;
-    private float SwayLerpSpeed;
     private float SwayTime;
-    protected Transform SwayObj;
     public bool IsAiming { get; protected set; }
     #endregion
     public virtual void Execute()
@@ -33,42 +27,26 @@ public class scr_BaseWeapon : MonoBehaviour
     }
 
     #region - Start/Update/LateUpdate -
-    private void Start()
-    {
-        newWeaponRotation = transform.localRotation.eulerAngles;
-    }
-    private void Update()
-    {
-        CalculateWeaponRotation();
-    }
     private void LateUpdate()
     {
-        CalculateWeaponSway();  
+        CalculateWeaponRotation();
+        CalculateWeaponSway();
     }
     #endregion
-
-    public void SetUp(float _SwayAmountA,float _SwayAmountB,float _SwayLerpSpeed,Transform _SwayObj, float _SwayScale)
-    {
-        SwayAmountA = _SwayAmountA;
-        SwayAmountB = _SwayAmountB;
-        SwayLerpSpeed = _SwayLerpSpeed;
-        SwayObj = _SwayObj;
-        SwayScale = _SwayScale;
-    }
 
     #region - Sway -
     void CalculateWeaponSway()
     {
-        var targetPos = Curve(SwayTime, SwayAmountA, SwayAmountB) / (IsAiming ? SwayScale * 4 : SwayScale);
-        SwayPosition = Vector3.Lerp(SwayPosition, targetPos, Time.smoothDeltaTime * SwayLerpSpeed);
+        var targetPos = Curve(SwayTime, holder.GetWeaponController().SwayAmountA, holder.GetWeaponController().SwayAmountB) / (IsAiming ? holder.GetWeaponController().SwayScale * 4 : holder.GetWeaponController().SwayScale);
+        SwayPosition = Vector3.Lerp(SwayPosition, targetPos, Time.smoothDeltaTime * holder.GetWeaponController().SwayLerpSpeed);
         SwayTime += Time.deltaTime;
         if (SwayTime > 6.3f)
         {
             SwayTime = 0;
         }
-        SwayObj.localPosition = SwayPosition;
+        holder.GetWeaponController().SwayObj.localPosition = SwayPosition;
     }
-    private Vector3 Curve(float Time, float A, float B)
+    Vector3 Curve(float Time, float A, float B)
     {
         return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
@@ -78,18 +56,18 @@ public class scr_BaseWeapon : MonoBehaviour
 
     void CalculateWeaponRotation()
     {
-        TargetWeaponRotation.y += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayXInverted ? -scr_InputManeger.Instance.Input_View.x : scr_InputManeger.Instance.Input_View.x) * Time.deltaTime;
-        TargetWeaponRotation.x += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayYInverted ? scr_InputManeger.Instance.Input_View.y : -scr_InputManeger.Instance.Input_View.y) * Time.deltaTime;
+        TargetWeaponRotation.y += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayXInverted ? -holder.GetWeaponController().InputManeger.Input_View.x : holder.GetWeaponController().InputManeger.Input_View.x) * Time.deltaTime;
+        TargetWeaponRotation.x += (IsAiming ? holder.GetWeaponController().Settings.SwayAmount / 2 : holder.GetWeaponController().Settings.SwayAmount) * (holder.GetWeaponController().Settings.SwayYInverted ? holder.GetWeaponController().InputManeger.Input_View.y : -holder.GetWeaponController().InputManeger.Input_View.y) * Time.deltaTime;
         TargetWeaponRotation.x = Mathf.Clamp(TargetWeaponRotation.x, -holder.GetWeaponController().Settings.SwayClampX, holder.GetWeaponController().Settings.SwayClampX);
         TargetWeaponRotation.y = Mathf.Clamp(TargetWeaponRotation.y, -holder.GetWeaponController().Settings.SwayClampY, holder.GetWeaponController().Settings.SwayClampY);
         TargetWeaponRotation.z = IsAiming ? 0 : TargetWeaponRotation.y;
         TargetWeaponRotation = Vector3.SmoothDamp(TargetWeaponRotation, Vector3.zero, ref TargetWeaponRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
         newWeaponRotation = Vector3.SmoothDamp(newWeaponRotation, TargetWeaponRotation, ref newWeaponRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
-        TargetWeaponMovementRotation.z = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayX / 2 : holder.GetWeaponController().Settings.MovementSwayX) * (holder.GetWeaponController().Settings.MovementSwayXInverted ? -scr_InputManeger.Instance.Input_Movement.x : scr_InputManeger.Instance.Input_Movement.x);
-        TargetWeaponMovementRotation.x = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayY / 2 : holder.GetWeaponController().Settings.MovementSwayY) * (holder.GetWeaponController().Settings.MovementSwayYInverted ? -scr_InputManeger.Instance.Input_Movement.y : scr_InputManeger.Instance.Input_Movement.y);
+        TargetWeaponMovementRotation.z = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayX / 2 : holder.GetWeaponController().Settings.MovementSwayX) * (holder.GetWeaponController().Settings.MovementSwayXInverted ? -holder.GetWeaponController().InputManeger.Input_Movement.x : holder.GetWeaponController().InputManeger.Input_Movement.x);
+        TargetWeaponMovementRotation.x = (IsAiming ? holder.GetWeaponController().Settings.MovementSwayY / 2 : holder.GetWeaponController().Settings.MovementSwayY) * (holder.GetWeaponController().Settings.MovementSwayYInverted ? -holder.GetWeaponController().InputManeger.Input_Movement.y : holder.GetWeaponController().InputManeger.Input_Movement.y);
         TargetWeaponMovementRotation = Vector3.SmoothDamp(TargetWeaponMovementRotation, Vector3.zero, ref TargetWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwayResetSmoothing);
         newWeaponMovementRotation = Vector3.SmoothDamp(newWeaponMovementRotation, TargetWeaponMovementRotation, ref newWeaponMovementRotationVelocity, holder.GetWeaponController().Settings.SwaySmoothing);
-        SwayObj.localRotation = Quaternion.Euler(newWeaponRotation - newWeaponMovementRotation);
+        holder.GetWeaponController().SwayObj.localRotation = Quaternion.Euler(newWeaponRotation - newWeaponMovementRotation);
     }
     #endregion
   
@@ -101,7 +79,7 @@ public class scr_BaseWeapon : MonoBehaviour
         }
         holder = scr_WeaponHolder;
         holder.SetWeapon(this);
-        holder.GetWeaponParent().localPosition = scr_Weapon.WeaponPos;
+        holder.GetWeaponController().transform.localPosition = scr_Weapon.WeaponPos;
         var t = transform;
         t.SetParent(holder.GetWeaponParent(), false);
     }

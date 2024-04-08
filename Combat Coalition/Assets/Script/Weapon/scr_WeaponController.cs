@@ -9,7 +9,6 @@ using System.Collections;
 public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 {
     #region - Parameters -
-    public Transform debugobj;
     public event EventHandler<OnWeaponEquipedEventArgs> OnWeaponEquiped;
     public class OnWeaponEquipedEventArgs : EventArgs 
     {
@@ -22,7 +21,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     public class OnFireTypeChangeEventArgs : EventArgs { public WeaponFireType FireType; }
     private scr_BaseWeapon CurrentWeapon;
     private scr_Pickable InRangeWeapon;
-    private scr_InputManeger inputManeger;
+    public scr_InputManeger InputManeger {  get; private set; }
     private RaycastHit[] hitInfo = new RaycastHit[1];
     private scr_CharacterController CharacterController;
     [SerializeField] LayerMask RetractLayerMask;
@@ -35,16 +34,14 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] Transform WeaponAimPiviot;
     [SerializeField] Transform WeaponParent;
     [SerializeField] Animator animator;
-    [SerializeField] Transform SwayObj;
-    [field: SerializeField] public Transform CameraTarget { get; private set; }
+    [field: SerializeField] public Transform SwayObj { get;  set; }
     //Setting
     [field: SerializeField] public WeaponSettingsModel Settings { get; private set; }
     //Breathing
-    [Header("Weapon Sway")]
-    [SerializeField] float SwayAmountA = 1;
-    [SerializeField] float SwayAmountB = 2;
-    [SerializeField] float SwayScale = 600;
-    [SerializeField] float SwayLerpSpeed = 14;
+    [field: SerializeField] public float SwayAmountA { get; private set; } = 1;
+    [field: SerializeField] public float SwayAmountB { get; private set; } = 2;
+    [field: SerializeField] public float SwayScale { get; private set; } = 600;
+    [field: SerializeField] public float SwayLerpSpeed { get; private set; } = 14;
     [Header("Shooting")]
     [SerializeField] WeaponFireType currentFireType;
     private Vector3 LastWeaponPos;
@@ -66,12 +63,11 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
             MeleeSO = weaponSO as scr_MeleeSO;
         }
         SetWeapon(scr_BaseWeapon.SpawnWeapon(weaponSO, this));
-        CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
     }
     private void Start()
     {
-        inputManeger = scr_InputManeger.Instance;
-        inputManeger.FireType += ChangeFireType;
+        InputManeger = CharacterController.InputManeger;
+        InputManeger.FireType += ChangeFireType;
         animator.runtimeAnimatorController = weaponSO.controller;
         StartCoroutine(EquipCoroutine());
         if (weaponSO.WeaponType == WeaponType.Gun)
@@ -89,7 +85,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 
     void CalculateAttack()
     {
-        if (!inputManeger.RightClick) return;
+        if (!InputManeger.RightClick) return;
         switch (weaponSO.WeaponType)
         {
             case WeaponType.Gun:
@@ -104,13 +100,13 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
                         break;
                     case WeaponFireType.SemiAuto:
                         CurrentWeapon.Execute();
-                        inputManeger.RightClick = false;
+                        InputManeger.RightClick = false;
                         break;
                 }
                 break;
             case WeaponType.Melee:
                 CurrentWeapon.Execute();
-                inputManeger.RightClick = false;
+                InputManeger.RightClick = false;
                 break;
         }
     }
@@ -163,7 +159,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
             return;
         }
         InRangeWeapon = hitInfo[0].collider.gameObject.GetComponent<scr_Pickable>();
-        if (!scr_InputManeger.Instance.IsInteractPressed)
+        if (!InputManeger.IsInteractPressed)
         {
             HoldTimeBegin = Time.time;
         }
@@ -172,7 +168,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         if (holdTime >= 1)
         {
             Equip();
-            scr_InputManeger.Instance.IsInteractPressed = false;
+            InputManeger.IsInteractPressed = false;
         }
         scr_UI_Maneger.Instance.Interact(InRangeWeapon,holdTime);
     }
@@ -182,7 +178,6 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         {
             LastWeaponPos = InRangeWeapon.transform.position;
             SetWeapon(scr_BaseWeapon.SpawnWeapon(InRangeWeapon.Weapon.GetScr_WeaponSO(), this));
-            CurrentWeapon.SetUp(SwayAmountA, SwayAmountB, SwayLerpSpeed, SwayObj, SwayScale);
             OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
             {
                 controller = animator,

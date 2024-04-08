@@ -6,7 +6,6 @@ public class scr_CharacterController : MonoBehaviour
 {
     #region - Parameters -
     //Private
-    private scr_InputManeger inputManeger;
     private CharacterController characterController;
     private Vector3 NewCameraRotation;
     private Vector3 NewCharacterRotation;
@@ -20,8 +19,6 @@ public class scr_CharacterController : MonoBehaviour
     private float CurrentLean;
     private float TargetLean;
     private float TargetLeanVelocity;
-    private float DefautYPos;
-    private float HeadBobTimer;
     private bool IsSprinting;
     //Events
     public event EventHandler<CharacterMovementAnimationEventArgs> CharacterMovementAnimationEvent;
@@ -39,10 +36,11 @@ public class scr_CharacterController : MonoBehaviour
 
 
     [Header("References")]
-    [SerializeField] Transform CameraTarget;
+    [SerializeField] Transform feetTransfrom;
+    [SerializeField] GameObject[] CharacterModels;
+    [field: SerializeField] public scr_InputManeger InputManeger { get; set; }
     [field: SerializeField] public Transform CameraHolder { get; private set; }
     [field: SerializeField] public Camera MainCamera { get; private set; }
-    [SerializeField] Transform feetTransfrom;
     [Header("Player Settings")]
     [SerializeField] PlayerSettingModel PlayerSettings;
     [SerializeField] float ViewClampYmin = -60;
@@ -70,7 +68,7 @@ public class scr_CharacterController : MonoBehaviour
     [SerializeField] float LeanSmoothing;
     #endregion
 
-    #region - Awake/Start/Update/LateUpdate -
+    #region - Awake/Start/Update -
     private void Awake()
     {
         scr_GameManeger.Instance.AddPlayer(this);
@@ -80,16 +78,18 @@ public class scr_CharacterController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
         WeaponController.SetCharcterController(this);
-        DefautYPos = CameraTarget.localPosition.y;
     }
     private void Start()
     {
-        inputManeger = scr_InputManeger.Instance;
-        inputManeger.Jump += Jump;
-        inputManeger.Crouch += Crouch;
-        inputManeger.Prone += Prone;
-        inputManeger.ToggleSprint += ToggleSprint;
-        inputManeger.StopSprint += StopSprint;
+        foreach(var child in CharacterModels)
+        {
+            child.layer = LayerMask.NameToLayer("Character");
+        }
+        InputManeger.Jump += Jump;
+        InputManeger.Crouch += Crouch;
+        InputManeger.Prone += Prone;
+        InputManeger.ToggleSprint += ToggleSprint;
+        InputManeger.StopSprint += StopSprint;
     }
     private void Update()
     {
@@ -97,14 +97,9 @@ public class scr_CharacterController : MonoBehaviour
         IsFalling();
         CalculateView();
         CalculateMovement();
-        CalculateHeadBob();
         CalculateJump();
         CalculateStance();
         CalculateLeaning();
-    }
-    private void LateUpdate()
-    {
-        CalculateCameraPosition();
     }
     #endregion
 
@@ -123,19 +118,15 @@ public class scr_CharacterController : MonoBehaviour
     #region -View/Movement-
     void CalculateView()
     {
-        NewCharacterRotation.y += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -inputManeger.Input_View.x : inputManeger.Input_View.x) * Time.deltaTime;
+        NewCharacterRotation.y += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -InputManeger.Input_View.x : InputManeger.Input_View.x) * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(NewCharacterRotation);
-        NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? inputManeger.Input_View.y : -inputManeger.Input_View.y) * Time.deltaTime;
+        NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? InputManeger.Input_View.y : -InputManeger.Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
         CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + ((WeaponController.weaponSO.WeaponType == WeaponType.Gun) ? ((WeaponController.GetWeapon() as scr_Gun).CamRecoil) : Vector3.zero));
     }
-    void CalculateCameraPosition()
-    {
-        MainCamera.transform.position = CameraTarget.position;
-    }
     void CalculateMovement()
     {
-        if (inputManeger.Input_Movement.y <= 0.2f)
+        if (InputManeger.Input_Movement.y <= 0.2f)
         {
             IsSprinting = false;
         }
@@ -180,7 +171,7 @@ public class scr_CharacterController : MonoBehaviour
         });
         verticalSpeed *= PlayerSettings.SpeedEffector;
         horizontalSpeed *= PlayerSettings.SpeedEffector;
-        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * inputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * inputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
+        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * InputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * InputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
         var movementSpeed = transform.TransformDirection(newMovementSpeed);
         if (PlayerGravity < -0.1f && IsGrounded())
         {
@@ -188,7 +179,6 @@ public class scr_CharacterController : MonoBehaviour
         }
         if (PlayerGravity > GravityMin)
         {
-
             PlayerGravity += GravityVec.y * Time.deltaTime;
         }
         movementSpeed.y += PlayerGravity;
@@ -201,11 +191,11 @@ public class scr_CharacterController : MonoBehaviour
     #region - Leaning -
     void CalculateLeaning()
     {
-        if (inputManeger.IsLeaningLeft)
+        if (InputManeger.IsLeaningLeft)
         {
             TargetLean = LeanAngle;
         }
-        else if (inputManeger.IsLeaningRight)
+        else if (InputManeger.IsLeaningRight)
         {
             TargetLean = -LeanAngle;
         }
@@ -323,7 +313,7 @@ public class scr_CharacterController : MonoBehaviour
     #region - Sprinting -
     void ToggleSprint()
     {
-        if (inputManeger.Input_Movement.y <= 0.2f)
+        if (InputManeger.Input_Movement.y <= 0.2f)
         {
             IsSprinting = false;
             return;
@@ -335,30 +325,6 @@ public class scr_CharacterController : MonoBehaviour
         if(PlayerSettings.SprintHold)
         IsSprinting = false;
     }
-    #endregion
-
-    #region - HeadBob -
-
-    void CalculateHeadBob()
-    {
-        if (!IsGrounded())
-            return;
-
-        if (inputManeger.Input_Movement != Vector2.zero)
-        {
-            HeadBobTimer += Time.deltaTime *
-                (playerStance == PlayerStance.Crouch ? PlayerSettings.CrouchBobSpeed :
-                playerStance == PlayerStance.Prone ? PlayerSettings.ProneBobSpeed :
-                IsSprinting ? PlayerSettings.SprintBobSpeed : PlayerSettings.WalkBobSpeed);
-            CameraTarget.localPosition = Vector3.up * (DefautYPos + Mathf.Sin(HeadBobTimer) *
-                (playerStance == PlayerStance.Crouch ? PlayerSettings.CrouchBobAmount :
-                playerStance == PlayerStance.Prone ? PlayerSettings.ProneBobAmount :
-                IsSprinting ? PlayerSettings.SprintBobAmount : PlayerSettings.WalkBobAmount));
-        }
-        CameraTarget.localPosition = Vector3.Lerp(CameraTarget.localPosition, Vector3.up*DefautYPos, 0.2f);
-    }
-
-
     #endregion
 
     #region - Gizmos -

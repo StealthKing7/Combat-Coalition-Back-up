@@ -13,7 +13,8 @@ public class scr_GunHud : MonoBehaviour
     {
         scr_GameManeger.Instance.GetPlayerList().ForEach(p =>
         {
-            (p.WeaponController.GetWeapon() as scr_Gun).OnAmmoChange += Scr_GunHud_OnShoot;
+            if (p.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
+                (p.WeaponController.GetWeapon() as scr_Gun).OnAmmoChange += Scr_GunHud_OnShoot;
             p.WeaponController.OnFireTypeChange += WeaponController_OnFireTypeChange;
         });
     }

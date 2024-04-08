@@ -16,6 +16,7 @@ public class scr_Bullet : MonoBehaviour
     public class OnHitEventArgs:EventArgs
     {
         public GameObject hitObject;
+        public Vector3 hitPoint;
     }
 
 
@@ -64,7 +65,12 @@ public class scr_Bullet : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        OnHit?.Invoke(this, new OnHitEventArgs { hitObject = other.gameObject });
+
+        OnHit?.Invoke(this, new OnHitEventArgs
+        {
+            hitObject = other.gameObject,
+            hitPoint = other.ClosestPoint(transform.position)
+        });
         Destroy(gameObject);
     }
 }

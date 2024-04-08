@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class scr_InputManeger : MonoBehaviour
 {
-    public static scr_InputManeger Instance { get; private set; }
     DefaultInputs DefaultInput;
     public Vector2 Input_Movement { get; private set; }
     public Vector2 Input_View { get; private set; }
@@ -24,11 +23,6 @@ public class scr_InputManeger : MonoBehaviour
     public Action AimingInReleased { get; set; }
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-
         //Player Input
         DefaultInput = new DefaultInputs();
         DefaultInput.Character.Movement.performed += e => Input_Movement = e.ReadValue<Vector2>();
@@ -45,8 +39,8 @@ public class scr_InputManeger : MonoBehaviour
         DefaultInput.Character.InteractPressed.performed += e => IsInteractPressed = true;
         DefaultInput.Character.InteractReleased.performed += e => IsInteractPressed = false;
         //Weapon Input
-        DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
-        DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
+        DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed?.Invoke();
+        DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased?.Invoke();
         DefaultInput.Weapon.Fire1Pressed.performed += e => RightClick = true;
         DefaultInput.Weapon.Fire1Released.performed += e => RightClick = false;
         DefaultInput.Weapon.FireType.performed += e => FireType();

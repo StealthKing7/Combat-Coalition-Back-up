@@ -48,15 +48,6 @@ public static class scr_Models
         [Header("Is Grounded/Falling")]
         public float IsGroundedRadius;
         public float IsFallingSpeed;
-        [Header("Head Bob")]
-        public float WalkBobSpeed = 14;
-        public float WalkBobAmount = 0.5f;
-        public float SprintBobSpeed = 18;
-        public float SprintBobAmount = 1f;
-        public float CrouchBobSpeed = 8;
-        public float CrouchBobAmount = 0.25f;
-        public float ProneBobSpeed = 6;
-        public float ProneBobAmount = 0.125f;
     }
     [Serializable]
     public class CharacterStance

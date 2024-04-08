@@ -8,19 +8,6 @@ public class scr_Melee : scr_BaseWeapon
     {
         Attack();
     }
-    private void Start()
-    {
-        scr_InputManeger.Instance.AimingInPressed += AimInPressed;
-        scr_InputManeger.Instance.AimingInReleased += AimInReleased;
-    }
-    private void AimInPressed()
-    {
-        
-    }
-    private void AimInReleased()
-    {
-        
-    }
     private void Attack()
     {
         Debug.Log("Attack");

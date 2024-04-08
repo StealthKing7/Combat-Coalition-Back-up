@@ -10,7 +10,6 @@ using static UnityEngine.GraphicsBuffer;
 public class scr_Gun : scr_BaseWeapon
 {
     #region - Parameters - 
-    public Vector3 TestingVec;
     private Ray ray;
     private Dictionary<AttachmentTypes, scr_Attachment_SO> CurrentAttachments = new Dictionary<AttachmentTypes, scr_Attachment_SO>();
     public event  EventHandler<OnShootEventArgs> OnAmmoChange;
@@ -33,7 +32,6 @@ public class scr_Gun : scr_BaseWeapon
     public Vector3 CamRecoil { get; private set; }
     private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
-    private scr_InputManeger inputManeger;
     #endregion
 
 
@@ -64,7 +62,6 @@ public class scr_Gun : scr_BaseWeapon
     private void Bullet_OnHit(object sender, scr_Bullet.OnHitEventArgs e)
     {
         Debug.Log(e.hitObject.name);
-        holder.GetWeaponController().debugobj.position = e.hitObject.transform.position;
     }
 
     void Shoot()
@@ -72,7 +69,11 @@ public class scr_Gun : scr_BaseWeapon
         CurrentAmmo--;
         OnAmmoChange?.Invoke(this, new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
         RecoilTime = Time.deltaTime;
-        bulletWithDirs.Add(new BulletWithTarget { BulletTarget = HitPoint, scr_Bullet = Instantiate(_GunSO.Bullet) });
+        bulletWithDirs.Add(new BulletWithTarget
+        {
+            BulletTarget = IsAiming ? HitPoint : HitPoint + new Vector3((UnityEngine.Random.insideUnitCircle * _GunSO.BulletSpread).x, (UnityEngine.Random.insideUnitCircle * _GunSO.BulletSpread).y),
+            scr_Bullet = Instantiate(_GunSO.Bullet)
+        });
         bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
         bulletWithDirs.ForEach(b =>
         {
@@ -86,10 +87,9 @@ public class scr_Gun : scr_BaseWeapon
 
     private void Start()
     {
-        inputManeger = scr_InputManeger.Instance;
-        inputManeger.AimingInPressed += AimingInPressed;
-        inputManeger.AimingInReleased += AimingInReleased;
-        inputManeger.Reload += ReloadEvent;
+        holder.GetWeaponController().InputManeger.AimingInPressed += AimingInPressed;
+        holder.GetWeaponController().InputManeger.AimingInReleased += AimingInReleased;
+        holder.GetWeaponController().InputManeger.Reload += ReloadEvent;
         holder.GetWeaponController().OnWeaponEquiped += Scr_Gun_OnWeaponEquiped;
         _GunSO = GetScr_WeaponSO() as scr_GunSO;
         CurrentAmmo = _GunSO.MaxAmmo;
@@ -112,7 +112,7 @@ public class scr_Gun : scr_BaseWeapon
     }
     IEnumerator Reload()
     {
-        //if (CurrentAmmo == _GunSO.MaxAmmo) yield break;
+        if (CurrentAmmo == _GunSO.MaxAmmo) yield break;
         yield return new WaitForSeconds(_GunSO.ReloadTime);
         CurrentAmmo = _GunSO.MaxAmmo;
         OnAmmoChange?.Invoke(this, new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
