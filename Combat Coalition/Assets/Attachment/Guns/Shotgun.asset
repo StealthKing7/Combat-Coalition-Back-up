@@ -12,7 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b370e342e12a9a94db16a95548def0f2, type: 3}
   m_Name: Shotgun
   m_EditorClassIdentifier: 
-  weaponPartSOList:
-  - {fileID: 11400000, guid: edc351193095e4d459d28545d7929443, type: 2}
-  - {fileID: 11400000, guid: d5f0b411907006c4db448c765c7c782a, type: 2}
-  - {fileID: 11400000, guid: 0d517cbada74ec84693a1b0e9f638345, type: 2}
+  weaponPartSOList: []

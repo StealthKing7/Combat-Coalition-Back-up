@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Shotgun
   m_EditorClassIdentifier: 
   WeaponName: Shotgun
-  WeaponPos: {x: 0.045, y: 0.206, z: 0.199}
+  WeaponPos: {x: 0.058, y: -0.111, z: 0.113}
+  Icon: {fileID: 0}
   <Weapon>k__BackingField: {fileID: 3780998823877256282, guid: 6b01fd42384b573458f5b4cfb98cf4b6, type: 3}
   <WeaponPickable>k__BackingField: {fileID: 8843178677036836846, guid: 34a8d49c9a7358541808405da4aea528, type: 3}
   <WeaponAttachmentModel>k__BackingField: {fileID: 3780998823877256280, guid: 261f6c51a0afe9b4695f6b5c053752aa, type: 3}
@@ -31,6 +32,10 @@ MonoBehaviour:
   Bullet: {fileID: -82625557584138955, guid: 8d346d15ca945ac48814d6046ab550cc, type: 3}
   BulletSpeed: 50
   AllowedFireTypes: 00000000
+  FireRate: 10
+  BulletSpread: 0
+  MaxAmmo: 30
+  ReloadTime: 3
   m: 0.2
   r: 0.05
   DragCoefficient: 0.5
@@ -326,3 +331,6 @@ MonoBehaviour:
     m_ConstantMax: 0
   KickBackYMultiplier: 0.005
   RecoilSmoothing: 0.1
+  CameraRecoilX: 0
+  CameraRecoilY: 0
+  CameraShake: 0

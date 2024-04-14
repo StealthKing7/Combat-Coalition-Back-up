@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Karamit
   m_EditorClassIdentifier: 
   WeaponName: Karamit
-  WeaponPos: {x: 0.164, y: 0.252, z: 0.429}
+  WeaponPos: {x: 0.106, y: -0.07, z: 0.37}
+  Icon: {fileID: 0}
   <Weapon>k__BackingField: {fileID: 2542967205652421567, guid: 68d864f361acb494ab6626ab2e7f26a6, type: 3}
   <WeaponPickable>k__BackingField: {fileID: 6914693892246897855, guid: 3c591e610f552dd4a8b4ac07fa07461c, type: 3}
   <WeaponAttachmentModel>k__BackingField: {fileID: 2210736764638630788, guid: a6e3df45402e77243a8e814eaac5be90, type: 3}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AK-47
   m_EditorClassIdentifier: 
   WeaponName: AK-47
-  WeaponPos: {x: 0.045, y: -0.17, z: 0.1}
+  WeaponPos: {x: 0.04, y: -0.085, z: 0.24}
   Icon: {fileID: 21300000, guid: 9a33957013ff31d4f992bd7b6e3fa70e, type: 3}
   <Weapon>k__BackingField: {fileID: -1131585253535507789, guid: 9fe7b11538f8faf4f8b516b29609207f, type: 3}
   <WeaponPickable>k__BackingField: {fileID: 398383627595106642, guid: 69c91a033b2bf7f4fa43b58f5ae7e566, type: 3}
