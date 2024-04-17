@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8d58602fc7eaa14c8f1c86acfc7ed64, type: 3}
-  m_Name: Shotgun
+  m_Name: Fort-500
   m_EditorClassIdentifier: 
-  WeaponName: Shotgun
-  WeaponPos: {x: 0.058, y: -0.111, z: 0.113}
+  WeaponName: Fort-500
+  WeaponPos: {x: 0.04, y: -0.085, z: 0.3}
   Icon: {fileID: 0}
   <Weapon>k__BackingField: {fileID: 3780998823877256282, guid: 6b01fd42384b573458f5b4cfb98cf4b6, type: 3}
   <WeaponPickable>k__BackingField: {fileID: 8843178677036836846, guid: 34a8d49c9a7358541808405da4aea528, type: 3}
@@ -22,7 +22,7 @@ MonoBehaviour:
   Is2Handed: 1
   WeaponType: 0
   EquipingTime: 1
-  SightPos: {x: -0.04, y: -0.016, z: -0.06}
+  SightPos: {x: -0.04, y: 0.05, z: -0.06}
   SightOffset: 0.1
   FOV: 50
   ADSTime: 0.15
@@ -330,7 +330,7 @@ MonoBehaviour:
     m_ConstantMin: 0
     m_ConstantMax: 0
   KickBackYMultiplier: 0.005
-  RecoilSmoothing: 0.1
-  CameraRecoilX: 0
-  CameraRecoilY: 0
-  CameraShake: 0
+  RecoilSmoothing: 0.15
+  CameraRecoilX: 2
+  CameraRecoilY: 3
+  CameraShake: 4

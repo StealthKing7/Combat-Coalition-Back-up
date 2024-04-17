@@ -40,13 +40,17 @@ public class scr_Gun : scr_BaseWeapon
     {
         if (CurrentAmmo == 0f)
         {
-            StartCoroutine(Reload());
             return;
         }
         Shoot();
     }
     void CalculateShooting()
     {
+        if (CurrentAmmo == 0)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
         bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
         ray = holder.Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
         if(Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer))
