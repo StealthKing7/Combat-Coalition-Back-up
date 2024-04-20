@@ -178,6 +178,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scr_Weapon: {fileID: 11400000, guid: 2e4440dc053d94f41a46b7eb595fa24b, type: 2}
+  <LeftHand>k__BackingField: {fileID: 7290213737329341045}
+  <RightHand>k__BackingField: {fileID: 6259867169122935695}
+  <LeftElbow>k__BackingField: {fileID: 6890027921961164992}
+  <RightElbow>k__BackingField: {fileID: 4046913430938822840}
   _AttachmentsPoints:
   - AttachmentType: 3
     Point: {fileID: 7430978434345920483}

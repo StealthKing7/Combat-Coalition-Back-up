@@ -15,21 +15,20 @@ public class scr_WeaponAnimation : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        characterController.WeaponController.OnWeaponEquiped += WeaponController_OnWeaponEquiped;
     }
     private void Start()
     {
         characterController.CharacterMovementAnimationEvent += CharacterController_CharacterMovementAnimationEvent;
-        characterController.WeaponController.OnWeaponEquiped += WeaponController_OnWeaponEquiped;
     }
 
     private void WeaponController_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
     {
         animator.runtimeAnimatorController = e.weapon.GetScr_WeaponSO().controller;
-        Transform[] childrens = e.weapon.GetComponentsInChildren<Transform>();
-        LeftHand.data.target = childrens.FirstOrDefault(child => child.name == "LeftHand");
-        RightHand.data.target = childrens.FirstOrDefault(child => child.name == "RightHand");
-        LeftHand.data.hint = childrens.FirstOrDefault(child => child.name == "LeftElbow");
-        RightHand.data.hint = childrens.FirstOrDefault(child => child.name == "RightElbow");
+        LeftHand.data.target = e.weapon.LeftHand;
+        RightHand.data.target = e.weapon.RightHand;
+        LeftHand.data.hint = e.weapon.LeftElbow;
+        RightHand.data.hint = e.weapon.RightElbow;
         GetComponent<RigBuilder>().Build();
     }
     private void CharacterController_CharacterMovementAnimationEvent(object sender, scr_CharacterController.CharacterMovementAnimationEventArgs e)

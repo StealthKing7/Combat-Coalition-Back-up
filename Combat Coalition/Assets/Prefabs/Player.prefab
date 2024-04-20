@@ -1276,8 +1276,8 @@ MonoBehaviour:
     AimSpeedEffector: 0.5
     IsGroundedRadius: 0.1
     IsFallingSpeed: -9.81
-  ViewClampYmin: -60
-  ViewClampYmax: 60
+  ViewClampYmin: -80
+  ViewClampYmax: 80
   PlayerMask:
     serializedVersion: 2
     m_Bits: 183

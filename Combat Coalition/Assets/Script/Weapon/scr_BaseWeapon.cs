@@ -16,6 +16,10 @@ public class scr_BaseWeapon : MonoBehaviour
     private Vector3 TargetWeaponMovementRotation;
     private Vector3 TargetWeaponMovementRotationVelocity;
     [SerializeField] scr_WeaponSO scr_Weapon;
+    [field:SerializeField] public Transform LeftHand {  get; private set; }
+    [field:SerializeField] public Transform RightHand {  get; private set; }
+    [field:SerializeField] public Transform LeftElbow {  get; private set; }
+    [field:SerializeField] public Transform RightElbow {  get; private set; }
     private Vector3 SwayPosition;
     protected scr_WeaponHolder holder;
     private float SwayTime;

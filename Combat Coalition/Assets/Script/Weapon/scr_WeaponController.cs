@@ -69,9 +69,9 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         InputManeger = CharacterController.InputManeger;
         InputManeger.FireType += ChangeFireType;
         animator.runtimeAnimatorController = weaponSO.controller;
-        StartCoroutine(EquipCoroutine());
         if (weaponSO.WeaponType == WeaponType.Gun)
             currentFireType = GunSO.AllowedFireTypes.First();
+        StartCoroutine(Delay());
     }
     private void Update()
     {
@@ -137,7 +137,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     }
 
     #region  - Equiping Weapon -
-    IEnumerator EquipCoroutine()
+    IEnumerator Delay()
     {
         yield return null;
         OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
