@@ -29,7 +29,28 @@ public class scr_WeaponAnimation : MonoBehaviour
         RightHand.data.target = e.weapon.RightHand;
         LeftHand.data.hint = e.weapon.LeftElbow;
         RightHand.data.hint = e.weapon.RightElbow;
+        animator.Rebind();
         GetComponent<RigBuilder>().Build();
+        if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun) (e.weapon as scr_Gun).OnReload += Scr_WeaponAnimation_OnReloadChange;
+        if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun) (e.weapon as scr_Gun).Aim_Reload += Scr_WeaponAnimation_Aim_Reload;
+    }
+
+    private void Scr_WeaponAnimation_Aim_Reload(object sender, scr_Gun.Aim_ReloadEventArgs e)
+    {
+        animator.SetLayerWeight(animator.GetLayerIndex("Reload"), e.Weight);
+        animator.SetFloat("Reload_Multiplier", e.Weight);
+
+    }
+
+    private void Scr_WeaponAnimation_OnReloadChange(object sender, scr_Gun.OnReloadEventArgs e)
+    {
+        animator.SetTrigger("Reload");
+        StartCoroutine(ReloadDelay(e.delay));
+    }
+    IEnumerator ReloadDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        animator.ResetTrigger("Reload");
     }
     private void CharacterController_CharacterMovementAnimationEvent(object sender, scr_CharacterController.CharacterMovementAnimationEventArgs e)
     {

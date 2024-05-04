@@ -8315,6 +8315,22 @@ PrefabInstance:
       propertyPath: debugobj
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 627704910938908516, guid: fa416176407349b45982d066712b1838, type: 3}
+      propertyPath: m_RigLayers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 627704910938908516, guid: fa416176407349b45982d066712b1838, type: 3}
+      propertyPath: m_RigLayers.Array.data[1].m_Rig
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 627704910938908516, guid: fa416176407349b45982d066712b1838, type: 3}
+      propertyPath: m_RigLayers.Array.data[1].m_Active
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069261892300606017, guid: fa416176407349b45982d066712b1838, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6705275765126771159, guid: fa416176407349b45982d066712b1838, type: 3}
       propertyPath: m_Name
       value: Player

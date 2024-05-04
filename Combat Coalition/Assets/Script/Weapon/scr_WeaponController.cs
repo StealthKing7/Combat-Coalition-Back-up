@@ -33,7 +33,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [Header("References")]
     [SerializeField] Transform WeaponAimPiviot;
     [SerializeField] Transform WeaponParent;
-    [SerializeField] Animator animator;
+    public Animator animator;
     [field: SerializeField] public Transform SwayObj { get;  set; }
     //Setting
     [field: SerializeField] public WeaponSettingsModel Settings { get; private set; }

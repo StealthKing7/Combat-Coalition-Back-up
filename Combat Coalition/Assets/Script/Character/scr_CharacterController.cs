@@ -166,7 +166,7 @@ public class scr_CharacterController : MonoBehaviour
         var direction = transform.InverseTransformDirection(characterController.velocity);
         CharacterMovementAnimationEvent?.Invoke(this, new CharacterMovementAnimationEventArgs
         {
-            dir = direction,
+            dir = direction.normalized,
             isSprinting = IsSprinting
         });
         verticalSpeed *= PlayerSettings.SpeedEffector;

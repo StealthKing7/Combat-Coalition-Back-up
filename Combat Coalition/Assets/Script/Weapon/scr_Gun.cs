@@ -13,7 +13,11 @@ public class scr_Gun : scr_BaseWeapon
     private Ray ray;
     private Dictionary<AttachmentTypes, scr_Attachment_SO> CurrentAttachments = new Dictionary<AttachmentTypes, scr_Attachment_SO>();
     public event  EventHandler<OnShootEventArgs> OnAmmoChange;
+    public event  EventHandler<OnReloadEventArgs> OnReload;
+    public event EventHandler<Aim_ReloadEventArgs> Aim_Reload;
+    public class Aim_ReloadEventArgs : EventArgs { public float Weight; }
     public class OnShootEventArgs : EventArgs { public float CurrentAmmo; } 
+    public class OnReloadEventArgs : EventArgs { public float CurrentAmmo;public bool isAiming;public float delay; } 
     private List<BulletWithTarget> bulletWithDirs = new List<BulletWithTarget>();
     [SerializeField] AttachmentsPoints[] _AttachmentsPoints;
     [SerializeField] Transform SightTarget;
@@ -29,6 +33,8 @@ public class scr_Gun : scr_BaseWeapon
     private Vector3 HitPoint;
     private Vector3 CameraShakeVec;
     private Vector3 CameraRecoilVec;
+    private float AimVelocity = 0;
+    private bool IsReloading;
     public Vector3 CamRecoil { get; private set; }
     private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
@@ -117,9 +123,13 @@ public class scr_Gun : scr_BaseWeapon
     IEnumerator Reload()
     {
         if (CurrentAmmo == _GunSO.MaxAmmo) yield break;
+        OnReload?.Invoke(this, new OnReloadEventArgs { CurrentAmmo = CurrentAmmo, isAiming = IsAiming,delay=_GunSO.ReloadTime });
+        IsReloading = true;
         yield return new WaitForSeconds(_GunSO.ReloadTime);
         CurrentAmmo = _GunSO.MaxAmmo;
         OnAmmoChange?.Invoke(this, new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
+        IsReloading = false;
+
     }
     #endregion
     #region - AimingIn -
@@ -127,14 +137,29 @@ public class scr_Gun : scr_BaseWeapon
     {
         var AimTargetPos = Vector3.zero;
         var targetFOV = 60f;
+        float reloadLayerWeight = 0;
         if (IsAiming)
         {
             AimTargetPos = holder.Cam().transform.position - holder.GetWeaponParent().position + (transform.position - SightTarget.position) + (holder.Cam().transform.forward * _GunSO.SightOffset);
             targetFOV = _GunSO.FOV;
+            if (IsReloading)
+            {
+                reloadLayerWeight = 0;
+            }
         }
+        else
+        {
+            if (IsReloading)
+            {
+                reloadLayerWeight = 1;
+            }
+        }
+        float _weight = holder.GetWeaponController().animator.GetLayerWeight(holder.GetWeaponController().animator.GetLayerIndex("Reload"));
+        _weight = Mathf.SmoothDamp(_weight, reloadLayerWeight,ref AimVelocity , _GunSO.ADSTime);
+        Aim_Reload?.Invoke(this, new Aim_ReloadEventArgs { Weight = _weight });
         holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);
         GunAimPosition = transform.localPosition;
-        GunAimPosition = Vector3.SmoothDamp(GunAimPosition, transform.InverseTransformVector(AimTargetPos + (CurrentAttachments.TryGetValue(AttachmentTypes.Sight,out scr_Attachment_SO _sight)?(_sight as scr_Sight_SO).SightOffset : Vector3.zero)), ref GunAimPositionVelocity, _GunSO.ADSTime);
+        GunAimPosition = Vector3.SmoothDamp(GunAimPosition, transform.InverseTransformVector(AimTargetPos) + (CurrentAttachments.TryGetValue(AttachmentTypes.Sight, out scr_Attachment_SO _sight) ? (_sight as scr_Sight_SO).SightOffset : Vector3.zero), ref GunAimPositionVelocity, _GunSO.ADSTime);
         transform.localPosition = GunAimPosition;
     }
     void AimingInPressed()
