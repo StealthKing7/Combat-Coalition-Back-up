@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: 4899433800496338396}
   - component: {fileID: 7122527148289396133}
   - component: {fileID: 6679484540708089900}
+  - component: {fileID: 4202358666679557856}
   m_Layer: 8
   m_Name: WeaponCam
   m_TagString: Untagged
@@ -228,6 +229,19 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!114 &4202358666679557856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1110311151422766588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attenuationObject: {fileID: 0}
 --- !u!1 &1737275431533000053
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,8 +581,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4713030884789721060}
   - component: {fileID: 5133153493160078228}
-  - component: {fileID: 8029658893879119640}
   - component: {fileID: 6873420270331422826}
+  - component: {fileID: 7327008797746427944}
   m_Layer: 8
   m_Name: Camera
   m_TagString: Untagged
@@ -644,14 +658,6 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &8029658893879119640
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3436031211186234002}
-  m_Enabled: 1
 --- !u!114 &6873420270331422826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -697,6 +703,19 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!114 &7327008797746427944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3436031211186234002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c6556701af9e04380698b89f691b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attenuationObject: {fileID: 6705275765126771159}
 --- !u!1 &4262873229641879584
 GameObject:
   m_ObjectHideFlags: 0

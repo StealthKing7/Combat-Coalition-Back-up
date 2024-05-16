@@ -2,10 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using static scr_Models;
-using static UnityEngine.GraphicsBuffer;
 
 public class scr_Gun : scr_BaseWeapon
 {
@@ -48,6 +46,7 @@ public class scr_Gun : scr_BaseWeapon
         {
             return;
         }
+
         Shoot();
     }
     void CalculateShooting()
@@ -76,6 +75,7 @@ public class scr_Gun : scr_BaseWeapon
 
     void Shoot()
     {
+        scr_AudioManeger.Instance.PlayOneShot(_GunSO.GunShots, BulletSpawn.position);
         CurrentAmmo--;
         OnAmmoChange?.Invoke(this, new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
         RecoilTime = Time.deltaTime;

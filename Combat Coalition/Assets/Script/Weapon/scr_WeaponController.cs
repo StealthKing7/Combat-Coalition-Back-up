@@ -92,6 +92,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
                 switch (currentFireType)
                 {
                     case WeaponFireType.FullyAuto:
+                        scr_AudioManeger.Instance.PlayOneShot(GunSO.TriggerPressed, CurrentWeapon.transform.position);
                         if (Time.time >= nextTimetoFire)
                         {
                             nextTimetoFire = Time.time + 1 / GunSO.FireRate;

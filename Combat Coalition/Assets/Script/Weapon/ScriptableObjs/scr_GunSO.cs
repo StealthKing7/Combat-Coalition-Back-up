@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,9 @@ public class scr_GunSO : scr_WeaponSO
     public List<WeaponFireType> AllowedFireTypes;
     public float FireRate = 10f;
     public float BulletSpread;
+    [Header("Audio")]
+    public EventReference GunShots;
+    public EventReference TriggerPressed;
     [Header("Reloading Properties")]
     public float MaxAmmo = 30f;
     public float ReloadTime = 3f;

@@ -39,7 +39,6 @@ public class scr_WeaponAnimation : MonoBehaviour
     {
         animator.SetLayerWeight(animator.GetLayerIndex("Reload"), e.Weight);
         animator.SetFloat("Reload_Multiplier", e.Weight);
-
     }
 
     private void Scr_WeaponAnimation_OnReloadChange(object sender, scr_Gun.OnReloadEventArgs e)
