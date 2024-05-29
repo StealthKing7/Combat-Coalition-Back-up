@@ -79,11 +79,10 @@ public class scr_BaseWeapon : MonoBehaviour
     {
         if (scr_WeaponHolder.HasWeapon())
         {
-            scr_WeaponHolder.DropWeapon();
+            //scr_WeaponHolder.DropWeapon();
         }
         holder = scr_WeaponHolder;
-        holder.SetWeapon(this);
-        holder.GetWeaponController().transform.localPosition = scr_Weapon.WeaponPos;
+        //holder.SetWeapon(this);
         var t = transform;
         t.SetParent(holder.GetWeaponParent(), false);
     }

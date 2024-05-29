@@ -28,17 +28,18 @@ public class scr_UI_Maneger : MonoBehaviour
     private void Start()
     {
         scr_GameManeger.Instance.OnFpsUpdateText += UpdateFPSText;
-        foreach (var Player in scr_GameManeger.Instance.GetPlayerList())
-        {
-            CurrentRectileSize = MinRectileSize;
-            if (Player.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
-            {
-                var gunso = Player.WeaponController.GetWeapon().GetScr_WeaponSO() as scr_GunSO;
-                Rectile = Instantiate(gunso.Rectile, canvas.transform);
-            }
-        }
+        scr_GameManeger.Instance.GetPlayerList().ForEach(p=> p.WeaponController.OnWeaponEquiped += WeaponController_OnWeaponEquiped);
     }
 
+    private void WeaponController_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
+    {
+        CurrentRectileSize = MinRectileSize;
+        if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
+        {
+            var gunso = e.weapon.GetScr_WeaponSO() as scr_GunSO;
+            Rectile = Instantiate(gunso.Rectile, canvas.transform);
+        }
+    }
 
     public void Interact(scr_Pickable pickable,float holdTime)
     {

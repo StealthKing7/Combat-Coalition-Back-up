@@ -6,13 +6,10 @@ using static scr_Models;
 public class scr_GunAttachmentsSystem : MonoBehaviour
 {
     public static scr_GunAttachmentsSystem Instance { get; private set; }
-
-
     public event EventHandler OnAnyPartChanged;
-
-
     [field : SerializeField] public List<scr_WeaponSO> WeaponSOList { get; private set; }
-    [SerializeField] private scr_WeaponSO WeaponSO;
+    [SerializeField] private scr_WeaponSO CurrentWeaponSO;
+    private List<scr_WeaponSO> AllWeaponsSelected = new List<scr_WeaponSO>();
     private scr_GunAttachmentPreview WeaponPreview;
 
 
@@ -37,24 +34,32 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
             Destroy(WeaponPreview.gameObject);
         }
 
-        this.WeaponSO = WeaponSO;
+        CurrentWeaponSO = WeaponSO;
 
         Transform weaponBodyTransform = Instantiate(WeaponSO.WeaponAttachmentModel);
         weaponBodyTransform.eulerAngles = previousEulerAngles;
         WeaponPreview = weaponBodyTransform.GetComponent<scr_GunAttachmentPreview>();
         if (WeaponSO.WeaponType == WeaponType.Melee) return;
         Instantiate(WeaponPreview.PrefabUI, weaponBodyTransform);
+        
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            AllWeaponsSelected.Add(WeaponPreview.GetWeaponBodySO());
+        }
     }
     public int GetPartIndex(AttachmentTypes partType)
     {
         scr_Attachment_SO equippedWeaponPartSO = WeaponPreview.GetWeaponPartSO(partType);
-        if (equippedWeaponPartSO == null || WeaponSO.WeaponType == WeaponType.Melee)
+        if (equippedWeaponPartSO == null || CurrentWeaponSO.WeaponType == WeaponType.Melee)
         {
             return 0;
         }
         else
         {
-            var gun_SO = WeaponSO as scr_GunSO;
+            var gun_SO = CurrentWeaponSO as scr_GunSO;
             List<scr_Attachment_SO> weaponPartSOList = gun_SO.ValidAttachments.GetWeaponPartSOList(partType);
             int partIndex = weaponPartSOList.IndexOf(equippedWeaponPartSO);
             return partIndex;
@@ -64,7 +69,7 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
     public void ChangePart(AttachmentTypes partType)
     {
         scr_Attachment_SO equippedWeaponPartSO = WeaponPreview.GetWeaponPartSO(partType);
-        var gun_SO = WeaponSO as scr_GunSO;
+        var gun_SO = CurrentWeaponSO as scr_GunSO;
         if (equippedWeaponPartSO == null)
         {
             WeaponPreview.SetAttachments(gun_SO.ValidAttachments.GetWeaponPartSOList(partType)[0]);
@@ -93,9 +98,9 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
         }
     }
 
-    public scr_WeaponSO GetWeaponBodySO()
+    public List<scr_WeaponSO> GetWeaponBodySO()
     {
-        return WeaponSO;
+        return AllWeaponsSelected;
     }
 
     public void ChangeWeapon(scr_WeaponSO weapon)
@@ -109,7 +114,7 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
                 WeaponsOfSameType.Add(_weapon);
             }
         }
-        int Index = WeaponsOfSameType.IndexOf(WeaponSO);
+        int Index = WeaponsOfSameType.IndexOf(CurrentWeaponSO);
         int nextIndex = (Index + 1) % WeaponsOfSameType.Count;
         if (nextIndex == Index)
         {
@@ -131,7 +136,7 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
             Destroy(WeaponPreview.gameObject);
         }
 
-        WeaponSO = weaponComplete.GetWeaponBodySO();
+        CurrentWeaponSO = weaponComplete.GetWeaponBodySO();
 
         WeaponPreview = weaponComplete;
     }

@@ -46,7 +46,6 @@ public class scr_Gun : scr_BaseWeapon
         {
             return;
         }
-
         Shoot();
     }
     void CalculateShooting()
@@ -118,7 +117,8 @@ public class scr_Gun : scr_BaseWeapon
     #region - Reload -
     void ReloadEvent()
     {
-        StartCoroutine(Reload());
+        if (gameObject.activeInHierarchy)
+            StartCoroutine(Reload());
     }
     IEnumerator Reload()
     {

@@ -34,6 +34,20 @@ MonoBehaviour:
   AllowedFireTypes: 00000000
   FireRate: 10
   BulletSpread: 0
+  GunShots:
+    Guid:
+      Data1: 2070122399
+      Data2: 1145156444
+      Data3: -110458717
+      Data4: 538541080
+    Path: event:/Ak47 GunShots
+  TriggerPressed:
+    Guid:
+      Data1: -1083302835
+      Data2: 1213271178
+      Data3: 1038059411
+      Data4: 1832175609
+    Path: event:/TriggerPressed
   MaxAmmo: 30
   ReloadTime: 3
   m: 0.2

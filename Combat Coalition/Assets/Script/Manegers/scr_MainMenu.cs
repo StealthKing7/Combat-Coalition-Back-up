@@ -37,11 +37,8 @@ public class scr_MainMenu : MonoBehaviour
 
         playButton.onClick.AddListener(() =>
         {
-            scr_GameManeger.Instance._WeaponSO = scr_GunAttachmentsSystem.Instance.GetWeaponBodySO();
-            foreach (var i in scr_GunAttachmentsSystem.Instance.GetWeaponComplete().Save())
-            {
-                scr_GameManeger.Instance.AddAttachments(i);
-            }
+            scr_GameManeger.Instance.AllWeaponSO = scr_GunAttachmentsSystem.Instance.GetWeaponBodySO();
+            scr_GunAttachmentsSystem.Instance.GetWeaponComplete().Save().ForEach(i => scr_GameManeger.Instance.AddAttachments(i));
             scr_SceneManeger.Instance.LoadScene();
         });
     }

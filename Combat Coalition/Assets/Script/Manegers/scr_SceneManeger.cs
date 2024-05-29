@@ -43,7 +43,6 @@ public class scr_SceneManeger : MonoBehaviour
                 if (asyncOp.IsValid())
                 {
                     float percent = asyncOp.GetDownloadStatus().Percent;
-                    Debug.Log(percent * 100);
                 }
             }
         };

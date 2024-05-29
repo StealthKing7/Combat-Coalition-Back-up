@@ -16,10 +16,10 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         public scr_BaseWeapon weapon;
         public List<scr_Attachment_SO> attachment_SO;
     }
-
     public event EventHandler<OnFireTypeChangeEventArgs> OnFireTypeChange;
     public class OnFireTypeChangeEventArgs : EventArgs { public WeaponFireType FireType; }
     private scr_BaseWeapon CurrentWeapon;
+    private List<scr_BaseWeapon> TotalWeapons = new List<scr_BaseWeapon>();
     private scr_Pickable InRangeWeapon;
     public scr_InputManeger InputManeger {  get; private set; }
     private RaycastHit[] hitInfo = new RaycastHit[1];
@@ -27,7 +27,8 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [SerializeField] LayerMask RetractLayerMask;
     [SerializeField] LayerMask WeaponLayerMask;
     [field: SerializeField] public LayerMask BulletIgnoreLayer { get; private set; }
-    public scr_WeaponSO weaponSO { get; private set; }
+    public scr_WeaponSO CurrentWeaponSO { get; private set; }
+    public List<scr_WeaponSO> TotalWeaponSO;
     private scr_GunSO GunSO;
     private scr_MeleeSO MeleeSO;
     [Header("References")]
@@ -47,36 +48,45 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     private Vector3 LastWeaponPos;
     private float HoldTimeBegin;
     private float nextTimetoFire = 0f;
+    private int CurrentWeaponSOIndex = 0;
     #endregion
 
     #region - Awake/Start/Update/LateUpdate -
 
     private void Awake()
     {
-        weaponSO = scr_GameManeger.Instance._WeaponSO;
-        if (weaponSO.WeaponType == WeaponType.Gun)
+        scr_GameManeger.Instance.AllWeaponSO.ForEach(i => TotalWeaponSO.Add(i));
+        foreach (var weaponso in TotalWeaponSO)
         {
-            GunSO = weaponSO as scr_GunSO;
+            TotalWeapons.Add(scr_BaseWeapon.SpawnWeapon(weaponso, this));
+            TotalWeapons.ForEach(weapon =>
+            {
+                if (TotalWeapons.IndexOf(weapon) != CurrentWeaponSOIndex)
+                    weapon.gameObject.SetActive(false);
+                else
+                    SetWeapon(weapon);
+            });
         }
-        else
-        {
-            MeleeSO = weaponSO as scr_MeleeSO;
-        }
-        SetWeapon(scr_BaseWeapon.SpawnWeapon(weaponSO, this));
+        GunSO = (TotalWeaponSO[CurrentWeaponSOIndex].WeaponType == WeaponType.Gun) ? (CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex]) as scr_GunSO : null;
+        MeleeSO = (TotalWeaponSO[CurrentWeaponSOIndex].WeaponType == WeaponType.Melee) ? (CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex]) as scr_MeleeSO : null;
+        transform.localPosition = CurrentWeaponSO.WeaponPos;
     }
     private void Start()
     {
         InputManeger = CharacterController.InputManeger;
         InputManeger.FireType += ChangeFireType;
-        animator.runtimeAnimatorController = weaponSO.controller;
-        if (weaponSO.WeaponType == WeaponType.Gun)
+        InputManeger.ScrollUp += ScrollUp;
+        InputManeger.ScrollDown += ScrollDown;
+        animator.runtimeAnimatorController = CurrentWeaponSO.controller;
+        if (CurrentWeaponSO.WeaponType == WeaponType.Gun)
             currentFireType = GunSO.AllowedFireTypes.First();
         StartCoroutine(Delay());
+        InputManeger.RightClickPressed += () => { scr_AudioManeger.Instance.PlayOneShot(GunSO.TriggerPressed, CurrentWeapon.transform.position); };
     }
     private void Update()
     {
         CalculateAttack();
-        CalculateWeaponAimTarget();
+        //CalculateWeaponAimTarget();
         CalculateEqupingWeapon();
     }
     #endregion
@@ -86,13 +96,12 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     void CalculateAttack()
     {
         if (!InputManeger.RightClick) return;
-        switch (weaponSO.WeaponType)
+        switch (CurrentWeaponSO.WeaponType)
         {
             case WeaponType.Gun:
                 switch (currentFireType)
                 {
                     case WeaponFireType.FullyAuto:
-                        scr_AudioManeger.Instance.PlayOneShot(GunSO.TriggerPressed, CurrentWeapon.transform.position);
                         if (Time.time >= nextTimetoFire)
                         {
                             nextTimetoFire = Time.time + 1 / GunSO.FireRate;
@@ -132,11 +141,46 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     void ChangeFireType()
     {
         int index = GunSO.AllowedFireTypes.IndexOf(currentFireType);
-        if (weaponSO.WeaponType == WeaponType.Gun)
+        if (CurrentWeaponSO.WeaponType == WeaponType.Gun)
             currentFireType = GunSO.AllowedFireTypes[(index + 1) % GunSO.AllowedFireTypes.Count];
         OnFireTypeChange?.Invoke(this, new OnFireTypeChangeEventArgs { FireType = currentFireType });
     }
 
+    #region - WeaponSwitching -
+    void ScrollUp()
+    {
+        int index = TotalWeapons.IndexOf(CurrentWeapon);
+        SetWeapon(TotalWeapons[(index + 1) % TotalWeapons.Count]);
+        CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
+        CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex];
+        TotalWeapons.ForEach(weapon =>
+        {
+            if (TotalWeapons.IndexOf(weapon) != CurrentWeaponSOIndex)
+            {
+                weapon.gameObject.SetActive(false);
+                return;
+            }
+            weapon.gameObject.SetActive(true);
+        });
+        GunSO = (TotalWeaponSO[CurrentWeaponSOIndex].WeaponType == WeaponType.Gun) ? (CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex]) as scr_GunSO : null;
+        MeleeSO = (TotalWeaponSO[CurrentWeaponSOIndex].WeaponType == WeaponType.Melee) ? (CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex]) as scr_MeleeSO : null;
+        if (CurrentWeaponSO.WeaponType == WeaponType.Gun)
+        {
+            currentFireType = GunSO.AllowedFireTypes.First();
+        }
+        OnWeaponEquiped?.Invoke(this, new OnWeaponEquipedEventArgs
+        {
+            controller = animator,
+            weapon = CurrentWeapon,
+            //attachment_SO = scr_GameManeger.Instance.GetAttachments()
+        });
+        transform.localPosition = CurrentWeaponSO.WeaponPos;
+    }
+    void ScrollDown()
+    {
+
+    }
+    #endregion
     #region  - Equiping Weapon -
     IEnumerator Delay()
     {
@@ -185,10 +229,11 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
                 weapon = CurrentWeapon,
                 attachment_SO = InRangeWeapon.attachment_SOs
             });
-            weaponSO = CurrentWeapon.GetScr_WeaponSO();
+            CurrentWeaponSO = CurrentWeapon.GetScr_WeaponSO();
             InRangeWeapon.DestroySelf();
             Cam().fieldOfView = 60f;
         }
+        transform.localPosition = CurrentWeaponSO.WeaponPos;
     }
     #endregion
 
@@ -216,9 +261,9 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     }
     public void DropWeapon()
     {
-        if (weaponSO.WeaponPickable != null)
+        if (CurrentWeaponSO.WeaponPickable != null)
         {
-            scr_BaseWeapon.SpawnWeaponInWorld(weaponSO, LastWeaponPos);
+            scr_BaseWeapon.SpawnWeaponInWorld(CurrentWeaponSO, LastWeaponPos);
         }
         CurrentWeapon.DestroySelf();
     }

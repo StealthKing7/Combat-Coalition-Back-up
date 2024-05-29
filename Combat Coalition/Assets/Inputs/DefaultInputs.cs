@@ -403,6 +403,24 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ScrollDown"",
+                    ""type"": ""Value"",
+                    ""id"": ""192ea617-c8a3-4d93-a116-a0503cda1a85"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ScrollUp"",
+                    ""type"": ""Value"",
+                    ""id"": ""6d9c34f6-a081-42df-8c5e-72092d1e452e"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -471,6 +489,28 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
                     ""action"": ""Reload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ad91baf9-1f74-47c5-a004-9cff625b53ee"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollDown"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""882bcceb-5962-468d-96cf-479e3b6e4e19"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ScrollUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -500,6 +540,8 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
         m_Weapon_Fire1Released = m_Weapon.FindAction("Fire1Released", throwIfNotFound: true);
         m_Weapon_FireType = m_Weapon.FindAction("FireType", throwIfNotFound: true);
         m_Weapon_Reload = m_Weapon.FindAction("Reload", throwIfNotFound: true);
+        m_Weapon_ScrollDown = m_Weapon.FindAction("ScrollDown", throwIfNotFound: true);
+        m_Weapon_ScrollUp = m_Weapon.FindAction("ScrollUp", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -709,6 +751,8 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
     private readonly InputAction m_Weapon_Fire1Released;
     private readonly InputAction m_Weapon_FireType;
     private readonly InputAction m_Weapon_Reload;
+    private readonly InputAction m_Weapon_ScrollDown;
+    private readonly InputAction m_Weapon_ScrollUp;
     public struct WeaponActions
     {
         private @DefaultInputs m_Wrapper;
@@ -719,6 +763,8 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
         public InputAction @Fire1Released => m_Wrapper.m_Weapon_Fire1Released;
         public InputAction @FireType => m_Wrapper.m_Weapon_FireType;
         public InputAction @Reload => m_Wrapper.m_Weapon_Reload;
+        public InputAction @ScrollDown => m_Wrapper.m_Weapon_ScrollDown;
+        public InputAction @ScrollUp => m_Wrapper.m_Weapon_ScrollUp;
         public InputActionMap Get() { return m_Wrapper.m_Weapon; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -746,6 +792,12 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @ScrollDown.started += instance.OnScrollDown;
+            @ScrollDown.performed += instance.OnScrollDown;
+            @ScrollDown.canceled += instance.OnScrollDown;
+            @ScrollUp.started += instance.OnScrollUp;
+            @ScrollUp.performed += instance.OnScrollUp;
+            @ScrollUp.canceled += instance.OnScrollUp;
         }
 
         private void UnregisterCallbacks(IWeaponActions instance)
@@ -768,6 +820,12 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @ScrollDown.started -= instance.OnScrollDown;
+            @ScrollDown.performed -= instance.OnScrollDown;
+            @ScrollDown.canceled -= instance.OnScrollDown;
+            @ScrollUp.started -= instance.OnScrollUp;
+            @ScrollUp.performed -= instance.OnScrollUp;
+            @ScrollUp.canceled -= instance.OnScrollUp;
         }
 
         public void RemoveCallbacks(IWeaponActions instance)
@@ -809,5 +867,7 @@ public partial class @DefaultInputs: IInputActionCollection2, IDisposable
         void OnFire1Released(InputAction.CallbackContext context);
         void OnFireType(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnScrollDown(InputAction.CallbackContext context);
+        void OnScrollUp(InputAction.CallbackContext context);
     }
 }

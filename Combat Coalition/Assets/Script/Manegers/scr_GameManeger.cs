@@ -13,7 +13,7 @@ public class scr_GameManeger : MonoBehaviour
         public float FrameRate;
     }
     public static scr_GameManeger Instance {  get; private set; }
-    public  scr_WeaponSO _WeaponSO; 
+    public  List<scr_WeaponSO> AllWeaponSO; 
     private List<scr_Attachment_SO> attachment_SOs = new List<scr_Attachment_SO>();
     private List<scr_CharacterController> Players = new List<scr_CharacterController>();
     private float frameRate;

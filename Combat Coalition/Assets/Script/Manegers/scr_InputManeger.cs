@@ -12,6 +12,9 @@ public class scr_InputManeger : MonoBehaviour
     public bool IsLeaningLeft { get; private set; }
     public bool IsLeaningRight { get; private set; }
     public bool RightClick { get;  set; }
+    public Action ScrollUp { get;  set; }
+    public Action ScrollDown { get;  set; }
+    public Action RightClickPressed { get;  set; }
     public Action FireType { get; set; }
     public Action Jump { get;  set; }
     public Action Crouch { get; set; }
@@ -41,10 +44,13 @@ public class scr_InputManeger : MonoBehaviour
         //Weapon Input
         DefaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed?.Invoke();
         DefaultInput.Weapon.Fire2Released.performed += e => AimingInReleased?.Invoke();
+        DefaultInput.Weapon.Fire1Pressed.started += e => RightClickPressed();
         DefaultInput.Weapon.Fire1Pressed.performed += e => RightClick = true;
         DefaultInput.Weapon.Fire1Released.performed += e => RightClick = false;
         DefaultInput.Weapon.FireType.performed += e => FireType();
         DefaultInput.Weapon.Reload.performed += e => Reload();
+        DefaultInput.Weapon.ScrollDown.performed += e => ScrollDown();
+        DefaultInput.Weapon.ScrollUp.performed += e => ScrollUp();
         DefaultInput.Enable();
     }
 }

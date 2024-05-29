@@ -119,13 +119,6 @@ MonoBehaviour:
   <RightHand>k__BackingField: {fileID: 2830977167076286174}
   <LeftElbow>k__BackingField: {fileID: 4047569741271624985}
   <RightElbow>k__BackingField: {fileID: 6179370502430826375}
-  Sound:
-    Guid:
-      Data1: -1203951946
-      Data2: 1306927909
-      Data3: 739370149
-      Data4: -1760273852
-    Path: event:/Ak47 Gunshot Desgin
   _AttachmentsPoints:
   - AttachmentType: 4
     Point: {fileID: 6129504808093143728}

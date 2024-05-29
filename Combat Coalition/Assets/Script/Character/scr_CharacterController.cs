@@ -122,7 +122,7 @@ public class scr_CharacterController : MonoBehaviour
         transform.localRotation = Quaternion.Euler(NewCharacterRotation);
         NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? InputManeger.Input_View.y : -InputManeger.Input_View.y) * Time.deltaTime;
         NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
-        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + ((WeaponController.weaponSO.WeaponType == WeaponType.Gun) ? ((WeaponController.GetWeapon() as scr_Gun).CamRecoil) : Vector3.zero));
+        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + ((WeaponController.CurrentWeaponSO.WeaponType == WeaponType.Gun) ? ((WeaponController.GetWeapon() as scr_Gun).CamRecoil) : Vector3.zero));
     }
     void CalculateMovement()
     {
