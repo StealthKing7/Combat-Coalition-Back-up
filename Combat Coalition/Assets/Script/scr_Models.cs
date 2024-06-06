@@ -102,6 +102,13 @@ public static class scr_Models
         public AttachmentTypes AttachmentType;
         public Transform Point;
     }
+    [Serializable]
+    public class WeaponsWithAttachments
+    {
+        public scr_WeaponSO scr_WeaponSO;
+        public List<scr_Attachment_SO> AttachmentSOList;
+    }
+
     public class AttachedWeaponPart
     {
         public AttachmentsPoints AttachmentTypePoint;

@@ -57,8 +57,8 @@ public class scr_UI_Maneger : MonoBehaviour
     {
         scr_GameManeger.Instance.GetPlayerList().ForEach(b =>
         {
-            if (b.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
-                Rectile.gameObject.SetActive(!b.WeaponController.GetWeapon().IsAiming);
+            //if (b.WeaponController.GetWeapon().GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
+              //Rectile.gameObject.SetActive(!b.WeaponController.GetWeapon().IsAiming);
         });
         /*if (scr_InputManeger.Instance.Input_Movement != Vector2.zero)
         {

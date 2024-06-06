@@ -770,8 +770,7 @@ MonoBehaviour:
   <BulletIgnoreLayer>k__BackingField:
     serializedVersion: 2
     m_Bits: 1215
-  TotalWeaponSO:
-  - {fileID: 11400000, guid: 6958c12974d586947872bf8befa84b3e, type: 2}
+  TotalWeaponSO: []
   WeaponAimPiviot: {fileID: 4432860347388811463}
   WeaponParent: {fileID: 3527424403202774225}
   animator: {fileID: 2069261892300606017}

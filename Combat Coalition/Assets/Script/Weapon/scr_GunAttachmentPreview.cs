@@ -60,7 +60,7 @@ public class scr_GunAttachmentPreview : MonoBehaviour
     {
         return WeaponSO;
     }
-    public List<scr_Attachment_SO> Save()
+    public List<scr_Attachment_SO> AttchamentsList()
     {
         List<scr_Attachment_SO> weaponPartSOList = new List<scr_Attachment_SO>();
         foreach (AttachmentTypes partType in CurrentAttachments.Keys)

@@ -10,12 +10,12 @@ public class scr_Gun : scr_BaseWeapon
     #region - Parameters - 
     private Ray ray;
     private Dictionary<AttachmentTypes, scr_Attachment_SO> CurrentAttachments = new Dictionary<AttachmentTypes, scr_Attachment_SO>();
-    public event  EventHandler<OnShootEventArgs> OnAmmoChange;
-    public event  EventHandler<OnReloadEventArgs> OnReload;
+    public event EventHandler<OnShootEventArgs> OnAmmoChange;
+    public event EventHandler<OnReloadEventArgs> OnReload;
     public event EventHandler<Aim_ReloadEventArgs> Aim_Reload;
     public class Aim_ReloadEventArgs : EventArgs { public float Weight; }
-    public class OnShootEventArgs : EventArgs { public float CurrentAmmo; } 
-    public class OnReloadEventArgs : EventArgs { public float CurrentAmmo;public bool isAiming;public float delay; } 
+    public class OnShootEventArgs : EventArgs { public float CurrentAmmo; }
+    public class OnReloadEventArgs : EventArgs { public float CurrentAmmo; public bool isAiming; public float delay; }
     private List<BulletWithTarget> bulletWithDirs = new List<BulletWithTarget>();
     [SerializeField] AttachmentsPoints[] _AttachmentsPoints;
     [SerializeField] Transform SightTarget;
@@ -57,11 +57,11 @@ public class scr_Gun : scr_BaseWeapon
         }
         bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
         ray = holder.Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
-        if(Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer))
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer))
         {
             HitPoint = hitInfo.point;
         }
-        foreach(var bullet in  bulletWithDirs)
+        foreach (var bullet in bulletWithDirs)
         {
             bullet.scr_Bullet.OnHit += Bullet_OnHit;
         }
@@ -89,7 +89,7 @@ public class scr_Gun : scr_BaseWeapon
             if (b.scr_Bullet.IsInitialized()) return;
             b.scr_Bullet.SetStartValues(_GunSO, BulletSpawn.position, (b.BulletTarget - BulletSpawn.position).normalized);
         });
-        }
+    }
     #endregion
 
     #region - Awake/Start/Update/FixedUpdate -
@@ -99,13 +99,14 @@ public class scr_Gun : scr_BaseWeapon
         holder.GetWeaponController().InputManeger.AimingInPressed += AimingInPressed;
         holder.GetWeaponController().InputManeger.AimingInReleased += AimingInReleased;
         holder.GetWeaponController().InputManeger.Reload += ReloadEvent;
-        holder.GetWeaponController().OnWeaponEquiped += Scr_Gun_OnWeaponEquiped;
+        holder.GetWeaponController().OnGunLoaded += OnGunLoaded;
         _GunSO = GetScr_WeaponSO() as scr_GunSO;
         CurrentAmmo = _GunSO.MaxAmmo;
     }
-    private void Scr_Gun_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
+    private void OnGunLoaded(object sender, scr_WeaponController.OnGunLoadedEventArgs e)
     {
-        LoadAttachments(e.attachment_SO);
+        Debug.Log(e._GunSO == _GunSO);
+        LoadAttachments(e._Attachment_SOs);
     }
     private void Update()
     {
@@ -123,7 +124,7 @@ public class scr_Gun : scr_BaseWeapon
     IEnumerator Reload()
     {
         if (CurrentAmmo == _GunSO.MaxAmmo) yield break;
-        OnReload?.Invoke(this, new OnReloadEventArgs { CurrentAmmo = CurrentAmmo, isAiming = IsAiming,delay=_GunSO.ReloadTime });
+        OnReload?.Invoke(this, new OnReloadEventArgs { CurrentAmmo = CurrentAmmo, isAiming = IsAiming, delay = _GunSO.ReloadTime });
         IsReloading = true;
         yield return new WaitForSeconds(_GunSO.ReloadTime);
         CurrentAmmo = _GunSO.MaxAmmo;
@@ -155,7 +156,7 @@ public class scr_Gun : scr_BaseWeapon
             }
         }
         float _weight = holder.GetWeaponController().animator.GetLayerWeight(holder.GetWeaponController().animator.GetLayerIndex("Reload"));
-        _weight = Mathf.SmoothDamp(_weight, reloadLayerWeight,ref AimVelocity , _GunSO.ADSTime);
+        _weight = Mathf.SmoothDamp(_weight, reloadLayerWeight, ref AimVelocity, _GunSO.ADSTime);
         Aim_Reload?.Invoke(this, new Aim_ReloadEventArgs { Weight = _weight });
         holder.Cam().fieldOfView = Mathf.SmoothDamp(holder.Cam().fieldOfView, targetFOV, ref FOVFloatVelocity, _GunSO.ADSTime);
         GunAimPosition = transform.localPosition;
@@ -179,12 +180,12 @@ public class scr_Gun : scr_BaseWeapon
         float RecoilPosY = _GunSO.KickBackY.Evaluate(fraction) * _GunSO.KickBackYMultiplier;
         float RecoilPosZ = _GunSO.KickBackZ.Evaluate(fraction) * _GunSO.KickBackZMultiplier;
 
-        float RecoilRotY = _GunSO.RotationY.Evaluate(fraction,0.5f) * _GunSO.RotationYMultiplier; 
+        float RecoilRotY = _GunSO.RotationY.Evaluate(fraction, 0.5f) * _GunSO.RotationYMultiplier;
         float RecoilRotX = _GunSO.RotationX.Evaluate(fraction) * _GunSO.RotationXMultiplier;
         RecoilTargetPos = new Vector3(0, RecoilPosY, RecoilPosZ);
-        RecoilTargetRot =  new Vector3(RecoilRotX, RecoilRotY, 0);
-        CameraRecoilVec += new Vector3(-(IsAiming ? _GunSO.CameraRecoilX/2 : _GunSO.CameraRecoilX), UnityEngine.Random.Range(-_GunSO.CameraRecoilY, _GunSO.CameraRecoilY), 0); 
-        CameraShakeVec += new Vector3(UnityEngine.Random.Range(-(IsAiming? _GunSO.CameraShake/2 : _GunSO.CameraShake), 0), 0, 0);
+        RecoilTargetRot = new Vector3(RecoilRotX, RecoilRotY, 0);
+        CameraRecoilVec += new Vector3(-(IsAiming ? _GunSO.CameraRecoilX / 2 : _GunSO.CameraRecoilX), UnityEngine.Random.Range(-_GunSO.CameraRecoilY, _GunSO.CameraRecoilY), 0);
+        CameraShakeVec += new Vector3(UnityEngine.Random.Range(-(IsAiming ? _GunSO.CameraShake / 2 : _GunSO.CameraShake), 0), 0, 0);
     }
     void CalculateRecoil()
     {
@@ -204,7 +205,7 @@ public class scr_Gun : scr_BaseWeapon
         }
         Vector3 Recoilrotation = Vector3.zero;
         Recoilrotation = Vector3.SmoothDamp(Recoilrotation, RecoilTargetRot, ref RecoilTargetRotVelocity, RecoilTime * Time.deltaTime);
-        Vector3 RecoilPos = Vector3.SmoothDamp(transform.localPosition, RecoilTargetPos, ref RecoilTargetPosVelocity, RecoilTime* Time.deltaTime);
+        Vector3 RecoilPos = Vector3.SmoothDamp(transform.localPosition, RecoilTargetPos, ref RecoilTargetPosVelocity, RecoilTime * Time.deltaTime);
         Vector3 camShake = Vector3.zero;
         camShake = Vector3.SmoothDamp(camShake, CameraShakeVec, ref RecoilTargetRotVelocity, 1);
         CameraRecoilVec = Vector3.Lerp(CameraRecoilVec, Vector3.zero, 2 * Time.deltaTime);
@@ -214,7 +215,7 @@ public class scr_Gun : scr_BaseWeapon
         holder.Cam().transform.localRotation = Quaternion.Euler(camShake);
     }
     #endregion
-    void LoadAttachments(List<scr_Attachment_SO> attachment_SOs)
+    public void LoadAttachments(List<scr_Attachment_SO> attachment_SOs)
     {
         for (int i = 0; i < _AttachmentsPoints.Length; i++)
         {

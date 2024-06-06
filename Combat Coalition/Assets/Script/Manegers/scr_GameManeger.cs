@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static scr_CharacterController;
+using static scr_Models;
 using UnityEngine.Playables;
 using System;
 
@@ -13,8 +13,7 @@ public class scr_GameManeger : MonoBehaviour
         public float FrameRate;
     }
     public static scr_GameManeger Instance {  get; private set; }
-    public  List<scr_WeaponSO> AllWeaponSO; 
-    private List<scr_Attachment_SO> attachment_SOs = new List<scr_Attachment_SO>();
+    public  List<WeaponsWithAttachments> AllWeaponSO; 
     private List<scr_CharacterController> Players = new List<scr_CharacterController>();
     private float frameRate;
     private float FpsTimer;
@@ -46,13 +45,5 @@ public class scr_GameManeger : MonoBehaviour
     public List<scr_CharacterController> GetPlayerList()
     {
         return Players;
-    }
-    public void AddAttachments(scr_Attachment_SO scr_Attachment)
-    {
-        attachment_SOs.Add(scr_Attachment);
-    }
-    public List<scr_Attachment_SO> GetAttachments()
-    {
-        return attachment_SOs;
     }
 }

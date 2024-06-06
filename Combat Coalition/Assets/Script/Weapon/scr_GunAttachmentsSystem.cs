@@ -9,9 +9,8 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
     public event EventHandler OnAnyPartChanged;
     [field : SerializeField] public List<scr_WeaponSO> WeaponSOList { get; private set; }
     [SerializeField] private scr_WeaponSO CurrentWeaponSO;
-    private List<scr_WeaponSO> AllWeaponsSelected = new List<scr_WeaponSO>();
+    private List<WeaponsWithAttachments> AllWeaponsSelected = new List<WeaponsWithAttachments>();
     private scr_GunAttachmentPreview WeaponPreview;
-
 
 
     private void Awake()
@@ -47,7 +46,7 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.X))
         {
-            AllWeaponsSelected.Add(WeaponPreview.GetWeaponBodySO());
+            AllWeaponsSelected.Add(new WeaponsWithAttachments { scr_WeaponSO = CurrentWeaponSO, AttachmentSOList = WeaponPreview.AttchamentsList() });
         }
     }
     public int GetPartIndex(AttachmentTypes partType)
@@ -98,7 +97,7 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
         }
     }
 
-    public List<scr_WeaponSO> GetWeaponBodySO()
+    public List<WeaponsWithAttachments> GetWeaponBodySO()
     {
         return AllWeaponsSelected;
     }

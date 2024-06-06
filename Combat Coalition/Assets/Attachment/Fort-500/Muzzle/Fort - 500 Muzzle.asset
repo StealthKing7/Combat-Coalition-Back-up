@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0aea6ec6f162b24aba031995d5cd399, type: 3}
-  m_Name: Muzzle 2
+  m_Name: Fort - 500 Muzzle
   m_EditorClassIdentifier: 
   AttachmentType: 3
-  Model: {fileID: 96878647602888097, guid: 9334db61e4597574a89724bf6bd62a45, type: 3}
+  Model: {fileID: 4396572221024649919, guid: cc28f1379667e164e812494dc848273b, type: 3}
   Damge: 0
   Accuracy: 0
