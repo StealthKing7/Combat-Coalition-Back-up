@@ -194,6 +194,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmokeTrail
       objectReference: {fileID: 0}
+    - target: {fileID: 676643045155261126, guid: bffb75eef8bca434f860273f72f047fd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2813055295853583221, guid: bffb75eef8bca434f860273f72f047fd, type: 3}
       propertyPath: m_RootOrder
       value: 1

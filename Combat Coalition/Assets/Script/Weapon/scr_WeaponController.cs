@@ -8,18 +8,13 @@ using System.Collections;
 
 public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
 {
-    #region - Parameters -
-    public event EventHandler<OnWeaponEquipedEventArgs> OnWeaponEquiped;
+    #region - Parameters -    
+    public delegate void OnEquippedEvent(scr_WeaponController sender, OnWeaponEquipedEventArgs e);
+    public event OnEquippedEvent OnWeaponEquiped;
     public class OnWeaponEquipedEventArgs : EventArgs 
     {
         public Animator controller;
         public scr_BaseWeapon weapon;
-    }
-    public event EventHandler<OnGunLoadedEventArgs> OnGunLoaded;
-    public class OnGunLoadedEventArgs : EventArgs 
-    {
-        public scr_GunSO _GunSO;
-        public List<scr_Attachment_SO> _Attachment_SOs;
     }
     public event EventHandler<OnFireTypeChangeEventArgs> OnFireTypeChange;
     public class OnFireTypeChangeEventArgs : EventArgs { public WeaponFireType FireType; }
@@ -156,6 +151,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     #region - WeaponSwitching -
     void ScrollUp()
     {
+        if (TotalWeapons.Count < 2) return;
         int index = TotalWeapons.IndexOf(CurrentWeapon);
         SetWeapon(TotalWeapons[(index + 1) % TotalWeapons.Count]);
         CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
@@ -164,6 +160,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     }
     void ScrollDown()
     {
+        if (TotalWeapons.Count < 2) return;
         int index = TotalWeapons.IndexOf(CurrentWeapon);
         SetWeapon(TotalWeapons[Mathf.Abs((index - 1) % TotalWeapons.Count)]);
         CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
@@ -173,7 +170,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     #endregion
     #region  - Equiping Weapon -
     void SetUpWeapon()
-    {
+    { 
         TotalWeapons.ForEach(weapon =>
         {
             if (TotalWeapons.IndexOf(weapon) != CurrentWeaponSOIndex)

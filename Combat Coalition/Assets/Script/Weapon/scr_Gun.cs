@@ -99,14 +99,8 @@ public class scr_Gun : scr_BaseWeapon
         holder.GetWeaponController().InputManeger.AimingInPressed += AimingInPressed;
         holder.GetWeaponController().InputManeger.AimingInReleased += AimingInReleased;
         holder.GetWeaponController().InputManeger.Reload += ReloadEvent;
-        holder.GetWeaponController().OnGunLoaded += OnGunLoaded;
         _GunSO = GetScr_WeaponSO() as scr_GunSO;
         CurrentAmmo = _GunSO.MaxAmmo;
-    }
-    private void OnGunLoaded(object sender, scr_WeaponController.OnGunLoadedEventArgs e)
-    {
-        Debug.Log(e._GunSO == _GunSO);
-        LoadAttachments(e._Attachment_SOs);
     }
     private void Update()
     {
