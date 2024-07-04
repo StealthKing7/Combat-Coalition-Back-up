@@ -2,10 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.Mathematics;
 
 public static class scr_Models
 {
-    public static Vector3 GravityVec = new Vector3(0, -9.81f, 0);
+    public static readonly Vector3 GravityVec = new Vector3(0, -9.81f, 0);
+    public static  float3 LocalToWorld(this float4x4 localtoworld_Component, float3 direction)
+    {
+        return math.rotate(localtoworld_Component, direction);
+    }
+    public static quaternion RotateTowards(quaternion from, quaternion to, float maxDegreesDelta)
+    {
+        float num = Angle(from, to);
+        return num < float.Epsilon ? to : math.slerp(from, to, math.min(1f, maxDegreesDelta / num));
+    }
+    public static float Angle(this quaternion q1, quaternion q2)
+    {
+        var dot = math.dot(q1, q2);
+        return !(dot > 0.999998986721039) ? (float)(math.acos(math.min(math.abs(dot), 1f)) * 2.0) : 0.0f;
+    }
     #region - Player -
 
     public static float ArmourHeath = 50f;
@@ -17,7 +32,7 @@ public static class scr_Models
         Prone
     }  
     [Serializable]
-    public class PlayerSettingModel
+    public struct PlayerSettingModel
     {
         [Header("View Settings")]
         public  float ViewXSencitivity;
@@ -39,8 +54,10 @@ public static class scr_Models
         public float JumpingHeight;
         public float JumpingFallof;
         public float FallingSmoothing;
+        public float GravityMultiplierJump;
+        public float GravityMultiplierFalling;
         [Header("Speed Effectors")]
-        public float SpeedEffector = 1f;
+        public float SpeedEffector;
         public float CrouchSpeedEffector;
         public float ProneSpeedEffector;
         public float FallingSpeedEffector;

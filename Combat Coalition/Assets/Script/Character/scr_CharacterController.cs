@@ -1,15 +1,21 @@
 using System;
 using UnityEngine;
-using TMPro;
 using static scr_Models;
+using UnityEngine.Jobs;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Burst;
+using Unity.Properties;
 public class scr_CharacterController : MonoBehaviour
 {
+
     #region - Parameters -
     //Private
     private CharacterController characterController;
-    private Vector3 NewCameraRotation;
-    private Vector3 NewCharacterRotation;
     private Vector3 StanceCapsuleCenterVeloctiy;
+    private Vector3 CurrentCharacterRotation;
+    private Vector3 currentCamRot;
     private Vector3 newMovementSpeed;
     private Vector3 newMovementSpeedVelocity;
     private float StanceCheckErrorMargin = 0.05f;
@@ -20,6 +26,7 @@ public class scr_CharacterController : MonoBehaviour
     private float TargetLean;
     private float TargetLeanVelocity;
     private bool IsSprinting;
+    private Vector3 CurrentPos;
     //Events
     public event EventHandler<CharacterMovementAnimationEventArgs> CharacterMovementAnimationEvent;
     public class CharacterMovementAnimationEventArgs : EventArgs
@@ -73,11 +80,10 @@ public class scr_CharacterController : MonoBehaviour
     {
         scr_GameManeger.Instance.AddPlayer(this);
         Cursor.lockState = CursorLockMode.Locked;
-        NewCharacterRotation = transform.localRotation.eulerAngles;
-        NewCameraRotation = CameraHolder.localRotation.eulerAngles;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
         WeaponController.SetCharcterController(this);
+
     }
     private void Start()
     {
@@ -106,7 +112,8 @@ public class scr_CharacterController : MonoBehaviour
     #region - IsGrounded / IsFalling -
     bool IsGrounded()
     {
-        return Physics.CheckSphere(feetTransfrom.position, PlayerSettings.IsGroundedRadius, GroundMask);
+        Collider[] results = new Collider[1];
+        return Physics.OverlapSphereNonAlloc(feetTransfrom.position, PlayerSettings.IsGroundedRadius, results, GroundMask) > 0;
     }
     bool IsFalling()
     {
@@ -118,74 +125,186 @@ public class scr_CharacterController : MonoBehaviour
     #region -View/Movement-
     void CalculateView()
     {
-        NewCharacterRotation.y += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -InputManeger.Input_View.x : InputManeger.Input_View.x) * Time.deltaTime;
-        transform.localRotation = Quaternion.Euler(NewCharacterRotation);
-        NewCameraRotation.x += (WeaponController.GetWeapon().IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? InputManeger.Input_View.y : -InputManeger.Input_View.y) * Time.deltaTime;
-        NewCameraRotation.x = Mathf.Clamp(NewCameraRotation.x, ViewClampYmin, ViewClampYmax);
-        CameraHolder.localRotation = Quaternion.Euler(NewCameraRotation + ((WeaponController.CurrentWeaponSO.WeaponType == WeaponType.Gun) ? ((WeaponController.GetWeapon() as scr_Gun).CamRecoil) : Vector3.zero));
+        NativeArray<float3> CameraRotation = new NativeArray<float3>(1, Allocator.TempJob);
+        NativeArray<float3> CharacterRotation = new NativeArray<float3>(1, Allocator.TempJob);
+        JobHandle CamHandle = ViewCamJobHandle(CameraRotation,CharacterRotation ,out ViewJob _viewCameraJob);
+        CamHandle.Complete();
+        currentCamRot = _viewCameraJob.CameraRotation[0];
+        CameraHolder.localRotation = Quaternion.Euler(_viewCameraJob.CameraRotation[0]);
+        CurrentCharacterRotation = _viewCameraJob.CharacterRotaion[0];
+        Debug.Log(_viewCameraJob.CharacterRotaion[0]);
+        transform.localRotation = Quaternion.Euler(_viewCameraJob.CharacterRotaion[0]);
+        CharacterRotation.Dispose();
+        CameraRotation.Dispose();
+    }
+    JobHandle ViewCamJobHandle(NativeArray<float3> CameraRotation,NativeArray<float3> characterRotation ,out ViewJob _viewCamera)
+    {
+        CameraRotation[0] = currentCamRot;
+        characterRotation[0] = CurrentCharacterRotation;
+        ViewJob viewCameraJob = new ViewJob()
+        {
+            Input_View = InputManeger.Input_View,
+            CameraRotation = CameraRotation,
+            CharacterRotaion = characterRotation,
+            IsAiming = WeaponController.GetWeapon().IsAiming,
+            ViewClampYmax = ViewClampYmax,
+            ViewClampYmin = ViewClampYmin,
+            IsGrounded = IsGrounded(),
+            PlayerSettings = PlayerSettings,
+            deltaTime = Time.deltaTime,
+            
+        };
+        _viewCamera = viewCameraJob;
+        return viewCameraJob.Schedule(1, 1);
+    }
+    //ViewJob(Burst)
+    [BurstCompile]
+    public struct ViewJob : IJobParallelFor
+    {
+        public PlayerSettingModel PlayerSettings;
+        public bool IsAiming;
+        public bool IsGrounded;
+        public float3 NewCameraRotation;
+        public float3 NewCharacterRotation;
+        public float ViewClampYmin;
+        public float ViewClampYmax;
+        public float2 Input_View;
+        public float3 CamRecoil;
+        public float deltaTime;
+        public NativeArray<float3> CharacterRotaion;
+        public NativeArray<float3> CameraRotation;
+        public void Execute(int index)
+        {
+            float3 charRot = CharacterRotaion[0];
+            NewCharacterRotation.y += (IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * deltaTime;
+            charRot += NewCharacterRotation;
+            CharacterRotaion[0] = charRot;
+            float3 cameraRot = CameraRotation[0];
+            NewCameraRotation.x += (IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewYInverted ? Input_View.y : -Input_View.y) * deltaTime;
+            cameraRot += NewCameraRotation; 
+            cameraRot.x = math.clamp(cameraRot.x, ViewClampYmin, ViewClampYmax);
+            CameraRotation[0] = cameraRot;
+        }
     }
     void CalculateMovement()
     {
-        if (InputManeger.Input_Movement.y <= 0.2f)
-        {
-            IsSprinting = false;
-        }
-        var verticalSpeed = PlayerSettings.WalkingStrafeSpeed;
-        var horizontalSpeed = PlayerSettings.WalkingForwardSpeed;
-        if (IsSprinting)
-        {
-            verticalSpeed = PlayerSettings.RunningStrafeSpeed;
-            horizontalSpeed = PlayerSettings.RunningForwardSpeed;
-        }
-        if (!IsGrounded())
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
-        }
-        else if (playerStance == PlayerStance.Crouch)
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
-        } 
-        else if (playerStance == PlayerStance.Prone)
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
-        }
-        else if (WeaponController.GetWeapon().IsAiming)
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
-        }
-        else
-        {
-            PlayerSettings.SpeedEffector = 1;
-        }
+        NativeArray<float3> pos = new NativeArray<float3>(1, Allocator.TempJob);
+        JobHandle handle = MoveHandle(pos,out MovementJob movementJob);
+        handle.Complete();
+        characterController.Move(movementJob.position[0]);
+        pos.Dispose();
 
-        AnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
-        if (AnimationSpeed > 1)
-        {
-            AnimationSpeed = 1;
-        }
         var direction = transform.InverseTransformDirection(characterController.velocity);
         CharacterMovementAnimationEvent?.Invoke(this, new CharacterMovementAnimationEventArgs
         {
             dir = direction.normalized,
             isSprinting = IsSprinting
         });
-        verticalSpeed *= PlayerSettings.SpeedEffector;
-        horizontalSpeed *= PlayerSettings.SpeedEffector;
-        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * InputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * InputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
-        var movementSpeed = transform.TransformDirection(newMovementSpeed);
-        if (PlayerGravity < -0.1f && IsGrounded())
+    }
+    JobHandle MoveHandle(NativeArray<float3> pos,out MovementJob _movementJob)
+    {
+        pos[0] = transform.position;
+        MovementJob movementJob = new MovementJob()
         {
-            PlayerGravity = -0.1f;
-        }
-        if (PlayerGravity > GravityMin)
+            position = pos,
+            velocity = characterController.velocity,
+            Input_Movement = InputManeger.Input_Movement,
+            DeltaTime = Time.deltaTime,
+            IsSprinting = IsSprinting,
+            PlayerSettings = PlayerSettings,
+            IsGrounded = IsGrounded(),
+            IsFalling = IsFalling(),
+            AnimationSpeed = AnimationSpeed,
+            playerStance = playerStance,
+            PlayerGravity = PlayerGravity,
+            IsAiming = WeaponController.GetWeapon().IsAiming,
+            newMovementSpeed = newMovementSpeed,
+            newMovementSpeedVelocity = newMovementSpeedVelocity,
+            GravityMin = GravityMin,
+            JumpingForce = JumpingForce,
+        };
+        _movementJob = movementJob;
+        return movementJob.Schedule(new TransformAccessArray(new Transform[1] { transform }));
+    }
+    //MovementJob(Burst)
+    [BurstCompile]
+    public struct MovementJob : IJobParallelForTransform
+    {
+        public float2 Input_Movement;
+        public float DeltaTime;
+        public bool IsSprinting;
+        public PlayerSettingModel PlayerSettings;
+        public bool IsGrounded;
+        public bool IsFalling;
+        public float AnimationSpeed;
+        public float PlayerGravity;
+        public PlayerStance playerStance;
+        public float3 newMovementSpeed;
+        public float3 newMovementSpeedVelocity;
+        public bool IsAiming;
+        public float3 velocity;
+        public float GravityMin;
+        public float3 JumpingForce;
+        public NativeArray<float3> position;
+        public void Execute(int index, TransformAccess transform)
         {
-            PlayerGravity += GravityVec.y * Time.deltaTime;
+            if (Input_Movement.y <= 0.2f)
+            {
+                IsSprinting = false;
+            }
+            var verticalSpeed = PlayerSettings.WalkingStrafeSpeed;
+            var horizontalSpeed = PlayerSettings.WalkingForwardSpeed;
+            if (IsSprinting)
+            {
+                verticalSpeed = PlayerSettings.RunningStrafeSpeed;
+                horizontalSpeed = PlayerSettings.RunningForwardSpeed;
+            }
+            if (!IsGrounded)
+            {
+                PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
+            }
+            else if (playerStance == PlayerStance.Crouch)
+            {
+                PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
+            }
+            else if (playerStance == PlayerStance.Prone)
+            {
+                PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
+            }
+            else if (IsAiming)
+            {
+                PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
+            }
+            else
+            {
+                PlayerSettings.SpeedEffector = 1;
+            }
+            AnimationSpeed = math.length(velocity) / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
+            if (AnimationSpeed > 1)
+            {
+                AnimationSpeed = 1;
+            }
+            verticalSpeed *= PlayerSettings.SpeedEffector;
+            horizontalSpeed *= PlayerSettings.SpeedEffector;
+            //SmoothDamp Pending 
+            newMovementSpeed = new float3(verticalSpeed * Input_Movement.x * DeltaTime, 0, horizontalSpeed * Input_Movement.y * DeltaTime);
+            float3 movementSpeed = scr_Models.LocalToWorld(transform.localToWorldMatrix, newMovementSpeed);
+            if (PlayerGravity < -0.1f && IsGrounded)
+            {
+                PlayerGravity = -0.1f;
+            }
+            if (PlayerGravity > GravityMin)
+            {
+                PlayerGravity += (GravityVec.y * (IsFalling ? PlayerSettings.GravityMultiplierFalling : PlayerSettings.GravityMultiplierJump)) * DeltaTime;
+            }
+            movementSpeed.y += PlayerGravity;
+            movementSpeed += JumpingForce * DeltaTime;
+            position[index] = movementSpeed;
         }
-        movementSpeed.y += PlayerGravity;
-        movementSpeed += JumpingForce * Time.deltaTime;
-        characterController.Move(movementSpeed);
     }
     #endregion
+
+
 
 
     #region - Leaning -

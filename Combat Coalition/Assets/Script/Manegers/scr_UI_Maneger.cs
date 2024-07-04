@@ -37,6 +37,10 @@ public class scr_UI_Maneger : MonoBehaviour
         if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
         {
             var gunso = e.weapon.GetScr_WeaponSO() as scr_GunSO;
+            if (Rectile != null)
+            {
+                Destroy(Rectile.gameObject);
+            }
             Rectile = Instantiate(gunso.Rectile, canvas.transform);
         }
     }
@@ -50,7 +54,12 @@ public class scr_UI_Maneger : MonoBehaviour
         text.text = pickable.Weapon.GetScr_WeaponSO().WeaponName;
     }
     private void LateUpdate()
-    { 
+    {
+        StartCoroutine(Delay());
+    }
+    IEnumerator Delay()
+    {
+        yield return null;
         UpdateRectileSize();
     }
     void UpdateRectileSize()

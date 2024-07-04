@@ -57,9 +57,10 @@ public class scr_Gun : scr_BaseWeapon
         }
         bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
         ray = holder.Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
-        if (Physics.Raycast(ray, out RaycastHit hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer))
+        RaycastHit[] hitInfo = new RaycastHit[1];
+        if (Physics.RaycastNonAlloc(ray, hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer) != 0)
         {
-            HitPoint = hitInfo.point;
+            HitPoint = hitInfo[0].point;
         }
         foreach (var bullet in bulletWithDirs)
         {
@@ -101,6 +102,10 @@ public class scr_Gun : scr_BaseWeapon
         holder.GetWeaponController().InputManeger.Reload += ReloadEvent;
         _GunSO = GetScr_WeaponSO() as scr_GunSO;
         CurrentAmmo = _GunSO.MaxAmmo;
+    }
+    private void OnEnable()
+    {
+        OnAmmoChange?.Invoke(this,new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
     }
     private void Update()
     {

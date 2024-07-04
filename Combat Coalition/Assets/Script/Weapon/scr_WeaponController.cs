@@ -74,7 +74,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         if (CurrentWeaponSO.WeaponType == WeaponType.Gun)
             currentFireType = GunSO.AllowedFireTypes.First();
         StartCoroutine(Delay());
-        InputManeger.RightClickPressed += () => { scr_AudioManeger.Instance.PlayOneShot(GunSO.TriggerPressed, CurrentWeapon.transform.position); };
+        InputManeger.RightClickPressed += () => { if (CurrentWeaponSO.WeaponType == WeaponType.Melee) return; scr_AudioManeger.Instance.PlayOneShot(GunSO.TriggerPressed, CurrentWeapon.transform.position); };
         TotalWeapons.ForEach(weapon =>
         {
             if (TotalWeapons.IndexOf(weapon) == CurrentWeaponSOIndex)
@@ -154,23 +154,23 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         if (TotalWeapons.Count < 2) return;
         int index = TotalWeapons.IndexOf(CurrentWeapon);
         SetWeapon(TotalWeapons[(index + 1) % TotalWeapons.Count]);
-        CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
-        CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex];
+        Debug.Log(index + "," + CurrentWeapon.name);
         SetUpWeapon();
     }
     void ScrollDown()
     {
         if (TotalWeapons.Count < 2) return;
         int index = TotalWeapons.IndexOf(CurrentWeapon);
-        SetWeapon(TotalWeapons[Mathf.Abs((index - 1) % TotalWeapons.Count)]);
-        CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
-        CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex];
+        if (index == 0) index = TotalWeapons.Count;
+        SetWeapon(TotalWeapons[index - 1]);
         SetUpWeapon();
     }
     #endregion
     #region  - Equiping Weapon -
     void SetUpWeapon()
-    { 
+    {
+        CurrentWeaponSOIndex = TotalWeapons.IndexOf(CurrentWeapon);
+        CurrentWeaponSO = TotalWeaponSO[CurrentWeaponSOIndex];
         TotalWeapons.ForEach(weapon =>
         {
             if (TotalWeapons.IndexOf(weapon) != CurrentWeaponSOIndex)
