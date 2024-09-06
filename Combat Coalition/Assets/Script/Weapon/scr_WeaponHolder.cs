@@ -9,6 +9,8 @@ public interface scr_WeaponHolder
     public scr_BaseWeapon GetWeapon();
     public void DropWeapon();
     public Camera Cam();
+    public Cinemachine.CinemachineVirtualCamera VCam();
+    public Transform CamRecoilObj();
     public Transform CamHolder();
     public Transform GetWeaponParent();
     public scr_WeaponController GetWeaponController();

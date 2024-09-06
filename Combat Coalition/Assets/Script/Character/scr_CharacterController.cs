@@ -79,7 +79,7 @@ public class scr_CharacterController : MonoBehaviour
     private void Awake()
     {
         scr_GameManeger.Instance.AddPlayer(this);
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
         characterController = GetComponent<CharacterController>();
         CameraHeight = CameraHolder.localPosition.y;
         WeaponController.SetCharcterController(this);
@@ -132,7 +132,6 @@ public class scr_CharacterController : MonoBehaviour
         currentCamRot = _viewCameraJob.CameraRotation[0];
         CameraHolder.localRotation = Quaternion.Euler(_viewCameraJob.CameraRotation[0]);
         CurrentCharacterRotation = _viewCameraJob.CharacterRotaion[0];
-        Debug.Log(_viewCameraJob.CharacterRotaion[0]);
         transform.localRotation = Quaternion.Euler(_viewCameraJob.CharacterRotaion[0]);
         CharacterRotation.Dispose();
         CameraRotation.Dispose();
@@ -152,14 +151,13 @@ public class scr_CharacterController : MonoBehaviour
             IsGrounded = IsGrounded(),
             PlayerSettings = PlayerSettings,
             deltaTime = Time.deltaTime,
-            
         };
         _viewCamera = viewCameraJob;
-        return viewCameraJob.Schedule(1, 1);
+        return viewCameraJob.Schedule(new TransformAccessArray(new Transform[1] { CameraHolder }));
     }
     //ViewJob(Burst)
     [BurstCompile]
-    public struct ViewJob : IJobParallelFor
+    public struct ViewJob : IJobParallelForTransform
     {
         public PlayerSettingModel PlayerSettings;
         public bool IsAiming;
@@ -169,11 +167,10 @@ public class scr_CharacterController : MonoBehaviour
         public float ViewClampYmin;
         public float ViewClampYmax;
         public float2 Input_View;
-        public float3 CamRecoil;
         public float deltaTime;
         public NativeArray<float3> CharacterRotaion;
         public NativeArray<float3> CameraRotation;
-        public void Execute(int index)
+        public void Execute(int index,TransformAccess transform)
         {
             float3 charRot = CharacterRotaion[0];
             NewCharacterRotation.y += (IsAiming ? PlayerSettings.AimSensitivityEffector : PlayerSettings.ViewXSencitivity) * (PlayerSettings.ViewXInverted ? -Input_View.x : Input_View.x) * deltaTime;
@@ -189,11 +186,13 @@ public class scr_CharacterController : MonoBehaviour
     void CalculateMovement()
     {
         NativeArray<float3> pos = new NativeArray<float3>(1, Allocator.TempJob);
-        JobHandle handle = MoveHandle(pos,out MovementJob movementJob);
+        NativeArray<PlayerStance> _playerStance = new NativeArray<PlayerStance>(1, Allocator.TempJob);
+        JobHandle handle = MoveHandle(pos,_playerStance,out MovementJob movementJob);
         handle.Complete();
+        playerStance = movementJob.playerStance[0];
         characterController.Move(movementJob.position[0]);
         pos.Dispose();
-
+        _playerStance.Dispose();
         var direction = transform.InverseTransformDirection(characterController.velocity);
         CharacterMovementAnimationEvent?.Invoke(this, new CharacterMovementAnimationEventArgs
         {
@@ -201,9 +200,10 @@ public class scr_CharacterController : MonoBehaviour
             isSprinting = IsSprinting
         });
     }
-    JobHandle MoveHandle(NativeArray<float3> pos,out MovementJob _movementJob)
+    JobHandle MoveHandle(NativeArray<float3> pos,NativeArray<PlayerStance> _playerStance,out MovementJob _movementJob)
     {
         pos[0] = transform.position;
+        _playerStance[0] = playerStance;
         MovementJob movementJob = new MovementJob()
         {
             position = pos,
@@ -215,11 +215,11 @@ public class scr_CharacterController : MonoBehaviour
             IsGrounded = IsGrounded(),
             IsFalling = IsFalling(),
             AnimationSpeed = AnimationSpeed,
-            playerStance = playerStance,
-            PlayerGravity = PlayerGravity,
+            playerStance = _playerStance,
             IsAiming = WeaponController.GetWeapon().IsAiming,
             newMovementSpeed = newMovementSpeed,
             newMovementSpeedVelocity = newMovementSpeedVelocity,
+            PlayerGravity = PlayerGravity,
             GravityMin = GravityMin,
             JumpingForce = JumpingForce,
         };
@@ -227,7 +227,7 @@ public class scr_CharacterController : MonoBehaviour
         return movementJob.Schedule(new TransformAccessArray(new Transform[1] { transform }));
     }
     //MovementJob(Burst)
-    [BurstCompile]
+    //[BurstCompile]
     public struct MovementJob : IJobParallelForTransform
     {
         public float2 Input_Movement;
@@ -238,7 +238,7 @@ public class scr_CharacterController : MonoBehaviour
         public bool IsFalling;
         public float AnimationSpeed;
         public float PlayerGravity;
-        public PlayerStance playerStance;
+        public NativeArray<PlayerStance> playerStance;
         public float3 newMovementSpeed;
         public float3 newMovementSpeedVelocity;
         public bool IsAiming;
@@ -263,11 +263,11 @@ public class scr_CharacterController : MonoBehaviour
             {
                 PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
             }
-            else if (playerStance == PlayerStance.Crouch)
+            else if (playerStance[index] == PlayerStance.Crouch)
             {
                 PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
             }
-            else if (playerStance == PlayerStance.Prone)
+            else if (playerStance[index] == PlayerStance.Prone)
             {
                 PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
             }

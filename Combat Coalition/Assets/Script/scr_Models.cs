@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Mathematics;
+using Unity.Jobs;
+using Unity.Collections;
+using Unity.Burst;
+using System.Linq;
 
 public static class scr_Models
 {
@@ -11,15 +15,9 @@ public static class scr_Models
     {
         return math.rotate(localtoworld_Component, direction);
     }
-    public static quaternion RotateTowards(quaternion from, quaternion to, float maxDegreesDelta)
+    public static float Noise(float seed, float timeCounter)
     {
-        float num = Angle(from, to);
-        return num < float.Epsilon ? to : math.slerp(from, to, math.min(1f, maxDegreesDelta / num));
-    }
-    public static float Angle(this quaternion q1, quaternion q2)
-    {
-        var dot = math.dot(q1, q2);
-        return !(dot > 0.999998986721039) ? (float)(math.acos(math.min(math.abs(dot), 1f)) * 2.0) : 0.0f;
+        return (Mathf.PerlinNoise(seed, timeCounter) - 0.5f) * 2;
     }
     #region - Player -
 
@@ -67,7 +65,7 @@ public static class scr_Models
         public float IsFallingSpeed;
     }
     [Serializable]
-    public class CharacterStance
+    public struct CharacterStance
     {
         public float CameraHeight;
         public float ForwardPos;
@@ -77,7 +75,7 @@ public static class scr_Models
 
     #region - Weapon -
 
-    public enum WeaponFireType
+    public enum GunFireType
     {
         SemiAuto,
         FullyAuto
@@ -88,7 +86,7 @@ public static class scr_Models
         Melee
     }
     [Serializable]
-    public class WeaponSettingsModel
+    public struct WeaponSettingsModel
     {
         public float WeaponSearchRaduis;
         [Header("Weapon Sway")]
@@ -114,19 +112,19 @@ public static class scr_Models
 
     #region - Gun - 
     [Serializable]
-    public class AttachmentsPoints
+    public struct AttachmentsPoints
     {
         public AttachmentTypes AttachmentType;
         public Transform Point;
     }
     [Serializable]
-    public class WeaponsWithAttachments
+    public struct WeaponsWithAttachments
     {
         public scr_WeaponSO scr_WeaponSO;
         public List<scr_Attachment_SO> AttachmentSOList;
     }
 
-    public class AttachedWeaponPart
+    public struct AttachedWeaponPart
     {
         public AttachmentsPoints AttachmentTypePoint;
         public scr_Attachment_SO weaponPartSO;
@@ -143,12 +141,41 @@ public static class scr_Models
         UnderBarrel,
     }
     #endregion
-        #region - Bullet -
+    #region - Bullet -
+
     public struct BulletWithTarget
     {
         public scr_Bullet scr_Bullet;
         public Vector3 BulletTarget;
     }
+
+
+    public static Vector3[] BulletPath(Vector3 target, Transform start, int Maxiteration, float speed)
+    {
+        List<Vector3> points = new List<Vector3>();   
+        RaycastHit[] hits=new RaycastHit[1];
+        float time = 0;
+        for(int i = 0; i < Maxiteration;i++)
+        {
+            time += 0.05f;
+
+            points.Add(start.position + (start.forward * time * speed));
+            points[i] += GravityVec * time * time;
+
+            if (Physics.RaycastNonAlloc(points[i], Vector3.forward, hits, 1f) != 0)
+            {
+                Debug.Log("Hit");
+                break;
+            }
+        }
+ 
+
+        return points.ToArray();
+    }
+
+
+
+    /*
     //Integration method 3
     //upVec is a vector perpendicular (in the upwards direction) to the direction the bullet is travelling in
     //is only needed if we calculate the lift force
@@ -160,7 +187,7 @@ public static class scr_Models
         //Drag
         accFactorEuler += CalculateBulletDragAcc(currentVel, bulletData);
         //Lift  
-        accFactorEuler += CalculateBulletLiftAcc(currentVel, bulletData, upVec);
+        //accFactorEuler += CalculateBulletLiftAcc(currentVel, bulletData, upVec);
 
 
         //Calculate the new velocity and position
@@ -183,7 +210,7 @@ public static class scr_Models
         //This assumes that windspeed is constant between the steps, which it should be because wind doesnt change that often
         accFactorHeuns += CalculateBulletDragAcc(newVelEuler, bulletData);
         //Lift 
-        accFactorHeuns += CalculateBulletLiftAcc(newVelEuler, bulletData, upVec);
+        //accFactorHeuns += CalculateBulletLiftAcc(newVelEuler, bulletData, upVec);
 
         newVel = currentVel + timeStep * 0.5f * (accFactorEuler + accFactorHeuns);
 
@@ -192,7 +219,7 @@ public static class scr_Models
 
     //Calculate the bullet's drag acceleration
     public static Vector3 CalculateBulletDragAcc(Vector3 bulletVel, scr_GunSO bulletData)
-    { 
+    {
         //If you have a wind speed in your game, you can take that into account here:
         //https://www.youtube.com/watch?v=lGg7wNf1w-k
         Vector3 bulletVelRelativeToWindVel = bulletVel - bulletData.windSpeedVector;
@@ -220,33 +247,35 @@ public static class scr_Models
         return dragVec;
     }
     //Calculate the bullet's lift acceleration
-    public static Vector3 CalculateBulletLiftAcc(Vector3 bulletVel, scr_GunSO bulletData, Vector3 bulletUpDir)
+    public static Vector3[] CalculateBulletLiftAcc(Vector3[] bulletVel, scr_GunSO bulletData, Vector3[] bulletUpDir)
     {
+        List<Vector3> liftVec = new List<Vector3>(bulletVel.Length);
         //If you have a wind speed in your game, you can take that into account here:
         //https://www.youtube.com/watch?v=lGg7wNf1w-k
-        Vector3 bulletVelRelativeToWindVel = bulletVel - bulletData.windSpeedVector;
+        for (int i = 0; i < bulletVel.Length; i++)
+        {
+            Vector3 bulletVelRelativeToWindVel = bulletVel[i] - bulletData.windSpeedVector;
 
-        //Step 1. Calculate the bullet's lift force [N]
-        //https://en.wikipedia.org/wiki/Lift_(force)
-        //F_lift = 0.5 * rho * v^2 * S * C_l 
+            //Step 1. Calculate the bullet's lift force [N]
+            //https://en.wikipedia.org/wiki/Lift_(force)
+            //F_lift = 0.5 * rho * v^2 * S * C_l 
 
-        //The velocity of the bullet [m/s]
-        float v = bulletVelRelativeToWindVel.magnitude;
-        //Planform (projected) wing area, which is assumed to be the same as the cross section area [m^2]
-        float S = Mathf.PI * bulletData.r * bulletData.r;
+            //The velocity of the bullet [m/s]
+            float v = bulletVelRelativeToWindVel.magnitude;
+            //Planform (projected) wing area, which is assumed to be the same as the cross section area [m^2]
+            float S = Mathf.PI * bulletData.r * bulletData.r;
 
-        float liftForce = 0.5f * bulletData.rho * v * v * S * bulletData.LiftCoefficient;
+            float liftForce = 0.5f * bulletData.rho * v * v * S * bulletData.LiftCoefficient;
 
-        //Step 2. We need to add an acceleration, not a force, in the integration method [m/s^2]
-        //Drag acceleration F = m * a -> a = F / m
-        float liftAcc = liftForce / bulletData.m;
+            //Step 2. We need to add an acceleration, not a force, in the integration method [m/s^2]
+            //Drag acceleration F = m * a -> a = F / m
+            float liftAcc = liftForce / bulletData.m;
 
-        //The lift force acts in the up-direction = perpendicular to the velocity direction it travels in
-        Vector3 liftVec = liftAcc * bulletUpDir;
-
-
-        return liftVec;
-    }
+            //The lift force acts in the up-direction = perpendicular to the velocity direction it travels in
+            liftVec.Add(liftAcc * bulletUpDir[i]);
+        }
+        return liftVec.ToArray();
+    }*/
     #endregion
 }
 

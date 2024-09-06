@@ -20,7 +20,7 @@ public class scr_GunSO : scr_WeaponSO
     [Header("Shooting Properties")]
     public scr_Bullet Bullet;
     public float BulletSpeed;
-    public List<WeaponFireType> AllowedFireTypes;
+    public List<GunFireType> AllowedFireTypes;
     public float FireRate = 10f;
     public float BulletSpread;
     [Header("Audio")]
@@ -47,17 +47,22 @@ public class scr_GunSO : scr_WeaponSO
     //The density of the medium the bullet is travelling in, which in this case is air at 15 degrees [kg/m^3]
     public float rho = 1.225f;
     [Header("Recoil")]
-    public MinMaxCurve RotationX = new MinMaxCurve(1, new AnimationCurve(), new AnimationCurve());
-    public float RotationXMultiplier;
-    public MinMaxCurve RotationY = new MinMaxCurve(1, new AnimationCurve(), new AnimationCurve());
-    public float RotationYMultiplier;
-    public MinMaxCurve KickBackZ = new MinMaxCurve(1, new AnimationCurve(), new AnimationCurve());
+    //Rotation
+    public AnimationCurve RotationX;
+    public float RotationXStrength;
+    //Position
+    public AnimationCurve KickBackZ;
     public float KickBackZMultiplier;
-    public MinMaxCurve KickBackY = new MinMaxCurve(1, new AnimationCurve(), new AnimationCurve());
+    public AnimationCurve KickBackY;
     public float KickBackYMultiplier;
+
     public float RecoilSmoothing;
     [Header("Camera Recoil")]
-    public float CameraRecoilX;
-    public float CameraRecoilY;
+    public Vector3 CamRecoil;
+    public float CamRecoilIncrement;
+    public float CameraReturnSpeed;
+    public float CameraRecoilScale;
+    public float Snapiness;
     public float CameraShake;
+    public float CameraShakeSmoothing;
 }

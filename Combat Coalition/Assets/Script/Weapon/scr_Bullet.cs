@@ -4,10 +4,10 @@ using static scr_Models;
 
 public class scr_Bullet : MonoBehaviour
 {
-    private Vector3 currentPos;
-    private Vector3 currentVel;
-    private Vector3 newPos;
-    private Vector3 newVel;
+    public Vector3 currentPos { get; private set; }
+    public Vector3 currentVel { get;private set; }
+    public Vector3 newPos { get; set; }
+    public Vector3 newVel { get; set; }
     private scr_GunSO scr_gunSO;
     private bool _IsInitialized;
     public event EventHandler<OnHitEventArgs> OnHit;
@@ -24,17 +24,11 @@ public class scr_Bullet : MonoBehaviour
     {
         Destroy(gameObject, LifeTime);
     }
-    private void FixedUpdate()
-    {
-        MoveBulletOneStep();
-    }
-    void MoveBulletOneStep()
+    void FixedUpdate()
     {
         if (!_IsInitialized) return;
         //Use an integration method to calculate the new position of the bullet
         float timeStep = Time.fixedDeltaTime;
-
-        Heuns(timeStep, currentPos, currentVel, transform.up, scr_gunSO, out newPos, out newVel);
 
         //Debug.DrawRay(transform.position, transform.up * 5f);
 
@@ -69,7 +63,7 @@ public class scr_Bullet : MonoBehaviour
         OnHit?.Invoke(this, new OnHitEventArgs
         {
             hitObject = other.gameObject,
-            hitPoint = other.ClosestPoint(transform.position)
+            hitPoint = other.transform.position
         });
         Destroy(gameObject);
     }

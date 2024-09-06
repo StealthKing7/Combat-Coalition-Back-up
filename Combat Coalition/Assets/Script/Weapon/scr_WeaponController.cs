@@ -17,7 +17,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
         public scr_BaseWeapon weapon;
     }
     public event EventHandler<OnFireTypeChangeEventArgs> OnFireTypeChange;
-    public class OnFireTypeChangeEventArgs : EventArgs { public WeaponFireType FireType; }
+    public class OnFireTypeChangeEventArgs : EventArgs { public GunFireType FireType; }
     private scr_BaseWeapon CurrentWeapon;
     private List<scr_BaseWeapon> TotalWeapons = new List<scr_BaseWeapon>();
     private scr_Pickable InRangeWeapon;
@@ -32,8 +32,10 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     private scr_GunSO GunSO;
     private scr_MeleeSO MeleeSO;
     [Header("References")]
+    [SerializeField] Cinemachine.CinemachineVirtualCamera VirtualCamera;
     [SerializeField] Transform WeaponAimPiviot;
     [SerializeField] Transform WeaponParent;
+    [SerializeField] Transform CameraRecoil;
     public Animator animator;
     [field: SerializeField] public Transform SwayObj { get;  set; }
     //Setting
@@ -44,7 +46,7 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     [field: SerializeField] public float SwayScale { get; private set; } = 600;
     [field: SerializeField] public float SwayLerpSpeed { get; private set; } = 14;
     [Header("Shooting")]
-    [SerializeField] WeaponFireType currentFireType;
+    [SerializeField] GunFireType currentFireType;
     private Vector3 LastWeaponPos;
     private float HoldTimeBegin;
     private float nextTimetoFire = 0f;
@@ -103,14 +105,14 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
             case WeaponType.Gun:
                 switch (currentFireType)
                 {
-                    case WeaponFireType.FullyAuto:
+                    case GunFireType.FullyAuto:
                         if (Time.time >= nextTimetoFire)
                         {
                             nextTimetoFire = Time.time + 1 / GunSO.FireRate;
                             CurrentWeapon.Execute();
                         }
                         break;
-                    case WeaponFireType.SemiAuto:
+                    case GunFireType.SemiAuto:
                         CurrentWeapon.Execute();
                         InputManeger.RightClick = false;
                         break;
@@ -291,6 +293,14 @@ public class scr_WeaponController : MonoBehaviour,scr_WeaponHolder
     public Camera Cam()
     {
         return CharacterController.MainCamera;
+    }
+    public Cinemachine.CinemachineVirtualCamera VCam()
+    {
+        return VirtualCamera;
+    }
+    public Transform CamRecoilObj()
+    {
+        return CameraRecoil;
     }
     public Transform CamHolder()
     {

@@ -20,7 +20,7 @@ public class scr_GunHud : MonoBehaviour
     private void WeaponController_OnWeaponEquiped(scr_WeaponController sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
     {
         if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
-            (e.weapon as scr_Gun).OnAmmoChange += Scr_GunHud_OnShoot;
+            (e.weapon as scr_Gun).OnShoot += Scr_GunHud_OnShoot;
             UpdateFireTypeUI(sender);
     }
     void UpdateFireTypeUI(scr_WeaponController WeaponController)
@@ -31,7 +31,7 @@ public class scr_GunHud : MonoBehaviour
     {
         switch (e.FireType)
         {
-            case scr_Models.WeaponFireType.SemiAuto:
+            case scr_Models.GunFireType.SemiAuto:
                 AutoFire.gameObject.SetActive(false);
                 SingleFire.gameObject.SetActive(true);
                 break;
