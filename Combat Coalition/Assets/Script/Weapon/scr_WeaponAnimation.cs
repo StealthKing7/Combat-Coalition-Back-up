@@ -12,6 +12,7 @@ public class scr_WeaponAnimation : MonoBehaviour
     [SerializeField] TwoBoneIKConstraint LeftHand;
     private const string VELOCITY_X = "VelocityX";
     private const string VELOCITY_Z = "VelocityZ";
+    private const string ANIMATIONSPEED = "AnimationSpeed";
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -55,5 +56,6 @@ public class scr_WeaponAnimation : MonoBehaviour
     {
         animator.SetFloat(VELOCITY_X, e.dir.x);
         animator.SetFloat(VELOCITY_Z, e.dir.z);
+        animator.SetFloat(ANIMATIONSPEED, e.AnimationSpeed);
     }
 }

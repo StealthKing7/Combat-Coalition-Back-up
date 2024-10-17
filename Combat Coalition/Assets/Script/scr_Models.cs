@@ -3,18 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Mathematics;
-using Unity.Jobs;
-using Unity.Collections;
-using Unity.Burst;
-using System.Linq;
-
 public static class scr_Models
 {
     public static readonly Vector3 GravityVec = new Vector3(0, -9.81f, 0);
-    public static  float3 LocalToWorld(this float4x4 localtoworld_Component, float3 direction)
-    {
-        return math.rotate(localtoworld_Component, direction);
-    }
     public static float Noise(float seed, float timeCounter)
     {
         return (Mathf.PerlinNoise(seed, timeCounter) - 0.5f) * 2;
@@ -22,7 +13,7 @@ public static class scr_Models
     #region - Player -
 
     public static float ArmourHeath = 50f;
-
+    public static float BasePlayerHealth = 100f;
     public enum PlayerStance
     {
         Stand,
@@ -143,37 +134,24 @@ public static class scr_Models
     #endregion
     #region - Bullet -
 
-    public struct BulletWithTarget
+    public struct BulletsWithPath
     {
-        public scr_Bullet scr_Bullet;
-        public Vector3 BulletTarget;
+        public Vector3[] path;
+        public Transform bullets;
+        public int PathIndex;
     }
-
-
-    public static Vector3[] BulletPath(Vector3 target, Transform start, int Maxiteration, float speed)
+    public static Vector3[] BulletPath(int iteration,Vector3 startpos,Vector3 forward,float speed,Vector3 Wind)
     {
-        List<Vector3> points = new List<Vector3>();   
-        RaycastHit[] hits=new RaycastHit[1];
+        List<Vector3> path = new List<Vector3>();
         float time = 0;
-        for(int i = 0; i < Maxiteration;i++)
+        for (int i = 0; i < iteration; i++)
         {
-            time += 0.05f;
-
-            points.Add(start.position + (start.forward * time * speed));
-            points[i] += GravityVec * time * time;
-
-            if (Physics.RaycastNonAlloc(points[i], Vector3.forward, hits, 1f) != 0)
-            {
-                Debug.Log("Hit");
-                break;
-            }
+            time += Time.fixedDeltaTime;
+            path.Add(startpos + (forward * time * speed));
+            path[i] += (GravityVec + new Vector3(Wind.x, 0, Wind.y)) * time * time;
         }
- 
-
-        return points.ToArray();
+        return path.ToArray();
     }
-
-
 
     /*
     //Integration method 3

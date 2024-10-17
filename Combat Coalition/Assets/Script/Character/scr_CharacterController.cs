@@ -6,7 +6,6 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Burst;
-using Unity.Properties;
 public class scr_CharacterController : MonoBehaviour
 {
 
@@ -32,7 +31,8 @@ public class scr_CharacterController : MonoBehaviour
     public class CharacterMovementAnimationEventArgs : EventArgs
     {
         public Vector3 dir;
-        public bool isSprinting; 
+        public bool isSprinting;
+        public float AnimationSpeed;
     }
     public event EventHandler CharacterJumpAnimationEvent;
     public event EventHandler<OnStanceChangedEventArgs> OnStanceChanged;
@@ -185,122 +185,64 @@ public class scr_CharacterController : MonoBehaviour
     }
     void CalculateMovement()
     {
-        NativeArray<float3> pos = new NativeArray<float3>(1, Allocator.TempJob);
-        NativeArray<PlayerStance> _playerStance = new NativeArray<PlayerStance>(1, Allocator.TempJob);
-        JobHandle handle = MoveHandle(pos,_playerStance,out MovementJob movementJob);
-        handle.Complete();
-        playerStance = movementJob.playerStance[0];
-        characterController.Move(movementJob.position[0]);
-        pos.Dispose();
-        _playerStance.Dispose();
-        var direction = transform.InverseTransformDirection(characterController.velocity);
+        if (InputManeger.Input_Movement.y <= 0.2f)
+        {
+            IsSprinting = false;
+        }
+        var verticalSpeed = PlayerSettings.WalkingStrafeSpeed;
+        var horizontalSpeed = PlayerSettings.WalkingForwardSpeed;
+        if (IsSprinting)
+        {
+            verticalSpeed = PlayerSettings.RunningStrafeSpeed;
+            horizontalSpeed = PlayerSettings.RunningForwardSpeed;
+        }
+        if (!IsGrounded())
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
+        }
+        else if (playerStance == PlayerStance.Crouch)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
+        }
+        else if (playerStance == PlayerStance.Prone)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
+        }
+        else if (WeaponController.GetWeapon().IsAiming)
+        {
+            PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
+        }
+        else
+        {
+            PlayerSettings.SpeedEffector = 1;
+        }
+        AnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
+        if (AnimationSpeed > 1)
+        {
+            AnimationSpeed = 1;
+        }
+        var direction = transform.InverseTransformDirection(characterController.velocity * AnimationSpeed);
         CharacterMovementAnimationEvent?.Invoke(this, new CharacterMovementAnimationEventArgs
         {
             dir = direction.normalized,
-            isSprinting = IsSprinting
-        });
-    }
-    JobHandle MoveHandle(NativeArray<float3> pos,NativeArray<PlayerStance> _playerStance,out MovementJob _movementJob)
-    {
-        pos[0] = transform.position;
-        _playerStance[0] = playerStance;
-        MovementJob movementJob = new MovementJob()
-        {
-            position = pos,
-            velocity = characterController.velocity,
-            Input_Movement = InputManeger.Input_Movement,
-            DeltaTime = Time.deltaTime,
-            IsSprinting = IsSprinting,
-            PlayerSettings = PlayerSettings,
-            IsGrounded = IsGrounded(),
-            IsFalling = IsFalling(),
+            isSprinting = IsSprinting,
             AnimationSpeed = AnimationSpeed,
-            playerStance = _playerStance,
-            IsAiming = WeaponController.GetWeapon().IsAiming,
-            newMovementSpeed = newMovementSpeed,
-            newMovementSpeedVelocity = newMovementSpeedVelocity,
-            PlayerGravity = PlayerGravity,
-            GravityMin = GravityMin,
-            JumpingForce = JumpingForce,
-        };
-        _movementJob = movementJob;
-        return movementJob.Schedule(new TransformAccessArray(new Transform[1] { transform }));
-    }
-    //MovementJob(Burst)
-    //[BurstCompile]
-    public struct MovementJob : IJobParallelForTransform
-    {
-        public float2 Input_Movement;
-        public float DeltaTime;
-        public bool IsSprinting;
-        public PlayerSettingModel PlayerSettings;
-        public bool IsGrounded;
-        public bool IsFalling;
-        public float AnimationSpeed;
-        public float PlayerGravity;
-        public NativeArray<PlayerStance> playerStance;
-        public float3 newMovementSpeed;
-        public float3 newMovementSpeedVelocity;
-        public bool IsAiming;
-        public float3 velocity;
-        public float GravityMin;
-        public float3 JumpingForce;
-        public NativeArray<float3> position;
-        public void Execute(int index, TransformAccess transform)
+        });
+        verticalSpeed *= PlayerSettings.SpeedEffector;
+        horizontalSpeed *= PlayerSettings.SpeedEffector;
+        newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed, new Vector3(verticalSpeed * InputManeger.Input_Movement.x * Time.deltaTime, 0, horizontalSpeed * InputManeger.Input_Movement.y * Time.deltaTime), ref newMovementSpeedVelocity, IsGrounded() ? PlayerSettings.MovementSmoothing : PlayerSettings.FallingSmoothing);
+        var movementSpeed = transform.TransformDirection(newMovementSpeed);
+        if (PlayerGravity < -0.1f && IsGrounded())
         {
-            if (Input_Movement.y <= 0.2f)
-            {
-                IsSprinting = false;
-            }
-            var verticalSpeed = PlayerSettings.WalkingStrafeSpeed;
-            var horizontalSpeed = PlayerSettings.WalkingForwardSpeed;
-            if (IsSprinting)
-            {
-                verticalSpeed = PlayerSettings.RunningStrafeSpeed;
-                horizontalSpeed = PlayerSettings.RunningForwardSpeed;
-            }
-            if (!IsGrounded)
-            {
-                PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
-            }
-            else if (playerStance[index] == PlayerStance.Crouch)
-            {
-                PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
-            }
-            else if (playerStance[index] == PlayerStance.Prone)
-            {
-                PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
-            }
-            else if (IsAiming)
-            {
-                PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
-            }
-            else
-            {
-                PlayerSettings.SpeedEffector = 1;
-            }
-            AnimationSpeed = math.length(velocity) / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
-            if (AnimationSpeed > 1)
-            {
-                AnimationSpeed = 1;
-            }
-            verticalSpeed *= PlayerSettings.SpeedEffector;
-            horizontalSpeed *= PlayerSettings.SpeedEffector;
-            //SmoothDamp Pending 
-            newMovementSpeed = new float3(verticalSpeed * Input_Movement.x * DeltaTime, 0, horizontalSpeed * Input_Movement.y * DeltaTime);
-            float3 movementSpeed = scr_Models.LocalToWorld(transform.localToWorldMatrix, newMovementSpeed);
-            if (PlayerGravity < -0.1f && IsGrounded)
-            {
-                PlayerGravity = -0.1f;
-            }
-            if (PlayerGravity > GravityMin)
-            {
-                PlayerGravity += (GravityVec.y * (IsFalling ? PlayerSettings.GravityMultiplierFalling : PlayerSettings.GravityMultiplierJump)) * DeltaTime;
-            }
-            movementSpeed.y += PlayerGravity;
-            movementSpeed += JumpingForce * DeltaTime;
-            position[index] = movementSpeed;
+            PlayerGravity = -0.1f;
         }
+        if (PlayerGravity > GravityMin)
+        {
+            PlayerGravity += GravityVec.y * Time.deltaTime;
+        }
+        movementSpeed.y += PlayerGravity;
+        movementSpeed += JumpingForce * Time.deltaTime;
+        characterController.Move(movementSpeed);
     }
     #endregion
 

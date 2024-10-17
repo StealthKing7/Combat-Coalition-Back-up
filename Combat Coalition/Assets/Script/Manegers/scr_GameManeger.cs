@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static scr_Models;
-using UnityEngine.Playables;
 using System;
 
 public class scr_GameManeger : MonoBehaviour
@@ -17,6 +15,7 @@ public class scr_GameManeger : MonoBehaviour
     private List<scr_CharacterController> Players = new List<scr_CharacterController>();
     private float frameRate;
     private float FpsTimer;
+
 
 
     private void Update()

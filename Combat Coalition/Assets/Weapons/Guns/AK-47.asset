@@ -30,8 +30,8 @@ MonoBehaviour:
   DefaultAttachments:
   - {fileID: 11400000, guid: fb7086493147aeb4f820f8591baf2560, type: 2}
   ValidAttachments: {fileID: 11400000, guid: 08a1aa6f79b70b149a57ca5a530d95e1, type: 2}
-  Bullet: {fileID: 3009495485232135985, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
-  BulletSpeed: 80
+  Bullet: {fileID: 3009495485232135998, guid: 6eed3632d4e673540a601f91c8620463, type: 3}
+  BulletSpeed: 150
   AllowedFireTypes: 0100000000000000
   FireRate: 7
   BulletSpread: 0.5
@@ -51,98 +51,58 @@ MonoBehaviour:
     Path: event:/TriggerPressed
   MaxAmmo: 100
   ReloadTime: 2
-  m: 7.9
-  r: 0.05
-  DragCoefficient: 0.5
-  LiftCoefficient: 0.5
-  windSpeedVector: {x: 5, y: 0, z: 0}
-  rho: 1.225
+  Iteration: 50
+  WindVector: {x: 0, y: 0, z: 0}
   RotationX:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0
+      time: 0.3812294
+      value: 0.19961548
       inSlope: 2
       outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    - serializedVersion: 3
-      time: 0.18291813
-      value: 1.0243877
-      inSlope: 0.0095921
-      outSlope: 0.17773525
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 1
-    - serializedVersion: 3
-      time: 0.71292794
-      value: 0.048269063
-      inSlope: -2.2416022
-      outSlope: -6.118169
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.07284496
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: -1.7887005
-      outSlope: -1.7887005
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.35248584
-      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  RotationXStrength: -10
+  RotationXStrength: 0
   KickBackZ:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.0032958984
-      inSlope: 3.063206
-      outSlope: 3.063206
-      tangentMode: 0
+      value: 0
+      inSlope: 2.630824
+      outSlope: 2.630824
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.050000057
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.05
-      value: 0.30022696
-      inSlope: 0.008131976
-      outSlope: -0.0640831
-      tangentMode: 1
+      time: 0.3833333
+      value: 1.0084825
+      inSlope: 0.49772358
+      outSlope: 0.49772358
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 1
-      outWeight: 0.98919916
-    - serializedVersion: 3
-      time: 0.7689304
-      value: -0.01690787
-      inSlope: -1.5118942
-      outSlope: -5.6219487
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.12978302
-      outWeight: 0.04430102
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -7.5494733
-      outSlope: -7.5494733
-      tangentMode: 0
+      inSlope: -1.6353769
+      outSlope: -1.6353769
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0.07212852
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  KickBackZMultiplier: -0.8
+  KickBackZMultiplier: -0.4
   KickBackY:
     serializedVersion: 2
     m_Curve:
@@ -155,33 +115,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0.7438539
-    - serializedVersion: 3
-      time: 0.34767643
-      value: 0.29335544
-      inSlope: 0.027829757
-      outSlope: -0.04452284
-      tangentMode: 1
-      weightedMode: 0
-      inWeight: 0.8761368
-      outWeight: 0.93694466
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 1.7506756
-      outSlope: 1.7506756
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.25843826
-      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  KickBackYMultiplier: -0.1
+  KickBackYMultiplier: 0
   RecoilSmoothing: 0.1
-  CamRecoil: {x: -15, y: 0, z: 0}
-  CamRecoilIncrement: 0.08
+  CamRecoil: {x: -10, y: 5, z: 0}
+  CamRecoilIncrement: 0.06
   CameraReturnSpeed: 0.2
-  CameraRecoilScale: 2.5
-  Snapiness: 1.4
-  CameraShake: 3
-  CameraShakeSmoothing: 0.2
+  CameraRecoilScale: 2
+  Snapiness: 0.7
+  CameraShake: 2
+  CameraShakeSmoothing: 0.1

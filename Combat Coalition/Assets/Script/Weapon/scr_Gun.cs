@@ -17,7 +17,7 @@ public class scr_Gun : scr_BaseWeapon
     public class Aim_ReloadEventArgs : EventArgs { public float Weight; }
     public class OnShootEventArgs : EventArgs { public float CurrentAmmo; }
     public class OnReloadEventArgs : EventArgs { public float CurrentAmmo; public bool isAiming; public float delay; }
-    private List<BulletWithTarget> bulletWithDirs = new List<BulletWithTarget>();
+    private List<BulletsWithPath> BulletWithPath = new List<BulletsWithPath>();
     [SerializeField] AttachmentsPoints[] _AttachmentsPoints;
     [SerializeField] Transform SightTarget;
     [SerializeField] Transform BulletSpawn;
@@ -34,6 +34,8 @@ public class scr_Gun : scr_BaseWeapon
     private float AimVelocity = 0;
     private bool IsReloading;
     private float Cam_Recoil;
+    private float Cam_RecoilY;
+    private float TargetCam_RecoilY;
     private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
     #endregion
@@ -55,48 +57,79 @@ public class scr_Gun : scr_BaseWeapon
             StartCoroutine(Reload());
             return;
         }
-        bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
-        ray = holder.Cam().ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
-        RaycastHit[] hitInfo = new RaycastHit[1];
-        if (Physics.RaycastNonAlloc(ray, hitInfo, float.MaxValue, holder.GetWeaponController().BulletIgnoreLayer) != 0)
+        CalculateBulletTrajectory();
+    }
+    private void OnDrawGizmos()
+    {
+        for (int i = 0; i < BulletWithPath.Count; i++)
         {
-            HitPoint = hitInfo[0].point;
-        }
-        foreach (var bullet in bulletWithDirs)
-        {
-            bullet.scr_Bullet.OnHit += Bullet_OnHit;
+            for (int j = 0; j < BulletWithPath[i].path.Length; j++)
+            {
+                Gizmos.DrawWireSphere(BulletWithPath[i].path[j], 1);
+                if (j != BulletWithPath[i].path.Length - 1)
+                    Debug.DrawLine(BulletWithPath[i].path[j], BulletWithPath[i].path[j + 1], Color.black, 2);
+            }
         }
     }
     void CalculateBulletTrajectory()
     {
-        if (bulletWithDirs.Count == 0) return;
-        for (int i = 0; i < bulletWithDirs.Count; i++)
+        BulletWithPath.RemoveAll(b => b.bullets == null);
+        for (int i = 0; i < BulletWithPath.Count; i++)
         {
-            //Debug.DrawLine(BulletSpawn.position, BulletPath(bulletWithDirs[i].BulletTarget,BulletSpawn.position,_GunSO.BulletSpeed));
+            RaycastHit[] hit = new RaycastHit[1];
+            var numberofHit = Physics.RaycastNonAlloc(BulletWithPath[i].bullets.position, BulletWithPath[i].bullets.forward, hit);
+            if (numberofHit > 0)
+            {
+                if(hit[0].transform.TryGetComponent(out scr_HeathAndArmour scr_Heath))
+                {
+                    scr_Heath.OnHit(15);
+                    Destroy(BulletWithPath[i].bullets.gameObject);
+                }
+            }
+        }
+        for (int i = 0; i < BulletWithPath.Count; i++)
+        {
+            BulletWithPath[i] = new BulletsWithPath
+            {
+                bullets = BulletWithPath[i].bullets,
+                path = BulletWithPath[i].path,
+                PathIndex = BulletWithPath[i].PathIndex
+            };
+            if (BulletWithPath[i].PathIndex != BulletWithPath[i].path.Length)
+            {
+                BulletWithPath[i].bullets.position = Vector3.MoveTowards(BulletWithPath[i].bullets.position, BulletWithPath[i].path[BulletWithPath[i].PathIndex], _GunSO.BulletSpeed * Time.deltaTime);
+                if (BulletWithPath[i].bullets.position == BulletWithPath[i].path[BulletWithPath[i].PathIndex])
+                {
+                    BulletWithPath[i] = new BulletsWithPath
+                    {
+                        bullets = BulletWithPath[i].bullets,
+                        path = BulletWithPath[i].path,
+                        PathIndex = BulletWithPath[i].PathIndex + 1
+                    };
+                }
+            }
+            else
+            {
+                Destroy(BulletWithPath[i].bullets.gameObject);
+            }
         }
     }
-    private void Bullet_OnHit(object sender, scr_Bullet.OnHitEventArgs e)
-    {
-        //Debug.Log(e.hitObject.name);
-    }
-
     void Shoot()
     {
         scr_AudioManeger.Instance.PlayOneShot(_GunSO.GunShots, BulletSpawn.position);
         CurrentAmmo--;
         OnShoot?.Invoke(this, new OnShootEventArgs { CurrentAmmo = CurrentAmmo });
         RecoilTime = Time.deltaTime;
-        bulletWithDirs.Add(new BulletWithTarget
+        var bullet = Instantiate(_GunSO.Bullet.transform);
+        bullet.position = BulletSpawn.position;
+        bullet.forward = BulletSpawn.forward;
+        BulletWithPath.Add(new BulletsWithPath
         {
-            BulletTarget = HitPoint, // new Vector3((UnityEngine.Random.insideUnitCircle * _GunSO.BulletSpread).x, (UnityEngine.Random.insideUnitCircle * _GunSO.BulletSpread).y),
-            scr_Bullet = Instantiate(_GunSO.Bullet)
+            bullets = bullet,
+            path = BulletPath(_GunSO.Iteration, BulletSpawn.position, transform.forward.normalized, _GunSO.BulletSpeed,_GunSO.WindVector),
+            PathIndex = 0
         });
-        bulletWithDirs.RemoveAll(b => b.scr_Bullet == null);
-        bulletWithDirs.ForEach(b =>
-        {
-            if (b.scr_Bullet.IsInitialized()) return;
-            b.scr_Bullet.SetStartValues(_GunSO, BulletSpawn.position, (b.BulletTarget - BulletSpawn.position).normalized);
-        });
+        BulletWithPath.RemoveAll(b => b.bullets == null);
     }
     #endregion
 
@@ -122,7 +155,6 @@ public class scr_Gun : scr_BaseWeapon
     }
     private void FixedUpdate()
     {
-        CalculateBulletTrajectory();
     }
 
     #endregion
@@ -190,7 +222,10 @@ public class scr_Gun : scr_BaseWeapon
     {
         Cam_Recoil += _GunSO.CamRecoilIncrement * _GunSO.Snapiness;
         Cam_Recoil = Mathf.Clamp01(Cam_Recoil);
-        
+        if (Cam_RecoilY == TargetCam_RecoilY)
+        {
+            TargetCam_RecoilY += MathF.Cos(UnityEngine.Random.insideUnitCircle.x) * UnityEngine.Random.Range(-_GunSO.CamRecoil.y, _GunSO.CamRecoil.y);
+        }
         Vector3 RecoilPosition = new Vector3
         {
             y = _GunSO.KickBackY.Evaluate(fraction) * _GunSO.KickBackYMultiplier,
@@ -207,7 +242,11 @@ public class scr_Gun : scr_BaseWeapon
     {
         RecoilRot = Vector3.zero;
         RecoilPos = Vector3.zero;
-        Cam_Recoil = Mathf.SmoothStep(Cam_Recoil, 0, _GunSO.CameraReturnSpeed);
+        Cam_RecoilY = 0;
+        if (!holder.GetWeaponController().InputManeger.RightClick)
+        {
+            Cam_Recoil = Mathf.SmoothStep(Cam_Recoil, 0, _GunSO.CameraReturnSpeed);
+        }
         if (RecoilTime > 0)
         {
             float fraction = RecoilTime / _GunSO.RecoilSmoothing;
@@ -219,8 +258,9 @@ public class scr_Gun : scr_BaseWeapon
             }
             Recoil(fraction);
         }
+        Cam_RecoilY = Mathf.SmoothStep(Cam_RecoilY, TargetCam_RecoilY, 1);
         Vector3 TargetCameraRecoil = Vector3.zero;
-        TargetCameraRecoil = Vector3.Slerp(TargetCameraRecoil, _GunSO.CamRecoil + Vector3.up * (Noise(UnityEngine.Random.value,RecoilTime)*_GunSO.CameraRecoilScale) * UnityEngine.Random.Range(-1,1), Cam_Recoil);
+        TargetCameraRecoil = Vector3.Slerp(TargetCameraRecoil, new Vector3(_GunSO.CamRecoil.x, Cam_RecoilY, 0), Cam_Recoil);
         holder.CamRecoilObj().transform.localRotation = Quaternion.Euler(TargetCameraRecoil);
         Vector3 TargetRecoilPos = Vector3.zero;
         TargetRecoilPos = Vector3.Lerp(TargetRecoilPos, RecoilPos, _GunSO.RecoilSmoothing);

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static scr_Models;
@@ -8,43 +7,63 @@ public class BulletStuff : MonoBehaviour
     [SerializeField] Transform DebugObj;
     [SerializeField] float speed;
     [SerializeField] int iteration;
-    private Vector3 HitPoint;
-    public List<Vector3> path = new List<Vector3>();
-    private struct BulletWithDir
-    {
-        public Transform bullet;
-        public Vector3 target; 
-    }
+    [SerializeField] int index;
+    private Vector3 start;
+    private Vector3 forward;
+    public List<BulletsWithPath> BulletsTransforms = new List<BulletsWithPath>();
+    [SerializeField] Vector2 Wind;
 
     private void Update()
     {
         if (Input.GetKeyUp(KeyCode.F))
         {
             Shoot();
-            foreach (var item in BulletPath(HitPoint, transform, iteration, speed))
+        }
+        for (int i = 0; i < BulletsTransforms.Count; i++)
+        {
+            BulletsTransforms[i] = new BulletsWithPath
             {
-                path.Add(item);
+                bullets = BulletsTransforms[i].bullets,
+                path = BulletsTransforms[i].path,
+                PathIndex = BulletsTransforms[i].PathIndex
+            };
+            if (BulletsTransforms[i].PathIndex != BulletsTransforms[i].path.Length)
+            {
+                BulletsTransforms[i].bullets.position = Vector3.MoveTowards(BulletsTransforms[i].bullets.position, BulletsTransforms[i].path[BulletsTransforms[i].PathIndex], speed * Time.deltaTime);
+                if (BulletsTransforms[i].bullets.position == BulletsTransforms[i].path[BulletsTransforms[i].PathIndex])
+                {
+                    BulletsTransforms[i] = new BulletsWithPath
+                    {
+                        bullets = BulletsTransforms[i].bullets,
+                        path = BulletsTransforms[i].path,
+                        PathIndex = BulletsTransforms[i].PathIndex + 1
+                    };
+                }
             }
         }
-        DebugObj.position = HitPoint;
-        for (int i = 0; i < path.Count; i++)
-        {
-            if (i == path.Count-1) return;
-            Debug.DrawLine(path[i], path[i + 1], Color.black, 2);
-        }
     }
+
     void Shoot()
     {
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hitInfo, float.MaxValue))
+        var bullet = Instantiate(Bulletprf);
+        bullet.position = transform.position;
+        BulletsTransforms.Add(new BulletsWithPath
         {
-            HitPoint =  hitInfo.point;
-        }
+            bullets = bullet,
+            path = BulletPath(iteration,transform.position,transform.forward.normalized,speed,Wind),
+            PathIndex = 0
+        });
     }
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
-        for (int i = 0; i < path.Count; i++)
+        for (int i = 0; i < BulletsTransforms.Count; i++)
         {
-            Gizmos.DrawWireSphere(path[i], 2);
+            for (int j = 0; j < BulletsTransforms[i].path.Length; j++)
+            {
+                Gizmos.DrawWireSphere(BulletsTransforms[i].path[j], 1);
+                if (j != BulletsTransforms[i].path.Length - 1)
+                    Debug.DrawLine(BulletsTransforms[i].path[j], BulletsTransforms[i].path[j + 1], Color.black, 2);
+            }
         }
     }
 }
