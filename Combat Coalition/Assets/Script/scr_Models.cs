@@ -2,14 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Unity.Mathematics;
 public static class scr_Models
 {
     public static readonly Vector3 GravityVec = new Vector3(0, -9.81f, 0);
-    public static float Noise(float seed, float timeCounter)
-    {
-        return (Mathf.PerlinNoise(seed, timeCounter) - 0.5f) * 2;
-    }
     #region - Player -
 
     public static float ArmourHeath = 50f;
@@ -65,7 +60,6 @@ public static class scr_Models
     #endregion
 
     #region - Weapon -
-
     public enum GunFireType
     {
         SemiAuto,

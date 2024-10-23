@@ -12,6 +12,7 @@ public class scr_UI_Maneger : MonoBehaviour
     public static scr_UI_Maneger Instance;
     private float CurrentRectileSize;
     private RectTransform Rectile;
+    private GameObject HitRegister;
     [Header("Interact")]
     [SerializeField] GameObject InteractObj;
     [SerializeField] TextMeshProUGUI text;
@@ -37,12 +38,25 @@ public class scr_UI_Maneger : MonoBehaviour
         if (e.weapon.GetScr_WeaponSO().WeaponType == scr_Models.WeaponType.Gun)
         {
             var gunso = e.weapon.GetScr_WeaponSO() as scr_GunSO;
+            (e.weapon as scr_Gun).OnHit += UI_OnHit;
             if (Rectile != null)
             {
                 Destroy(Rectile.gameObject);
             }
             Rectile = Instantiate(gunso.Rectile, canvas.transform);
+            HitRegister = Rectile.GetChild(0).gameObject;
         }
+    }
+
+    private void UI_OnHit(object sender, System.EventArgs e)
+    {
+        HitRegister.SetActive(true);
+        StartCoroutine(ResetHitRegister());
+    }
+    IEnumerator ResetHitRegister()
+    {
+        yield return new WaitForSeconds(0.1f);
+        HitRegister.SetActive(false);
     }
 
     public void Interact(scr_Pickable pickable,float holdTime)

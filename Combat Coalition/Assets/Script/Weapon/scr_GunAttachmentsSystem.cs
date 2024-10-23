@@ -42,12 +42,9 @@ public class scr_GunAttachmentsSystem : MonoBehaviour
         Instantiate(WeaponPreview.PrefabUI, weaponBodyTransform);
         
     }
-    private void Update()
+    public void SelecteWeapon()
     {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            AllWeaponsSelected.Add(new WeaponsWithAttachments { scr_WeaponSO = CurrentWeaponSO, AttachmentSOList = WeaponPreview.AttchamentsList() });
-        }
+        AllWeaponsSelected.Add(new WeaponsWithAttachments { scr_WeaponSO = CurrentWeaponSO, AttachmentSOList = WeaponPreview.AttchamentsList() });
     }
     public int GetPartIndex(AttachmentTypes partType)
     {

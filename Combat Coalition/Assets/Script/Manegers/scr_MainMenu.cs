@@ -8,27 +8,33 @@ public class scr_MainMenu : MonoBehaviour
     [SerializeField] private Button Assualt;
     [SerializeField] private Button Shotgun;
     [SerializeField] private Button Melee;
+    [SerializeField] private Button SelecteWeapon;
     [SerializeField] private Button randomizeButton;
     [SerializeField] private Button playButton;
     [SerializeField] private Button togglePartsButton;
+    private scr_GunAttachmentsSystem gunAttachmentsSystem;
     private void Awake()
     {
+        gunAttachmentsSystem = scr_GunAttachmentsSystem.Instance;
         MainMenu();
     }
     void MainMenu()
     {
         Assualt.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Gun));
+            gunAttachmentsSystem.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Gun));
         });
         Shotgun.onClick.AddListener(() => {
             //scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList, scr_Models.WeaponType.Gun);
         });
         Melee.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Melee));
+            gunAttachmentsSystem.ChangeWeapon(scr_GunAttachmentsSystem.Instance.WeaponSOList.Find(e => e.WeaponType == scr_Models.WeaponType.Melee));
         });
-
+        SelecteWeapon.onClick.AddListener(() =>
+        {
+            gunAttachmentsSystem.SelecteWeapon();
+        });
         randomizeButton.onClick.AddListener(() => {
-            scr_GunAttachmentsSystem.Instance.RandomizeParts();
+            gunAttachmentsSystem.RandomizeParts();
         });
 
         togglePartsButton.onClick.AddListener(() => {

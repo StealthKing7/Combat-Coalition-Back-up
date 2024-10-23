@@ -1,9 +1,7 @@
 using FMODUnity;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static scr_Models;
-using static UnityEngine.ParticleSystem;
 
 [CreateAssetMenu()]
 public class scr_GunSO : scr_WeaponSO
@@ -26,6 +24,7 @@ public class scr_GunSO : scr_WeaponSO
     [Header("Audio")]
     public EventReference GunShots;
     public EventReference TriggerPressed;
+    public EventReference HitRegisterSFX;
     [Header("Reloading Properties")]
     public float MaxAmmo = 30f;
     public float ReloadTime = 3f;

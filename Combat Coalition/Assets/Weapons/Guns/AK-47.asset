@@ -49,7 +49,14 @@ MonoBehaviour:
       Data3: 1038059411
       Data4: 1832175609
     Path: event:/TriggerPressed
-  MaxAmmo: 100
+  HitRegisterSFX:
+    Guid:
+      Data1: -987892233
+      Data2: 1184241114
+      Data3: 1861159315
+      Data4: -143014722
+    Path: event:/HitRegister
+  MaxAmmo: 30
   ReloadTime: 2
   Iteration: 50
   WindVector: {x: 0, y: 0, z: 0}
@@ -57,10 +64,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.3812294
-      value: 0.19961548
-      inSlope: 2
-      outSlope: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -68,7 +84,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  RotationXStrength: 0
+  RotationXStrength: -8
   KickBackZ:
     serializedVersion: 2
     m_Curve:
@@ -108,22 +124,31 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: -0.0037231445
-      inSlope: -0.018214032
-      outSlope: -0.018214032
-      tangentMode: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.7438539
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  KickBackYMultiplier: 0
+  KickBackYMultiplier: -0.03
   RecoilSmoothing: 0.1
-  CamRecoil: {x: -10, y: 5, z: 0}
-  CamRecoilIncrement: 0.06
+  CamRecoil: {x: -12, y: 0, z: 0}
+  CamRecoilIncrement: 0.1
   CameraReturnSpeed: 0.2
   CameraRecoilScale: 2
   Snapiness: 0.7
-  CameraShake: 2
+  CameraShake: 0
   CameraShakeSmoothing: 0.1

@@ -26,6 +26,7 @@ public class scr_CharacterController : MonoBehaviour
     private float TargetLeanVelocity;
     private bool IsSprinting;
     private Vector3 CurrentPos;
+    private Collider[] IsGroundResult = new Collider[1];
     //Events
     public event EventHandler<CharacterMovementAnimationEventArgs> CharacterMovementAnimationEvent;
     public class CharacterMovementAnimationEventArgs : EventArgs
@@ -112,8 +113,7 @@ public class scr_CharacterController : MonoBehaviour
     #region - IsGrounded / IsFalling -
     bool IsGrounded()
     {
-        Collider[] results = new Collider[1];
-        return Physics.OverlapSphereNonAlloc(feetTransfrom.position, PlayerSettings.IsGroundedRadius, results, GroundMask) > 0;
+        return Physics.OverlapSphereNonAlloc(feetTransfrom.position, PlayerSettings.IsGroundedRadius, IsGroundResult, GroundMask) > 0;
     }
     bool IsFalling()
     {
@@ -200,14 +200,6 @@ public class scr_CharacterController : MonoBehaviour
         {
             PlayerSettings.SpeedEffector = PlayerSettings.FallingSpeedEffector;
         }
-        else if (playerStance == PlayerStance.Crouch)
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
-        }
-        else if (playerStance == PlayerStance.Prone)
-        {
-            PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
-        }
         else if (WeaponController.GetWeapon().IsAiming)
         {
             PlayerSettings.SpeedEffector = PlayerSettings.AimSpeedEffector;
@@ -215,6 +207,18 @@ public class scr_CharacterController : MonoBehaviour
         else
         {
             PlayerSettings.SpeedEffector = 1;
+        }
+        switch (playerStance)
+        {
+            case PlayerStance.Crouch:
+                PlayerSettings.SpeedEffector = PlayerSettings.CrouchSpeedEffector;
+                break;
+            case PlayerStance.Prone:
+                PlayerSettings.SpeedEffector = PlayerSettings.ProneSpeedEffector;
+                break;
+            default:
+                PlayerSettings.SpeedEffector = 1;
+                break;
         }
         AnimationSpeed = characterController.velocity.magnitude / (PlayerSettings.WalkingForwardSpeed * PlayerSettings.SpeedEffector);
         if (AnimationSpeed > 1)
@@ -312,10 +316,6 @@ public class scr_CharacterController : MonoBehaviour
         else if (playerStance == PlayerStance.Prone)
         {
             currentStance = playerProneStance;
-        }
-        else if (playerStance == PlayerStance.Stand)
-        {
-            ViewClampYmin = -60;
         }
         if (IsFalling())
         {

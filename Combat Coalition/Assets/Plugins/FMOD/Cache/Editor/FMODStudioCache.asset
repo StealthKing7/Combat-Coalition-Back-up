@@ -27,6 +27,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 0
+--- !u!114 &-5482966237209600510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/HitRegister
+  m_EditorClassIdentifier: 
+  Path: event:/HitRegister
+  Guid:
+    Data1: -987892233
+    Data2: 1184241114
+    Data3: 1861159315
+    Data4: -143014722
+  Banks:
+  - {fileID: 8314733098303797429}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,12 +73,14 @@ MonoBehaviour:
   EditorEvents:
   - {fileID: 7731534750722050479}
   - {fileID: -6921522366842060665}
+  - {fileID: 6318264016368553194}
+  - {fileID: -5482966237209600510}
   EditorParameters: []
   MasterBanks:
   - {fileID: 5686076577386837674}
   StringsBanks:
   - {fileID: 6847120161849229193}
-  cacheTime: 638514047434431687
+  cacheTime: 638652681043852974
   cacheVersion: 131617
 --- !u!114 &5686076577386837674
 MonoBehaviour:
@@ -68,9 +97,36 @@ MonoBehaviour:
   Path: ../../../../Fmod_CombatCoaltion/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638514047434416618
+  lastModified: 638652681043833370
   FileSizes: []
   Exists: 1
+--- !u!114 &6318264016368553194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/event:/HitRegister/HitRegister
+  m_EditorClassIdentifier: 
+  Path: event:/event:/HitRegister/HitRegister
+  Guid:
+    Data1: -1362629090
+    Data2: 1216654433
+    Data3: -1841542216
+    Data4: -917998865
+  Banks:
+  - {fileID: 8314733098303797429}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 0
 --- !u!114 &6847120161849229193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,10 +142,10 @@ MonoBehaviour:
   Path: ../../../../Fmod_CombatCoaltion/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638514047434431687
+  lastModified: 638652681043852974
   FileSizes:
   - Name: 
-    Value: 866
+    Value: 970
   Exists: 1
 --- !u!114 &7731534750722050479
 MonoBehaviour:
@@ -133,6 +189,6 @@ MonoBehaviour:
   Path: ../../../../Fmod_CombatCoaltion/Build/Desktop/Ak47.bank
   Name: Ak47
   StudioPath: bank:/Ak47
-  lastModified: 638514047434214628
+  lastModified: 638652681043688794
   FileSizes: []
   Exists: 1

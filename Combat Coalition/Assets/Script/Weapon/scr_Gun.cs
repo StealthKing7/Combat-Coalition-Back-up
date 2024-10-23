@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 using static scr_Models;
 
@@ -14,6 +13,7 @@ public class scr_Gun : scr_BaseWeapon
     public event EventHandler<OnShootEventArgs> OnShoot;
     public event EventHandler<OnReloadEventArgs> OnReload;
     public event EventHandler<Aim_ReloadEventArgs> Aim_Reload;
+    public event EventHandler OnHit;
     public class Aim_ReloadEventArgs : EventArgs { public float Weight; }
     public class OnShootEventArgs : EventArgs { public float CurrentAmmo; }
     public class OnReloadEventArgs : EventArgs { public float CurrentAmmo; public bool isAiming; public float delay; }
@@ -35,7 +35,6 @@ public class scr_Gun : scr_BaseWeapon
     private bool IsReloading;
     private float Cam_Recoil;
     private float Cam_RecoilY;
-    private float TargetCam_RecoilY;
     private float CurrentAmmo = 0f;
     private scr_GunSO _GunSO;
     #endregion
@@ -83,6 +82,8 @@ public class scr_Gun : scr_BaseWeapon
                 if(hit[0].transform.TryGetComponent(out scr_HeathAndArmour scr_Heath))
                 {
                     scr_Heath.OnHit(15);
+                    OnHit?.Invoke(this, EventArgs.Empty);
+                    scr_AudioManeger.Instance.PlayOneShot(_GunSO.HitRegisterSFX, holder.Cam().transform.position);
                     Destroy(BulletWithPath[i].bullets.gameObject);
                 }
             }
@@ -153,9 +154,6 @@ public class scr_Gun : scr_BaseWeapon
         CalculateAimingIn();
         CalculateRecoil();
     }
-    private void FixedUpdate()
-    {
-    }
 
     #endregion
     #region - Reload -
@@ -222,10 +220,6 @@ public class scr_Gun : scr_BaseWeapon
     {
         Cam_Recoil += _GunSO.CamRecoilIncrement * _GunSO.Snapiness;
         Cam_Recoil = Mathf.Clamp01(Cam_Recoil);
-        if (Cam_RecoilY == TargetCam_RecoilY)
-        {
-            TargetCam_RecoilY += MathF.Cos(UnityEngine.Random.insideUnitCircle.x) * UnityEngine.Random.Range(-_GunSO.CamRecoil.y, _GunSO.CamRecoil.y);
-        }
         Vector3 RecoilPosition = new Vector3
         {
             y = _GunSO.KickBackY.Evaluate(fraction) * _GunSO.KickBackYMultiplier,
@@ -242,7 +236,6 @@ public class scr_Gun : scr_BaseWeapon
     {
         RecoilRot = Vector3.zero;
         RecoilPos = Vector3.zero;
-        Cam_RecoilY = 0;
         if (!holder.GetWeaponController().InputManeger.RightClick)
         {
             Cam_Recoil = Mathf.SmoothStep(Cam_Recoil, 0, _GunSO.CameraReturnSpeed);
@@ -258,10 +251,14 @@ public class scr_Gun : scr_BaseWeapon
             }
             Recoil(fraction);
         }
-        Cam_RecoilY = Mathf.SmoothStep(Cam_RecoilY, TargetCam_RecoilY, 1);
+        float TargetCam_RecoilY = 0;
+        TargetCam_RecoilY = Mathf.Lerp(TargetCam_RecoilY, Cam_RecoilY, Cam_Recoil);
         Vector3 TargetCameraRecoil = Vector3.zero;
-        TargetCameraRecoil = Vector3.Slerp(TargetCameraRecoil, new Vector3(_GunSO.CamRecoil.x, Cam_RecoilY, 0), Cam_Recoil);
-        holder.CamRecoilObj().transform.localRotation = Quaternion.Euler(TargetCameraRecoil);
+        TargetCameraRecoil = Vector3.Slerp(TargetCameraRecoil, 
+            IsAiming ?
+            new Vector3(_GunSO.CamRecoil.x / 2, (Mathf.PerlinNoise(UnityEngine.Random.value, Time.deltaTime) * _GunSO.CamRecoil.y / 2) * UnityEngine.Random.Range(-1, 1), 0) : 
+            new Vector3(_GunSO.CamRecoil.x, (Mathf.PerlinNoise(UnityEngine.Random.value, Time.deltaTime) * _GunSO.CamRecoil.y) * UnityEngine.Random.Range(-1, 1), 0), Cam_Recoil);
+        holder.CamRecoilObj().transform.localRotation = Quaternion.Slerp(holder.CamRecoilObj().transform.localRotation,  Quaternion.Euler(TargetCameraRecoil), _GunSO.Snapiness);
         Vector3 TargetRecoilPos = Vector3.zero;
         TargetRecoilPos = Vector3.Lerp(TargetRecoilPos, RecoilPos, _GunSO.RecoilSmoothing);
         transform.localPosition += TargetRecoilPos;
