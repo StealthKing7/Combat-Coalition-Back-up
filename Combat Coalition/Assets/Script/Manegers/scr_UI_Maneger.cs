@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class scr_UI_Maneger : MonoBehaviour
@@ -29,7 +27,7 @@ public class scr_UI_Maneger : MonoBehaviour
     private void Start()
     {
         scr_GameManeger.Instance.OnFpsUpdateText += UpdateFPSText;
-        scr_GameManeger.Instance.GetPlayerList().ForEach(p=> p.WeaponController.OnWeaponEquiped += WeaponController_OnWeaponEquiped);
+        scr_GameManeger.Instance.GetPlayerList().ForEach(p => p.WeaponController.OnWeaponEquiped += WeaponController_OnWeaponEquiped);
     }
 
     private void WeaponController_OnWeaponEquiped(object sender, scr_WeaponController.OnWeaponEquipedEventArgs e)
@@ -59,7 +57,7 @@ public class scr_UI_Maneger : MonoBehaviour
         HitRegister.SetActive(false);
     }
 
-    public void Interact(scr_Pickable pickable,float holdTime)
+    public void Interact(scr_Pickable pickable, float holdTime)
     {
         InteractObj.SetActive(pickable);
         if (pickable == null) return;
@@ -96,7 +94,7 @@ public class scr_UI_Maneger : MonoBehaviour
             Rectile.sizeDelta = new Vector2(CurrentRectileSize, CurrentRectileSize);
         }
     }
-    void UpdateFPSText(object sender,scr_GameManeger.OnFpsUpdateTextEventArgs e)
+    void UpdateFPSText(object sender, scr_GameManeger.OnFpsUpdateTextEventArgs e)
     {
         FPSText.text = e.FrameRate + " fps";
     }
